@@ -2,8 +2,8 @@ import qdarktheme
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
 
-from opps.interface.viewer_3d.render_widgets.common_render_widget import (
-    CommonRenderWidget,
+from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
+    EditorRenderWidget,
 )
 
 
@@ -22,6 +22,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("OPPS")
 
     def create_central_widget(self):
-        self.render_widget = CommonRenderWidget()
+        self.render_widget = EditorRenderWidget()
         self.render_widget.set_theme("dark")
         self.setCentralWidget(self.render_widget)
