@@ -7,7 +7,7 @@ import numpy as np
 class Pipe:
     start: np.ndarray
     end: np.ndarray
-    diameter: float = 0.1
+    radius: float = 0.1
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipe_actor import PipeActor

@@ -50,7 +50,7 @@ class Pipeline:
         def normalize(vector):
             return vector / np.linalg.norm(vector)
 
-        r = pipe_a.diameter
+        r = pipe_a.radius * 2
 
         a_vector = normalize(pipe_a.end - pipe_a.start)
         b_vector = normalize(pipe_b.end - pipe_b.start)
@@ -66,7 +66,7 @@ class Pipeline:
             start=pipe_a.end - a_vector * reduction_distance,
             end=pipe_b.start + b_vector * reduction_distance,
             center=pipe_a.end + c_vector * center_distance,
-            diameter=pipe_a.diameter,
+            radius=pipe_a.radius,
         )
 
         # resize the input tubes to fit the bend

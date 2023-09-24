@@ -18,7 +18,7 @@ class BendActor(vtk.vtkActor):
 
         tube_filter = vtk.vtkTubeFilter()
         tube_filter.SetInputData(arc_source.GetOutput())
-        tube_filter.SetRadius(self.bend.diameter / 2)
+        tube_filter.SetRadius(self.bend.radius)
         tube_filter.SetNumberOfSides(20)
         tube_filter.Update()
 

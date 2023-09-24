@@ -16,7 +16,7 @@ class PipeActor(vtk.vtkActor):
 
         tube_filter = vtk.vtkTubeFilter()
         tube_filter.SetInputData(line_source.GetOutput())
-        tube_filter.SetRadius(self.pipe.diameter / 2)
+        tube_filter.SetRadius(self.pipe.radius)
         tube_filter.SetNumberOfSides(50)
         tube_filter.Update()
 
