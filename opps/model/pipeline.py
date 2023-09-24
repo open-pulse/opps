@@ -31,13 +31,18 @@ class Pipeline:
             pipe = Pipe(point_a, point_b, 40)
             pipes.append(pipe)
 
+        flanges = []
         bends = []
         for pipe_a, pipe_b in pairwise(pipes):
             bend = self.replace_corner_with_bend(pipe_a, pipe_b)
             bends.append(bend)
 
+            flange = Flange(pipe_a.end, (pipe_a.end - pipe_a.start), pipe_a.radius)
+            flanges.append(flange)
+
         self.components.extend(pipes)
         self.components.extend(bends)
+        self.components.extend(flanges)
 
     def add_pipe_from_deltas(self, *deltas, start_point=(0, 0, 0)):
         points = [np.array(start_point)]

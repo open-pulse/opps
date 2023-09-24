@@ -7,8 +7,8 @@ import numpy as np
 class Flange:
     position: np.ndarray
     normal: np.ndarray
-    start_radius: float = 0.01
-    end_radius: float = 0.01
+    start_radius: float = 0.1
+    end_radius: float = 0.1
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.flange_actor import FlangeActor
