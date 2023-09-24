@@ -4,6 +4,7 @@ import numpy as np
 
 from opps.model.bend import Bend
 from opps.model.pipe import Pipe
+from opps.model.flange import Flange
 
 
 class Pipeline:
@@ -17,6 +18,10 @@ class Pipeline:
     def add_bend(self, point_a, point_b, point_c, *args, **kwargs):
         bend = Bend(np.array(point_a), np.array(point_b), np.array(point_c), *args, **kwargs)
         self.components.append(bend)
+    
+    def add_flange(self, position, normal, *args, **kwargs):
+        flange = Flange(np.array(position), np.array(normal), *args, **kwargs)
+        self.components.append(flange)
 
     def add_pipe_from_points(self, *points):
         points = np.array(points)
