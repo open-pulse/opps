@@ -11,6 +11,7 @@ class PipelineActor(vtk.vtkActor):
 
         self.pipeline = pipeline
         self.create_geometry()
+        self.configure_appearance()
 
     def create_geometry(self):
         append_filter = vtk.vtkAppendPolyData()
@@ -23,3 +24,9 @@ class PipelineActor(vtk.vtkActor):
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(append_filter.GetOutput())
         self.SetMapper(mapper)
+
+    def configure_appearance(self):
+        self.GetProperty().SetInterpolationToPhong()
+        self.GetProperty().SetDiffuse(0.8)
+        self.GetProperty().SetSpecular(1.5)
+        self.GetProperty().SetSpecularPower(60)

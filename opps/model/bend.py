@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 
+import numpy as np
+
 
 @dataclass
 class Bend:
-    start: tuple[float, float, float]
-    end: tuple[float, float, float]
-    center: tuple[float, float, float]
+    start: np.ndarray
+    end: np.ndarray
+    center: np.ndarray
     diameter: float = 0.1
 
     def as_vtk(self):

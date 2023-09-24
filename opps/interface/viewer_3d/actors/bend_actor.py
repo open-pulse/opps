@@ -13,13 +13,13 @@ class BendActor(vtk.vtkActor):
         arc_source.SetPoint1(self.bend.start)
         arc_source.SetPoint2(self.bend.end)
         arc_source.SetCenter(self.bend.center)
-        arc_source.SetResolution(50)
+        arc_source.SetResolution(20)
         arc_source.Update()
 
         tube_filter = vtk.vtkTubeFilter()
         tube_filter.SetInputData(arc_source.GetOutput())
         tube_filter.SetRadius(self.bend.diameter / 2)
-        tube_filter.SetNumberOfSides(50)
+        tube_filter.SetNumberOfSides(20)
         tube_filter.Update()
 
         mapper = vtk.vtkPolyDataMapper()
