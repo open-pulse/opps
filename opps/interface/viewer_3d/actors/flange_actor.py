@@ -12,19 +12,20 @@ class FlangeActor(vtk.vtkActor):
     def create_geometry(self):
         bigger_radius = max(self.flange.start_radius, self.flange.end_radius)
         width = 0.3 * bigger_radius
+        y_vector = np.array((0,1,0))
 
         disk_source = vtk.vtkDiskSource()
-        disk_source.SetCenter(self.flange.position - self.flange.normal * width / 2)
-        disk_source.SetNormal(self.flange.normal)
+        disk_source.SetCenter(self.flange.position - y_vector * width / 2)
+        disk_source.SetNormal(y_vector)
         disk_source.SetInnerRadius(self.flange.start_radius)
         disk_source.SetOuterRadius(bigger_radius + width)
-        disk_source.SetCircumferentialResolution(20)
+        disk_source.SetCircumferentialResolution(50)
         disk_source.Update()
 
         extrusion_filter = vtk.vtkLinearExtrusionFilter()
         extrusion_filter.SetInputData(disk_source.GetOutput())
         extrusion_filter.SetExtrusionTypeToNormalExtrusion()
-        extrusion_filter.SetVector(self.flange.normal)
+        extrusion_filter.SetVector(y_vector)
         extrusion_filter.SetScaleFactor(width)
         extrusion_filter.Update()
 

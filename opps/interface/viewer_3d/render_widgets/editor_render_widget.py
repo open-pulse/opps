@@ -21,7 +21,7 @@ class EditorRenderWidget(CommonRenderWidget):
             (0, 0, 307),
             (0, 0, 801),
         )
-        # self.pipeline.add_flange((0,0,0), (0,1,0))
+        self.pipeline.add_flange((0,0,0), (0,1,0))
         # self.pipeline.add_pipe_from_points(
         #     (0,0,0),
         #     (1,0,0),
