@@ -10,6 +10,11 @@ class Bend:
     center: np.ndarray
     radius: float = 0.1
 
+    def __post_init__(self):
+        self.start = np.array(self.start)
+        self.end = np.array(self.end)
+        self.center = np.array(self.center)
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.bend_actor import BendActor
 

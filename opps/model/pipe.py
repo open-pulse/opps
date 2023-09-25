@@ -9,6 +9,10 @@ class Pipe:
     end: np.ndarray
     radius: float = 0.1
 
+    def __post_init__(self):
+        self.start = np.array(self.start)
+        self.end = np.array(self.end)
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 
