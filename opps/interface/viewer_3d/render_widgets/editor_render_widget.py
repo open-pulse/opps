@@ -5,7 +5,7 @@ from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
 from opps.interface.viewer_3d.render_widgets.common_render_widget import (
     CommonRenderWidget,
 )
-from opps.model import Pipeline, Pipe
+from opps.model import Pipe, Pipeline
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -61,7 +61,7 @@ class EditorRenderWidget(CommonRenderWidget):
     def stage_structure(self, structure):
         self.tmp_structure = structure
         self.update_plot()
-    
+
     def commit_structure(self):
         self.pipeline.add_structure(self.tmp_structure)
         self.tmp_structure = None

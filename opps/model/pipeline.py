@@ -3,8 +3,8 @@ from itertools import pairwise
 import numpy as np
 
 from opps.model.bend import Bend
-from opps.model.pipe import Pipe
 from opps.model.flange import Flange
+from opps.model.pipe import Pipe
 
 
 class Pipeline:
@@ -16,7 +16,7 @@ class Pipeline:
 
     def add_bend(self, *args, **kwargs):
         self.add_structure(Bend(*args, **kwargs))
-    
+
     def add_flange(self, *args, **kwargs):
         self.add_structure(Flange(*args, **kwargs))
 

@@ -1,21 +1,21 @@
+import numpy as np
 import vtk
 
 from opps.model.flange import Flange
-import numpy as np
 
 
 class FlangeActor(vtk.vtkActor):
     def __init__(self, flange: Flange):
         self.flange = flange
         self.create_geometry()
-        
+
     def create_geometry(self):
         bigger_radius = max(self.flange.start_radius, self.flange.end_radius)
         width = 0.3 * bigger_radius
-        y_vector = np.array((0,1,0))
+        y_vector = np.array((0, 1, 0))
 
         disk_source = vtk.vtkDiskSource()
-        disk_source.SetCenter((0,0,0) - y_vector * width / 2)
+        disk_source.SetCenter((0, 0, 0) - y_vector * width / 2)
         disk_source.SetNormal(y_vector)
         disk_source.SetInnerRadius(self.flange.start_radius)
         disk_source.SetOuterRadius(bigger_radius + width)
@@ -39,17 +39,17 @@ class FlangeActor(vtk.vtkActor):
             nut.SetHeight(width * 3 / 2)
             nut.SetRadius(width / 3)
             nut.SetCenter(
-                (bigger_radius + width / 2) * np.sin(angle), 
-                0, 
+                (bigger_radius + width / 2) * np.sin(angle),
+                0,
                 (bigger_radius + width / 2) * np.cos(angle),
             )
             nut.Update()
             append_polydata.AddInputData(nut.GetOutput())
         append_polydata.Update()
-    
+
         unit_normal = self.flange.normal / np.linalg.norm(self.flange.normal)
         angle_x = np.arccos(np.dot(y_vector, unit_normal))
-        angle_y = np.arccos(np.dot((0,0,1), unit_normal))
+        angle_y = np.arccos(np.dot((0, 0, 1), unit_normal))
         transform = vtk.vtkTransform()
         transform.Translate(self.flange.position)
         transform.RotateY(np.degrees(angle_y))
