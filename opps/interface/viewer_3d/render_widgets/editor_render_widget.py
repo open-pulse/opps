@@ -18,8 +18,6 @@ class EditorRenderWidget(CommonRenderWidget):
         self.pipeline_actor = None
         self.tmp_structure_actor = None
 
-
-
         self.pipeline.add_pipe_from_deltas(
             (236, 0, 0),
             (118, 0, 0),
@@ -28,9 +26,6 @@ class EditorRenderWidget(CommonRenderWidget):
             (0, 0, 307),
             (0, 0, 801),
         )
-
-        self.tmp_structure = Pipe((0,0,0), (-255, 0,0), 40)
-
 
         # self.pipeline.add_flange((0,0,0), (1,1,1))
         # self.pipeline.add_pipe_from_points(
@@ -65,6 +60,11 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def stage_structure(self, structure):
         self.tmp_structure = structure
+        self.update_plot()
+    
+    def commit_structure(self):
+        self.pipeline.add_structure(self.tmp_structure)
+        self.tmp_structure = None
         self.update_plot()
 
     def remove_actors(self):
