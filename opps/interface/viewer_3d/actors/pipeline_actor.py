@@ -27,6 +27,7 @@ class PipelineActor(vtk.vtkActor):
 
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(normals_filter.GetOutput())
+        mapper.ScalarVisibilityOff()
         self.SetMapper(mapper)
 
     def configure_appearance(self):

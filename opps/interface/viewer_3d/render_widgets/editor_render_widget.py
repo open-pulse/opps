@@ -6,6 +6,7 @@ from opps.interface.viewer_3d.render_widgets.common_render_widget import (
     CommonRenderWidget,
 )
 from opps.model import Pipe, Pipeline
+import numpy as np
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -18,14 +19,16 @@ class EditorRenderWidget(CommonRenderWidget):
         self.pipeline_actor = None
         self.tmp_structure_actor = None
 
-        self.pipeline.add_pipe_from_deltas(
-            (236, 0, 0),
-            (118, 0, 0),
-            (123, 0, -123),
-            (0, 380, 0),
-            (0, 0, 307),
-            (0, 0, 801),
-        )
+        self._previous_point = np.array([0, 0, 0])
+        self._current_point = np.array([0, 0, 0])
+        # self.pipeline.add_pipe_from_deltas(
+        #     (236, 0, 0),
+        #     (118, 0, 0),
+        #     (123, 0, -123),
+        #     (0, 380, 0),
+        #     (0, 0, 307),
+        #     (0, 0, 801),
+        # )
 
         # self.pipeline.add_flange((0,0,0), (1,1,1))
         # self.pipeline.add_pipe_from_points(
@@ -56,7 +59,12 @@ class EditorRenderWidget(CommonRenderWidget):
             self.renderer.AddActor(self.tmp_structure_actor)
 
         self.renderer.ResetCamera()
-        # self.set_isometric_view()
+        self.update()
+
+    def stage_pipe_deltas(self, dx, dy, dz):
+        self._current_point = self._previous_point + (dx, dy, dz)
+        pipe = Pipe(self._previous_point, self._current_point)
+        self.stage_structure(pipe)
 
     def stage_structure(self, structure):
         self.tmp_structure = structure
@@ -65,6 +73,7 @@ class EditorRenderWidget(CommonRenderWidget):
     def commit_structure(self):
         self.pipeline.add_structure(self.tmp_structure)
         self.tmp_structure = None
+        self._previous_point = self._current_point
         self.update_plot()
 
     def remove_actors(self):
