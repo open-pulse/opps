@@ -11,17 +11,17 @@ class Pipeline:
     def __init__(self):
         self.components = []
 
-    def add_pipe(self, point_a, point_b, *args, **kwargs):
-        pipe = Pipe(np.array(point_a), np.array(point_b), *args, **kwargs)
-        self.components.append(pipe)
+    def add_pipe(self, *args, **kwargs):
+        self.add_structure(Pipe(*args, **kwargs))
 
-    def add_bend(self, point_a, point_b, point_c, *args, **kwargs):
-        bend = Bend(np.array(point_a), np.array(point_b), np.array(point_c), *args, **kwargs)
-        self.components.append(bend)
+    def add_bend(self, *args, **kwargs):
+        self.add_structure(Bend(*args, **kwargs))
     
-    def add_flange(self, position, normal, *args, **kwargs):
-        flange = Flange(np.array(position), np.array(normal), *args, **kwargs)
-        self.components.append(flange)
+    def add_flange(self, *args, **kwargs):
+        self.add_structure(Flange(*args, **kwargs))
+
+    def add_structure(self, structure):
+        self.components.append(structure)
 
     def add_pipe_from_points(self, *points):
         points = np.array(points)
