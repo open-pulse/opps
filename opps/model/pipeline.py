@@ -71,7 +71,8 @@ class Pipeline:
             start=pipe_a.end - a_vector * reduction_distance,
             end=pipe_b.start + b_vector * reduction_distance,
             center=pipe_a.end + c_vector * center_distance,
-            radius=pipe_a.radius,
+            start_radius=pipe_a.radius,
+            end_radius=pipe_b.radius,
         )
 
         # resize the input tubes to fit the bend

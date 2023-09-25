@@ -9,17 +9,28 @@ class PipeActor(vtk.vtkActor):
         self.create_geometry()
 
     def create_geometry(self):
+        radius = vtk.vtkDoubleArray()
+        radius.SetName("TubeRadius")
+        radius.SetNumberOfTuples(2)
+        radius.SetTuple1(0, self.pipe.radius)
+        radius.SetTuple1(1, self.pipe.radius) 
+
         line_source = vtk.vtkLineSource()
         line_source.SetPoint1(self.pipe.start)
         line_source.SetPoint2(self.pipe.end)
         line_source.Update()
 
+        polydata = line_source.GetOutput()
+        polydata.GetPointData().AddArray(radius)
+        polydata.GetPointData().SetActiveScalars(radius.GetName())
+
         tube_filter = vtk.vtkTubeFilter()
-        tube_filter.SetInputData(line_source.GetOutput())
-        tube_filter.SetRadius(self.pipe.radius)
-        tube_filter.SetNumberOfSides(50)
+        tube_filter.SetInputData(polydata)
+        tube_filter.SetNumberOfSides(20)
+        tube_filter.SetVaryRadiusToVaryRadiusByAbsoluteScalar()
         tube_filter.Update()
 
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(tube_filter.GetOutput())
+        mapper.ScalarVisibilityOff()
         self.SetMapper(mapper)

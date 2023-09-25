@@ -8,7 +8,8 @@ class Bend:
     start: np.ndarray
     end: np.ndarray
     center: np.ndarray
-    radius: float = 0.1
+    start_radius: float = 0.1
+    end_radius: float = 0.1
 
     def __post_init__(self):
         self.start = np.array(self.start)
