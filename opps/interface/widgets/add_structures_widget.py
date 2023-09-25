@@ -1,3 +1,4 @@
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QVBoxLayout
 from PyQt5.QtCore import Qt, pyqtSignal
 
@@ -5,6 +6,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 class AddStructuresWidget(QWidget):
     modified = pyqtSignal(float, float, float)
     applied = pyqtSignal(float, float, float)
+    on_close = pyqtSignal()
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -63,3 +65,7 @@ class AddStructuresWidget(QWidget):
             | Qt.FramelessWindowHint
             | Qt.WindowShadeButtonHint
         )
+
+    def closeEvent(self, a0) -> None:
+        self.on_close.emit()
+        return super().closeEvent(a0)

@@ -45,7 +45,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.create_axes()
         self.update_plot()
 
-    def update_plot(self):
+    def update_plot(self, reset_camera=True):
         self.remove_actors()
 
         self.pipeline_actor = self.pipeline.as_vtk()
@@ -58,7 +58,8 @@ class EditorRenderWidget(CommonRenderWidget):
             self.tmp_structure_actor.GetProperty().LightingOff()
             self.renderer.AddActor(self.tmp_structure_actor)
 
-        self.renderer.ResetCamera()
+        if reset_camera:
+            self.renderer.ResetCamera()
         self.update()
 
     def stage_pipe_deltas(self, dx, dy, dz):
@@ -75,6 +76,11 @@ class EditorRenderWidget(CommonRenderWidget):
         self.tmp_structure = None
         self._previous_point = self._current_point
         self.update_plot()
+
+    def unstage_structure(self):
+        self.tmp_structure = None
+        self._current_point = self._previous_point
+        self.update_plot(reset_camera=False)
 
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
