@@ -8,27 +8,31 @@ class AddStructuresWidget(QWidget):
     applied = pyqtSignal(float, float, float)
     on_close = pyqtSignal()
 
-    def __init__(self, parent):
+    def __init__(self, parent, render_widget):
         super().__init__(parent)
         self.configure_window()
+
+        self.render_widget = render_widget
 
         self.dx_box = QLineEdit()
         self.dy_box = QLineEdit()
         self.dz_box = QLineEdit()
+        self.flange_button = QPushButton("Add Flange")
         self.apply_button = QPushButton("Apply")
 
         layout = QVBoxLayout()
         layout.addWidget(self.dx_box)
         layout.addWidget(self.dy_box)
         layout.addWidget(self.dz_box)
+        layout.addWidget(self.flange_button)
         layout.addWidget(self.apply_button)
         self.setLayout(layout)
 
-        self.dx_box.textEdited.connect(self.modify_callback)
-        self.dy_box.textEdited.connect(self.modify_callback)
-        self.dz_box.textEdited.connect(self.modify_callback)
+        self.dx_box.textEdited.connect(self.coords_modified_callback)
+        self.dy_box.textEdited.connect(self.coords_modified_callback)
+        self.dz_box.textEdited.connect(self.coords_modified_callback)
+        self.flange_button.clicked.connect(self.add_flange_callback)
         self.apply_button.clicked.connect(self.apply_callback)
-        self.apply_button.clicked.connect(self.modify_callback)
 
     def get_displacement(self):
         try:
@@ -42,15 +46,20 @@ class AddStructuresWidget(QWidget):
             dx, dy, dz = 0, 0, 0
         return dx, dy, dz
 
-    def modify_callback(self):
+    def coords_modified_callback(self):
         dx, dy, dz = self.get_displacement()
-        self.modified.emit(dx, dy, dz)
+        self.render_widget.stage_pipe_deltas(dx, dy, dz)
+    
+    def add_flange_callback(self):
+        self.render_widget.add_flange()
+        self.coords_modified_callback()
 
     def apply_callback(self):
         dx, dy, dz = self.get_displacement()
         if (dx, dy, dz) == (0, 0, 0):
             return
-        self.applied.emit(dx, dy, dz)
+        self.render_widget.commit_structure()
+        self.coords_modified_callback()
 
     def configure_window(self):
         self.setWindowTitle("Add Structures")

@@ -30,6 +30,8 @@ class Pipeline:
         self.components.append(structure)
         if auto_connect and isinstance(structure, Pipe):
             self.connect_last_2_pipes()
+        elif auto_connect and isinstance(structure, Flange):
+            self.orient_flange(structure)
 
     def add_pipe_from_points(self, *points):
         points = np.array(points)
@@ -53,6 +55,23 @@ class Pipeline:
             next_point = points[-1] + np.array(delta)
             points.append(next_point)
         self.add_pipe_from_points(*points)
+
+    def orient_flange(self, flange: Flange):
+        for component in self.components:
+            if not isinstance(component, Pipe):
+                continue
+
+            pipe = component
+            if (pipe.start == flange.position).all():
+                flange.normal = pipe.end - pipe.start
+                flange.start_radius = pipe.radius
+                flange.end_radius = pipe.radius
+                break
+            elif (pipe.end == flange.position).all():
+                flange.normal = pipe.end - pipe.start
+                flange.start_radius = pipe.radius
+                flange.end_radius = pipe.radius
+                break
 
     def connect_last_2_pipes(self):
         pipes = []

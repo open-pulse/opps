@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.render_widget)
 
     def create_periferic_widgets(self):
-        self.add_structures = AddStructuresWidget(self)
+        self.add_structures = AddStructuresWidget(self, self.render_widget)
         self.add_structures.show()
         self.add_structures.modified.connect(self.stage_structure_callback)
         self.add_structures.applied.connect(self.commit_structure_callback)

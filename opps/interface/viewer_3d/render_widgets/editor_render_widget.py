@@ -9,7 +9,7 @@ from opps.interface.viewer_3d.interactor_styles.selection_interactor import (
 from opps.interface.viewer_3d.render_widgets.common_render_widget import (
     CommonRenderWidget,
 )
-from opps.model import Pipe, Pipeline
+from opps.model import Pipeline, Pipe, Flange
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -71,6 +71,12 @@ class EditorRenderWidget(CommonRenderWidget):
         self._current_point = self._previous_point + (dx, dy, dz)
         pipe = Pipe(self._previous_point, self._current_point)
         self.stage_structure(pipe)
+
+    def add_flange(self):
+        self._current_point = self._previous_point
+        self.pipeline.add_flange(self._current_point, (0,1,0), auto_connect=True)
+        self.tmp_structure = None
+        self.update_plot()
 
     def stage_structure(self, structure):
         self.tmp_structure = structure
