@@ -74,7 +74,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot()
 
     def commit_structure(self):
-        self.pipeline.add_structure(self.tmp_structure)
+        self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
         self.tmp_structure = None
         self._previous_point = self._current_point
         self.update_plot()

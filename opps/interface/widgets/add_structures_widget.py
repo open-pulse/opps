@@ -35,9 +35,9 @@ class AddStructuresWidget(QWidget):
             dx = self.dx_box.text() or 0
             dy = self.dy_box.text() or 0
             dz = self.dz_box.text() or 0
-            dx = int(dx)
-            dy = int(dy)
-            dz = int(dz)
+            dx = float(dx)
+            dy = float(dy)
+            dz = float(dz)
         except ValueError:
             dx, dy, dz = 0, 0, 0
         return dx, dy, dz
