@@ -13,6 +13,7 @@ class Flange:
     def __post_init__(self):
         self.position = np.array(self.position)
         self.normal = np.array(self.normal)
+        self.normal = self.normal / np.linalg.norm(self.normal)
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.flange_actor import FlangeActor

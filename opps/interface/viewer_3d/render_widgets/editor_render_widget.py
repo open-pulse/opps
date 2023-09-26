@@ -74,7 +74,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def add_flange(self):
         self._current_point = self._previous_point
-        self.pipeline.add_flange(self._current_point, (0,1,0), auto_connect=True)
+        self.pipeline.add_oriented_flange(self._current_point)
         self.tmp_structure = None
         self.update_plot()
 

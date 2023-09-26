@@ -11,20 +11,44 @@ class Pipeline:
     def __init__(self):
         self.components = []
 
-    def add_pipe(self, *args, auto_connect=False, **kwargs) -> Pipe:
+    def add_pipe(self, *args, **kwargs) -> Pipe:
         pipe = Pipe(*args, **kwargs)
-        self.add_structure(pipe, auto_connect=auto_connect)
+        self.add_structure(pipe)
         return pipe
 
-    def add_bend(self, *args, auto_connect=False, **kwargs) -> Bend:
+    def add_bend(self, *args, **kwargs) -> Bend:
         bend = Bend(*args, **kwargs)
-        self.add_structure(bend, auto_connect=auto_connect)
+        self.add_structure(bend)
         return bend
 
-    def add_flange(self, *args, auto_connect=False, **kwargs) -> Flange:
+    def add_flange(self, *args, **kwargs) -> Flange:
         flange = Flange(*args, **kwargs)
-        self.add_structure(flange, auto_connect=auto_connect)
+        self.add_structure(flange)
         return flange
+
+    def add_oriented_flange(self, position, *args, **kwargs):
+        pipes_connected = self.find_pipes_at(position)
+        if pipes_connected:
+            pipe = pipes_connected[0]
+            normal = pipe.end - pipe.start
+        else:
+            normal = (0, 1, 0)
+
+        flange = Flange(position, normal, *args, **kwargs)
+        self.add_structure(flange)
+
+    def add_connected_pipe(self, *args, **kwargs):
+        pipe = Pipe(*args, **kwargs)
+        pipes = self.find_pipes_at(pipe.start)
+        pipes.extend(self.find_pipes_at(pipe.end))
+        existing_pipe, *_ = pipes
+        
+        bend = self.connect_pipes_with_bend(pipe, existing_pipe)
+        if bend is not None:
+            self.add_structure(pipe)
+            self.add_structure(bend)
+        
+        return pipe, bend
 
     def add_structure(self, structure, *, auto_connect=False):
         self.components.append(structure)
@@ -57,21 +81,13 @@ class Pipeline:
         self.add_pipe_from_points(*points)
 
     def orient_flange(self, flange: Flange):
-        for component in self.components:
-            if not isinstance(component, Pipe):
-                continue
-
-            pipe = component
-            if (pipe.start == flange.position).all():
-                flange.normal = pipe.end - pipe.start
-                flange.start_radius = pipe.radius
-                flange.end_radius = pipe.radius
-                break
-            elif (pipe.end == flange.position).all():
-                flange.normal = pipe.end - pipe.start
-                flange.start_radius = pipe.radius
-                flange.end_radius = pipe.radius
-                break
+        pipes_connected = self.find_pipes_at(flange.position)
+        if pipes_connected:
+            pipe = pipes_connected[0]
+            normal = pipe.end - pipe.start
+        else:
+            normal = (0, 1, 0)
+        flange.normal = normal
 
     def connect_last_2_pipes(self):
         pipes = []
@@ -90,6 +106,16 @@ class Pipeline:
         bend = self.connect_pipes_with_bend(pipe_a, pipe_b, r)
         if bend is not None:
             self.components.append(bend)
+    
+    def find_pipes_at(self, position):
+        pipes = []
+        for component in self.components:
+            if not isinstance(component, Pipe):
+                continue
+            pipe = component
+            if (pipe.start == position).all() or (pipe.end == position).all():
+                pipes.append(component)
+        return pipes
 
     def connect_pipes_with_bend(self, pipe_a, pipe_b, r):
         def normalize(vector):
