@@ -8,6 +8,7 @@ from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
 from opps.interface.widgets.add_structures_widget import AddStructuresWidget
 from opps.model import Pipe
 
+
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
@@ -38,6 +39,6 @@ class MainWindow(QMainWindow):
 
     def stage_structure_callback(self, dx, dy, dz):
         self.render_widget.stage_pipe_deltas(dx, dy, dz)
-    
+
     def commit_structure_callback(self, *args, **kwargs):
         self.render_widget.commit_structure()

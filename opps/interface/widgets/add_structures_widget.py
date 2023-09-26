@@ -1,6 +1,6 @@
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QVBoxLayout
 from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QLineEdit, QPushButton, QVBoxLayout, QWidget
 
 
 class AddStructuresWidget(QWidget):
@@ -48,7 +48,7 @@ class AddStructuresWidget(QWidget):
 
     def apply_callback(self):
         dx, dy, dz = self.get_displacement()
-        if (dx, dy, dz) == (0,0,0):
+        if (dx, dy, dz) == (0, 0, 0):
             return
         self.applied.emit(dx, dy, dz)
 

@@ -11,16 +11,22 @@ class Pipeline:
     def __init__(self):
         self.components = []
 
-    def add_pipe(self, *args, **kwargs):
-        self.add_structure(Pipe(*args, **kwargs))
+    def add_pipe(self, *args, auto_connect=False, **kwargs) -> Pipe:
+        pipe = Pipe(*args, **kwargs)
+        self.add_structure(pipe, auto_connect=auto_connect)
+        return pipe
 
-    def add_bend(self, *args, **kwargs):
-        self.add_structure(Bend(*args, **kwargs))
+    def add_bend(self, *args, auto_connect=False, **kwargs) -> Bend:
+        bend = Bend(*args, **kwargs)
+        self.add_structure(bend, auto_connect=auto_connect)
+        return bend
 
-    def add_flange(self, *args, **kwargs):
-        self.add_structure(Flange(*args, **kwargs))
+    def add_flange(self, *args, auto_connect=False, **kwargs) -> Flange:
+        flange = Flange(*args, **kwargs)
+        self.add_structure(flange, auto_connect=auto_connect)
+        return flange
 
-    def add_structure(self, structure, auto_connect=False):
+    def add_structure(self, structure, *, auto_connect=False):
         self.components.append(structure)
         if auto_connect and isinstance(structure, Pipe):
             self.connect_last_2_pipes()
@@ -30,21 +36,15 @@ class Pipeline:
 
         pipes = []
         for point_a, point_b in pairwise(points):
-            pipe = Pipe(point_a, point_b, 40)
+            pipe = self.add_pipe(point_a, point_b, 40, auto_connect=True)
             pipes.append(pipe)
 
         flanges = []
-        bends = []
-        for pipe_a, pipe_b in pairwise(pipes):
-            bend = self.connect_pipes_with_bend(pipe_a, pipe_b, pipe_a.radius * 2)
-            if bend is not None:
-                bends.append(bend)
-
-            flange = Flange(pipe_a.end, (pipe_a.end - pipe_a.start), pipe_a.radius)
+        for pipe in pipes:
+            flange = Flange(pipe.end, (pipe.end - pipe.start), pipe.radius)
             flanges.append(flange)
 
         self.components.extend(pipes)
-        self.components.extend(bends)
         self.components.extend(flanges)
 
     def add_pipe_from_deltas(self, *deltas, start_point=(0, 0, 0)):
@@ -53,7 +53,7 @@ class Pipeline:
             next_point = points[-1] + np.array(delta)
             points.append(next_point)
         self.add_pipe_from_points(*points)
-    
+
     def connect_last_2_pipes(self):
         pipes = []
         for component in reversed(self.components):
@@ -65,7 +65,7 @@ class Pipeline:
 
         if len(pipes) < 2:
             return
-        
+
         pipe_a, pipe_b = pipes
         r = pipe_a.radius * 2
         bend = self.connect_pipes_with_bend(pipe_a, pipe_b, r)
@@ -76,14 +76,13 @@ class Pipeline:
         def normalize(vector):
             return vector / np.linalg.norm(vector)
 
-        # avoid configurations like ← → or → ← 
+        # avoid configurations like ← → or → ←
         if (pipe_a.start == pipe_b.end).all():
             pipe_a, pipe_b = pipe_b, pipe_a
         elif (pipe_a.end == pipe_b.end).all():
             pipe_b.start, pipe_b.end = pipe_b.end, pipe_b.start
         elif (pipe_a.start == pipe_b.start).all():
             pipe_a.start, pipe_a.end = pipe_a.end, pipe_a.start
-
 
         a_vector = normalize(pipe_a.end - pipe_a.start)
         b_vector = normalize(pipe_b.end - pipe_b.start)

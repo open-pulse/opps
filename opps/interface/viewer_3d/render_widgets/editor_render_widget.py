@@ -1,13 +1,16 @@
+import numpy as np
 import vtk
 
 from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
 from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
+from opps.interface.viewer_3d.interactor_styles.selection_interactor import (
+    SelectionInteractor,
+)
 from opps.interface.viewer_3d.render_widgets.common_render_widget import (
     CommonRenderWidget,
 )
 from opps.model import Pipe, Pipeline
-import numpy as np
-from opps.interface.viewer_3d.interactor_styles.selection_interactor import SelectionInteractor
+
 
 class EditorRenderWidget(CommonRenderWidget):
     def __init__(self, parent=None):
