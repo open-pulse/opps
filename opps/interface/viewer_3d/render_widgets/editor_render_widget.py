@@ -7,11 +7,13 @@ from opps.interface.viewer_3d.render_widgets.common_render_widget import (
 )
 from opps.model import Pipe, Pipeline
 import numpy as np
-
+from opps.interface.viewer_3d.interactor_styles.selection_interactor import SelectionInteractor
 
 class EditorRenderWidget(CommonRenderWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        # self.style = SelectionInteractor()
+        # self.render_interactor.SetInteractorStyle(self.style)
 
         self.pipeline = Pipeline()
         self.tmp_structure = None
