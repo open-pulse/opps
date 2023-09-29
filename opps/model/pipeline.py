@@ -118,9 +118,6 @@ class Pipeline:
         return pipes
 
     def connect_pipes_with_bend(self, pipe_a, pipe_b, r):
-        def normalize(vector):
-            return vector / np.linalg.norm(vector)
-
         # avoid configurations like ← → or → ←
         if (pipe_a.start == pipe_b.end).all():
             pipe_a, pipe_b = pipe_b, pipe_a
@@ -128,25 +125,15 @@ class Pipeline:
             pipe_b.start, pipe_b.end = pipe_b.end, pipe_b.start
         elif (pipe_a.start == pipe_b.start).all():
             pipe_a.start, pipe_a.end = pipe_a.end, pipe_a.start
-
-        a_vector = normalize(pipe_a.end - pipe_a.start)
-        b_vector = normalize(pipe_b.end - pipe_b.start)
-        c_vector = normalize(b_vector - a_vector)
-
-        pipes_are_parallel = np.dot(a_vector, b_vector) == 1
-        if pipes_are_parallel:
+        
+        curvature_points = self.find_curvature_points(pipe_a, pipe_b, r)
+        if curvature_points is None:
             return None
 
-        sin_angle = np.linalg.norm(a_vector + b_vector) / np.linalg.norm(a_vector) / 2
-        angle = np.arcsin(sin_angle)
-
-        center_distance = r / np.sin(angle)
-        reduction_distance = center_distance * np.cos(angle)
-
         bend = Bend(
-            start=pipe_a.end - a_vector * reduction_distance,
-            end=pipe_b.start + b_vector * reduction_distance,
-            center=pipe_a.end + c_vector * center_distance,
+            start=curvature_points[0],
+            end=curvature_points[1],
+            center=curvature_points[2],
             start_radius=pipe_a.radius,
             end_radius=pipe_b.radius,
         )
@@ -156,6 +143,29 @@ class Pipeline:
         pipe_b.start = bend.end
 
         return bend
+    
+    def find_curvature_points(self, pipe_a, pipe_b, r):
+        def normalize(vector):
+            return vector / np.linalg.norm(vector)
+        
+        a_vector = normalize(pipe_a.end - pipe_a.start)
+        b_vector = normalize(pipe_b.end - pipe_b.start)
+        c_vector = normalize(b_vector - a_vector)
+
+        if np.dot(a_vector, b_vector) == 1:
+            return None
+        
+        sin_angle = np.linalg.norm(a_vector + b_vector) / np.linalg.norm(a_vector) / 2
+        angle = np.arcsin(sin_angle)
+
+        center_distance = r / np.sin(angle)
+        reduction_distance = center_distance * np.cos(angle)
+
+        return (
+            pipe_a.end - a_vector * reduction_distance,
+            pipe_b.start + b_vector * reduction_distance,
+            pipe_a.end + c_vector * center_distance,
+        )
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipeline_actor import (
