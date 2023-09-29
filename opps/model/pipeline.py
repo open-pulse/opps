@@ -131,12 +131,12 @@ class Pipeline:
 
         a_vector = normalize(pipe_a.end - pipe_a.start)
         b_vector = normalize(pipe_b.end - pipe_b.start)
+        c_vector = normalize(b_vector - a_vector)
 
         pipes_are_parallel = np.dot(a_vector, b_vector) == 1
         if pipes_are_parallel:
             return None
 
-        c_vector = normalize((a_vector + b_vector) / 2 - a_vector)
         sin_angle = np.linalg.norm(a_vector + b_vector) / np.linalg.norm(a_vector) / 2
         angle = np.arcsin(sin_angle)
 
