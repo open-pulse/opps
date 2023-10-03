@@ -1,6 +1,7 @@
 import vtk
 
 from opps.model.pipe import Pipe
+from .utils import paint_data
 
 
 class PipeActor(vtk.vtkActor):
@@ -30,7 +31,11 @@ class PipeActor(vtk.vtkActor):
         tube_filter.SetVaryRadiusToVaryRadiusByAbsoluteScalar()
         tube_filter.Update()
 
+        data = tube_filter.GetOutput()
+        color = (255, 255, 255)
+        paint_data(data, color)
+
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(tube_filter.GetOutput())
+        mapper.SetInputData(data)
         mapper.ScalarVisibilityOff()
         self.SetMapper(mapper)

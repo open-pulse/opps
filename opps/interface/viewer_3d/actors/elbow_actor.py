@@ -3,6 +3,7 @@ import vtk
 from opps.model import Elbow, Flange
 from opps.interface.viewer_3d.actors.flange_actor import FlangeActor
 import numpy as np
+from .utils import paint_data
 
 
 class ElbowActor(vtk.vtkActor):
@@ -51,7 +52,11 @@ class ElbowActor(vtk.vtkActor):
         append_polydata.AddInputData(end_flange_data)
         append_polydata.Update()
 
+        data = append_polydata.GetOutput()
+        color = (255, 0, 0)
+        paint_data(data, color)
+
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(append_polydata.GetOutput())
+        mapper.SetInputData(data)
         mapper.ScalarVisibilityOff()
         self.SetMapper(mapper)

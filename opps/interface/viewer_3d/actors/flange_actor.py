@@ -2,6 +2,7 @@ import numpy as np
 import vtk
 
 from opps.model.flange import Flange
+from .utils import paint_data
 
 
 class FlangeActor(vtk.vtkActor):
@@ -59,7 +60,11 @@ class FlangeActor(vtk.vtkActor):
         transform_filter.SetInputData(append_polydata.GetOutput())
         transform_filter.SetTransform(transform)
         transform_filter.Update()
+        
+        data = transform_filter.GetOutput()
+        color = (0, 255, 0)
+        paint_data(data, color)
 
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(transform_filter.GetOutput())
+        mapper.SetInputData(data)
         self.SetMapper(mapper)

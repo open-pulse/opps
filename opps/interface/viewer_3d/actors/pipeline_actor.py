@@ -3,6 +3,7 @@ import vtk
 from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 from opps.model.pipe import Pipe
 from opps.model.pipeline import Pipeline
+from .utils import paint_data
 
 
 class PipelineActor(vtk.vtkActor):
@@ -25,9 +26,11 @@ class PipelineActor(vtk.vtkActor):
         normals_filter.AddInputData(append_filter.GetOutput())
         normals_filter.Update()
 
+        data = normals_filter.GetOutput()
+
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(normals_filter.GetOutput())
-        mapper.ScalarVisibilityOff()
+        mapper.SetInputData(data)
+        mapper.SetScalarModeToUseCellData()
         self.SetMapper(mapper)
 
     def configure_appearance(self):

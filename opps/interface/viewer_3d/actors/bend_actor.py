@@ -1,6 +1,7 @@
 import vtk
 
 from opps.model.bend import Bend
+from .utils import paint_data
 
 
 class BendActor(vtk.vtkActor):
@@ -37,7 +38,11 @@ class BendActor(vtk.vtkActor):
         tube_filter.SetVaryRadiusToVaryRadiusByAbsoluteScalar()
         tube_filter.Update()
 
+        data = tube_filter.GetOutput()
+        color = (255, 0, 255)
+        paint_data(data, color)
+
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(tube_filter.GetOutput())
-        mapper.ScalarVisibilityOff()
+        mapper.SetInputData(data)
+        mapper.SetScalarModeToUseCellData()
         self.SetMapper(mapper)
