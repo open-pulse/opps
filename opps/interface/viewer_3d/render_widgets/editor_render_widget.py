@@ -2,6 +2,7 @@ import vtk
 
 from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
 from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
+from opps.interface.viewer_3d.actors.grid_actor import GridActor
 from opps.interface.viewer_3d.render_widgets.common_render_widget import (
     CommonRenderWidget,
 )
@@ -38,18 +39,46 @@ class EditorRenderWidget(CommonRenderWidget):
         #     (2,1,-1),
         # )
 
+        # self.pipeline.add_pipe((0, 0, 0), (1, 0, 0))
+        # self.pipeline.add_pipe((0, 0, 0), (0, 1, 0))
+
+
         # self.pipeline.add_pipe((0, 0, 0), (0, 1, 0))
         # self.pipeline.add_pipe((1, 2, 0), (2, 2, 0))
         # self.pipeline.add_bend((0, 1, 0), (1, 2, 0), (1, 1, 0))
 
         self.create_axes()
         self.update_plot()
+        # self.set_bottom_view()
 
     def update_plot(self):
         self.remove_actors()
 
         self.pipeline_actor = self.pipeline.as_vtk()
         self.renderer.AddActor(self.pipeline_actor)
+
+        bla = GridActor()
+        self.renderer.AddActor(bla)
+
+        # sphere = vtk.vtkSphereSource()
+        # sphere.SetRadius(0.5)
+        # sphere.Update()
+        # mapper = vtk.vtkOpenGLPolyDataMapper()
+        # mapper.SetInputData(sphere.GetOutput())
+        # actor = vtk.vtkActor()
+        # actor.SetMapper(mapper)
+        # actor.GetProperty().SetColor(1, 0, 0)
+        # self.renderer.AddActor(actor)
+
+        # sphere = vtk.vtkPlaneSource()
+        # sphere.SetNormal(0, 1, 0)
+        # sphere.Update()
+        # mapper = vtk.vtkOpenGLPolyDataMapper()
+        # mapper.SetInputData(sphere.GetOutput())
+        # actor = vtk.vtkActor()
+        # actor.SetMapper(mapper)
+        # self.renderer.AddActor(actor)
+
 
         if self.tmp_structure is not None:
             self.tmp_structure_actor = self.tmp_structure.as_vtk()
