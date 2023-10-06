@@ -15,12 +15,12 @@ class Bend:
         self.start = np.array(self.start)
         self.end = np.array(self.end)
         self.center = np.array(self.center)
-    
+
     def get_bend_corner(self):
-        '''
+        """
         Get the corner from center is the same procedure
         as getting the center from corner.
-        '''
+        """
         r = np.linalg.norm(self.start - self.center)
         return get_bend_points(self.start, self.end, self.center, r)
 
@@ -30,7 +30,9 @@ class Bend:
         return BendActor(self)
 
 
-def get_bend_points(point_a: np.ndarray, point_b: np.ndarray, corner: np.ndarray, bend_radius: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def get_bend_points(
+    point_a: np.ndarray, point_b: np.ndarray, corner: np.ndarray, bend_radius: float
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     def normalize(vector):
         return vector / np.linalg.norm(vector)
 
@@ -40,7 +42,7 @@ def get_bend_points(point_a: np.ndarray, point_b: np.ndarray, corner: np.ndarray
 
     if np.dot(a_vector, b_vector) == 1:
         return None
-    
+
     sin_angle = np.linalg.norm(a_vector - b_vector) / np.linalg.norm(a_vector) / 2
     angle = np.arcsin(sin_angle)
     center_distance = bend_radius / np.sin(angle)

@@ -1,12 +1,14 @@
-import numpy as np
-from opps.model import Pipeline, Pipe, Bend, Flange
-from copy import deepcopy
 from collections import defaultdict
+from copy import deepcopy
 from dataclasses import dataclass
+
+import numpy as np
+
+from opps.model import Bend, Flange, Pipe, Pipeline
 
 
 class PipelineEditor:
-    def __init__(self, origin=(0,0,0)):
+    def __init__(self, origin=(0, 0, 0)):
         self.control_points_to_structure = defaultdict(list)
         self.structure_to_control_points = defaultdict(list)
 
@@ -16,7 +18,7 @@ class PipelineEditor:
 
         self.pipeline = Pipeline()
         self.staged_structure = None
-    
+
     def set_deltas(self, deltas):
         self.next_point = self.current_point + deltas
 
@@ -48,6 +50,6 @@ class PipelineEditor:
     def move_control_point(self, origin, target):
         origin_structures = self.control_points_to_structure[origin]
         # do stuff...
-    
+
     def recalculate_control_points(self):
         pass

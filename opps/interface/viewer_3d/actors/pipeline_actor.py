@@ -3,6 +3,7 @@ import vtk
 from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 from opps.model.pipe import Pipe
 from opps.model.pipeline import Pipeline
+
 from .utils import paint_data
 
 

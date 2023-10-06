@@ -1,8 +1,9 @@
+import numpy as np
 import vtk
 
-from opps.model import Elbow, Flange
 from opps.interface.viewer_3d.actors.flange_actor import FlangeActor
-import numpy as np
+from opps.model import Elbow, Flange
+
 from .utils import paint_data
 
 
@@ -40,10 +41,20 @@ class ElbowActor(vtk.vtkActor):
         tube_filter.SetVaryRadiusToVaryRadiusByAbsoluteScalar()
         tube_filter.Update()
 
-        plane_normal = np.cross((self.elbow.start - self.elbow.center), (self.elbow.end - self.elbow.center))
-        start_flange = Flange(self.elbow.start, np.cross(plane_normal, (self.elbow.start - self.elbow.center)), self.elbow.start_radius)
+        plane_normal = np.cross(
+            (self.elbow.start - self.elbow.center), (self.elbow.end - self.elbow.center)
+        )
+        start_flange = Flange(
+            self.elbow.start,
+            np.cross(plane_normal, (self.elbow.start - self.elbow.center)),
+            self.elbow.start_radius,
+        )
         start_flange_data = FlangeActor(start_flange).GetMapper().GetInput()
-        end_flange = Flange(self.elbow.end, np.cross(plane_normal, (self.elbow.end - self.elbow.center)), self.elbow.end_radius)
+        end_flange = Flange(
+            self.elbow.end,
+            np.cross(plane_normal, (self.elbow.end - self.elbow.center)),
+            self.elbow.end_radius,
+        )
         end_flange_data = FlangeActor(end_flange).GetMapper().GetInput()
 
         append_polydata = vtk.vtkAppendPolyData()

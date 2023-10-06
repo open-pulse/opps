@@ -42,12 +42,12 @@ class Pipeline:
         pipes = self.find_pipes_at(pipe.start)
         pipes.extend(self.find_pipes_at(pipe.end))
         existing_pipe, *_ = pipes
-        
+
         bend = self.connect_pipes_with_bend(pipe, existing_pipe)
         if bend is not None:
             self.add_structure(pipe)
             self.add_structure(bend)
-        
+
         return pipe, bend
 
     def add_structure(self, structure, *, auto_connect=False):
@@ -106,7 +106,7 @@ class Pipeline:
         bend = self.connect_pipes_with_bend(pipe_a, pipe_b, r)
         if bend is not None:
             self.components.append(bend)
-    
+
     def find_pipes_at(self, position):
         pipes = []
         for component in self.components:
@@ -125,7 +125,7 @@ class Pipeline:
             pipe_b.start, pipe_b.end = pipe_b.end, pipe_b.start
         elif (pipe_a.start == pipe_b.start).all():
             pipe_a.start, pipe_a.end = pipe_a.end, pipe_a.start
-        
+
         curvature_points = self.find_curvature_points(pipe_a, pipe_b, r)
         if curvature_points is None:
             return None
@@ -143,18 +143,18 @@ class Pipeline:
         pipe_b.start = bend.end
 
         return bend
-    
+
     def find_curvature_points(self, pipe_a, pipe_b, r):
         def normalize(vector):
             return vector / np.linalg.norm(vector)
-        
+
         a_vector = normalize(pipe_a.end - pipe_a.start)
         b_vector = normalize(pipe_b.end - pipe_b.start)
         c_vector = normalize(b_vector - a_vector)
 
         if np.dot(a_vector, b_vector) == 1:
             return None
-        
+
         sin_angle = np.linalg.norm(a_vector + b_vector) / np.linalg.norm(a_vector) / 2
         angle = np.arcsin(sin_angle)
 

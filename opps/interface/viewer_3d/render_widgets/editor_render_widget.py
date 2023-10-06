@@ -9,7 +9,7 @@ from opps.interface.viewer_3d.interactor_styles.selection_interactor import (
 from opps.interface.viewer_3d.render_widgets.common_render_widget import (
     CommonRenderWidget,
 )
-from opps.model import Pipeline, Pipe, Flange
+from opps.model import Flange, Pipe, Pipeline
 
 
 class EditorRenderWidget(CommonRenderWidget):
