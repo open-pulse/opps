@@ -57,6 +57,12 @@ class Pipeline:
         elif auto_connect and isinstance(structure, Flange):
             self.orient_flange(structure)
 
+    def remove_structure(self, structure):
+        component_ids = [id(i) for i in self.components]
+        if id(structure) in component_ids:
+            index = component_ids.index(id(structure))
+            self.components.pop(index)
+
     def add_pipe_from_points(self, *points):
         points = np.array(points)
 

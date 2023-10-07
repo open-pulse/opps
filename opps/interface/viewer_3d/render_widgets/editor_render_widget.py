@@ -10,6 +10,7 @@ from opps.interface.viewer_3d.render_widgets.common_render_widget import (
     CommonRenderWidget,
 )
 from opps.model import Flange, Pipe, Pipeline
+from opps.model.pipeline_editor import PipelineEditor
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -17,6 +18,8 @@ class EditorRenderWidget(CommonRenderWidget):
         super().__init__(parent)
         # self.style = SelectionInteractor()
         # self.render_interactor.SetInteractorStyle(self.style)
+
+        self.editor = PipelineEditor()
 
         self.pipeline = Pipeline()
         self.tmp_structure = None
@@ -53,7 +56,10 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        self.pipeline_actor = self.pipeline.as_vtk()
+        # self.pipeline_actor = self.pipeline.as_vtk()
+        # self.renderer.AddActor(self.pipeline_actor)
+
+        self.pipeline_actor = self.editor.pipeline.as_vtk()
         self.renderer.AddActor(self.pipeline_actor)
 
         if self.tmp_structure is not None:
@@ -68,6 +74,9 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def stage_pipe_deltas(self, dx, dy, dz):
+        self.editor.set_deltas((dx, dy, dz))
+        self.editor.add_pipe()
+
         self._current_point = self._previous_point + (dx, dy, dz)
         pipe = Pipe(self._previous_point, self._current_point)
         self.stage_structure(pipe)
@@ -83,6 +92,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot()
 
     def commit_structure(self):
+        self.editor.commit()
         self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
         self.tmp_structure = None
         self._previous_point = self._current_point
