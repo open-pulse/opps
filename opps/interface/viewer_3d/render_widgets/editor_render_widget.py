@@ -99,6 +99,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot()
 
     def unstage_structure(self):
+        self.editor.dismiss()
         self.tmp_structure = None
         self._current_point = self._previous_point
         self.update_plot(reset_camera=False)

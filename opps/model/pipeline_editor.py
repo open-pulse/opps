@@ -16,36 +16,60 @@ class PipelineEditor:
         self.deltas = np.array(origin)
 
         self.pipeline = Pipeline()
-        self.staged_structure = []
+        self.staged_structures = []
+        self.backup = []
 
     def set_deltas(self, deltas):
         self.deltas = np.array(deltas)
 
     def add_pipe(self):    
-        for structure in self.staged_structure:
-            self.pipeline.remove_structure(structure)
+        self.dismiss()
 
         if (self.deltas == (0,0,0)).all():
             return
-    
+        
+        connected_pipes = self.pipeline.find_pipes_at(self.current_point)
+        self.backup.extend(connected_pipes)
+        for structure in connected_pipes:
+            self.pipeline.remove_structure(structure)
+        
         new_pipe = Pipe(self.current_point, self.current_point + self.deltas)
         new_pipe.color = (255, 0, 0)
+        self.staged_structures.append(new_pipe)
+        
+        connected_pipes_copy = deepcopy(connected_pipes)
+        # connected_pipes_copy = connected_pipes
+        if connected_pipes_copy:
+            existing_pipe = connected_pipes_copy[0]
+            bend = self.pipeline.connect_pipes_with_bend(new_pipe, existing_pipe, new_pipe.radius)
+            if bend is not None:
+                bend.color = (255, 0, 0)
+                self.staged_structures.append(bend)
+            self.staged_structures.append(existing_pipe)
 
-        self.control_points_to_structure[tuple(self.current_point)].append(new_pipe)
-        self.structure_to_control_points[id(new_pipe)].append(new_pipe)
-        self.pipeline.add_structure(new_pipe)
-        self.staged_structure.append(new_pipe)
+        for structure in self.staged_structures:
+            self.pipeline.add_structure(structure)
 
     def add_flange(self):
         new_flange = Flange(self.current_point)
         # self.control_points_to_structure[tuple(self.current_point)].append(new_flange)
         # self.structure_to_control_points[new_flange].append(new_flange)
     
+    def dismiss(self):
+        for structure in self.staged_structures:
+            self.pipeline.remove_structure(structure)
+        self.staged_structures.clear()
+        
+        for structure in self.backup:
+            self.pipeline.add_structure(structure)
+        self.backup.clear()
+
     def commit(self):
         self.current_point = self.current_point + self.deltas
-        for structure in self.staged_structure:
+        for structure in self.staged_structures:
             structure.color = (255, 255, 255)
-        self.staged_structure.clear()
+        self.staged_structures.clear()
+        self.backup.clear()
 
     def reposition_structure(self, obj):
         if isinstance(obj, Pipe):
