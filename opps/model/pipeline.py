@@ -156,12 +156,16 @@ class Pipeline:
 
         a_vector = normalize(pipe_a.end - pipe_a.start)
         b_vector = normalize(pipe_b.end - pipe_b.start)
+
+        if (a_vector == b_vector).all():
+            return None
+
         c_vector = normalize(b_vector - a_vector)
 
         if np.dot(a_vector, b_vector) == 1:
             return None
 
-        sin_angle = np.linalg.norm(a_vector + b_vector) / np.linalg.norm(a_vector) / 2
+        sin_angle = np.linalg.norm(a_vector + b_vector) / 2
         angle = np.arcsin(sin_angle)
 
         center_distance = r / np.sin(angle)
