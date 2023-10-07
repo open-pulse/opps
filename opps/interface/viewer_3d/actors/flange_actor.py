@@ -63,7 +63,7 @@ class FlangeActor(vtk.vtkActor):
         transform_filter.Update()
 
         data = transform_filter.GetOutput()
-        color = (0, 255, 0)
+        color = self.flange.color
         paint_data(data, color)
 
         mapper = vtk.vtkPolyDataMapper()

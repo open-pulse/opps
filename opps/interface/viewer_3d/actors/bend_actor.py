@@ -40,7 +40,7 @@ class BendActor(vtk.vtkActor):
         tube_filter.Update()
 
         data = tube_filter.GetOutput()
-        color = (255, 0, 255)
+        color = self.bend.color
         paint_data(data, color)
 
         mapper = vtk.vtkPolyDataMapper()

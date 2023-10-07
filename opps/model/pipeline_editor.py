@@ -29,6 +29,8 @@ class PipelineEditor:
             return
     
         new_pipe = Pipe(self.current_point, self.current_point + self.deltas)
+        new_pipe.color = (255, 0, 0)
+
         self.control_points_to_structure[tuple(self.current_point)].append(new_pipe)
         self.structure_to_control_points[id(new_pipe)].append(new_pipe)
         self.pipeline.add_structure(new_pipe)
@@ -41,6 +43,8 @@ class PipelineEditor:
     
     def commit(self):
         self.current_point = self.current_point + self.deltas
+        for structure in self.staged_structure:
+            structure.color = (255, 255, 255)
         self.staged_structure.clear()
 
     def reposition_structure(self, obj):

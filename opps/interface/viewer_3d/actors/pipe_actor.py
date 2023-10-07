@@ -33,7 +33,7 @@ class PipeActor(vtk.vtkActor):
         tube_filter.Update()
 
         data = tube_filter.GetOutput()
-        color = (255, 255, 255)
+        color = self.pipe.color
         paint_data(data, color)
 
         mapper = vtk.vtkPolyDataMapper()

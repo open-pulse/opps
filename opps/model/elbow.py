@@ -10,6 +10,7 @@ class Elbow:
     center: np.ndarray
     start_radius: float = 0.1
     end_radius: float = 0.1
+    color: tuple = (255, 255, 255)
 
     def __post_init__(self):
         self.start = np.array(self.start)

@@ -8,6 +8,7 @@ class Flange:
     position: np.ndarray
     normal: np.ndarray
     radius: float = 0.1
+    color: tuple = (255, 255, 255)
 
     def __post_init__(self):
         self.position = np.array(self.position)

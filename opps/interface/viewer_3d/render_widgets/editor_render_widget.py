@@ -62,12 +62,12 @@ class EditorRenderWidget(CommonRenderWidget):
         self.pipeline_actor = self.editor.pipeline.as_vtk()
         self.renderer.AddActor(self.pipeline_actor)
 
-        if self.tmp_structure is not None:
-            self.tmp_structure_actor = self.tmp_structure.as_vtk()
-            self.tmp_structure_actor.GetProperty().SetOpacity(0.6)
-            self.tmp_structure_actor.GetProperty().SetColor(1, 1, 0.5)
-            self.tmp_structure_actor.GetProperty().LightingOff()
-            self.renderer.AddActor(self.tmp_structure_actor)
+        # if self.tmp_structure is not None:
+        #     self.tmp_structure_actor = self.tmp_structure.as_vtk()
+        #     self.tmp_structure_actor.GetProperty().SetOpacity(0.6)
+        #     self.tmp_structure_actor.GetProperty().SetColor(1, 1, 0.5)
+        #     self.tmp_structure_actor.GetProperty().LightingOff()
+        #     self.renderer.AddActor(self.tmp_structure_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
