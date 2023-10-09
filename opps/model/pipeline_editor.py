@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from opps.model import Bend, Flange, Pipe, Pipeline
+from opps.model import Bend, Elbow, Flange, Pipe, Pipeline
 
 
 class PipelineEditor:
@@ -38,14 +38,10 @@ class PipelineEditor:
         self.staged_structures.append(new_pipe)
         
         connected_pipes_copy = deepcopy(connected_pipes)
-        # connected_pipes_copy = connected_pipes
-        if connected_pipes_copy:
-            existing_pipe = connected_pipes_copy[0]
-            bend = self.pipeline.connect_pipes_with_bend(new_pipe, existing_pipe, new_pipe.radius)
-            if bend is not None:
-                bend.color = (255, 0, 0)
-                self.staged_structures.append(bend)
-            self.staged_structures.append(existing_pipe)
+        self.staged_structures.extend(connected_pipes_copy)
+        bends = self.add_joints(self.staged_structures)
+        for bend in bends:
+            bend.color = (255, 0, 0)
 
         for structure in self.staged_structures:
             self.pipeline.add_structure(structure)
@@ -91,4 +87,59 @@ class PipelineEditor:
         # do stuff...
 
     def recalculate_control_points(self):
-        pass
+        self.control_points_to_structure.clear()
+        pipes = [i for i in self.pipeline.components if isinstance(i, Pipe)]
+        joints = [i for i in self.pipeline.components if isinstance(i, Bend)]
+
+        for pipe in pipes:
+            self.control_points_to_structure[tuple(pipe.start)].append(pipe)
+            self.control_points_to_structure[tuple(pipe.end)].append(pipe)
+
+        for joint in joints:
+            start_structures = self.control_points_to_structure.pop(tuple(joint.start), None)
+            end_structures = self.control_points_to_structure.pop(tuple(joint.end), None)
+            merged_structures = [joint] + start_structures + end_structures
+            self.control_points_to_structure[tuple(joint.get_corner())] = merged_structures
+        
+    def add_joints(self, structures):
+        pipe_groups = defaultdict(list)
+        pipes = [i for i in structures if isinstance(i, Pipe)]
+        bends = []
+
+        for pipe in pipes:
+            pipe_groups[tuple(pipe.start)].append(pipe)
+            pipe_groups[tuple(pipe.end)].append(pipe)
+
+        for pipe_group in pipe_groups.values():
+            if len(pipe_group) != 2:
+                continue
+            r = pipe_group[0].radius
+            bend = self.pipeline.connect_pipes_with_bend(*pipe_group, r)
+            if bend is not None:
+                bends.append(bend)
+
+        structures.extend(bends)
+
+        return bends
+
+    def remove_joints(self, structures):
+        joints = [i for i in structures if isinstance(i, Bend)]
+        pipes = [i for i in structures if isinstance(i, Pipe)]
+
+        indexes_to_remove = []
+        for i, s in enumerate(structures):
+            if isinstance(s, Bend):
+                indexes_to_remove.append(i)
+        indexes_to_remove.sort(reverse=True)
+
+        for i in indexes_to_remove:
+            structures.pop(i)
+
+        replace_dict = dict()
+        for joint in joints:
+            replace_dict[tuple(joint.start)] = joint.get_corner()
+            replace_dict[tuple(joint.end)] = joint.get_corner()
+
+        for pipe in pipes:
+            pipe.start = np.array(replace_dict.get(tuple(pipe.start), pipe.start))
+            pipe.end = np.array(replace_dict.get(tuple(pipe.end), pipe.end))
