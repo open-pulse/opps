@@ -1,5 +1,6 @@
 import numpy as np
 import vtk
+from opps.io.cad_file.step_exporter import StepExporter
 
 from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
 from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
@@ -92,6 +93,9 @@ class EditorRenderWidget(CommonRenderWidget):
         self.tmp_structure = None
         self._current_point = self._previous_point
         self.update_plot(reset_camera=False)
+        a = StepExporter()
+        a.save("teste.step", self.pipeline)
+
 
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
