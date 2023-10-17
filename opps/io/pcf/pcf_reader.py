@@ -1,8 +1,9 @@
+import numpy as np
 from itertools import pairwise
 from opps.model.pipe import Pipe
-
-with open('P-29213_1.pcf') as c2:
-     lines = c2.readlines()
+from opps.model.bend import Bend
+from opps.model.flange import Flange
+from opps.model.elbow import Elbow
 
 def group_structures(lines_list):
 
@@ -22,6 +23,19 @@ def create_classes(groups):
         if group[0].strip() == "PIPE":
             pipe = create_pipe(group)
             objects.append(pipe)
+
+        elif group[0].strip() == "BEND":
+            bend = create_bend(group)
+            objects.append(bend)
+
+        elif group[0].strip() == "FLANGE":
+            flange = create_flange(group)
+            objects.append(flange)
+
+        elif group[0].strip() == "ELBOW":
+            elbow = create_elbow(group)
+            objects.append(elbow)
+
     return objects
 
 def create_pipe(group):
@@ -30,11 +44,55 @@ def create_pipe(group):
   
     start = (float(x0), float(y0), float(z0))
     end = (float(x1), float(y1), float(z1))
-    radius = float(r0)
+    radius = float(r0)/2
 
     return Pipe(start, end, radius)
 
-groups = group_structures(lines)    
-create_classes(groups)
+def create_bend(group):
+    _,x0,y0,z0,r0 = group[1].split()
+    _,x1,y1,z1,r1 = group[2].split()
+    _,x2,y2,z2 = group[3].split()
 
+    start = (float(x0), float(y0), float(z0))
+    end = (float(x1), float(y1), float(z1))
+    center = (float(x2), float(y2), float(z2))
+    start_radius = float(r0)/2
+    end_radius = float(r1)/2
+
+    color =  (255,0,0)
+
+    return Bend(start, end, center, start_radius, end_radius, color=color)
+
+def create_flange(group):
+
+    _,x0,y0,z0,r0 = group[1].split()
+    _,x1,y1,z1,r1 = group[2].split()
+    
+    start = np.array([float(x0), float(y0), float(z0)])
+    end = np.array([float(x1), float(y1), float(z1)])
+    position = (start + end)/2
+    normal = start-end
+    start_radius = float(r0)/2
+
+    color =  (0, 0, 255)
+    
+
+    return Flange(position, normal, start_radius, color=color)
+
+def create_elbow(group):
+    _,x0,y0,z0,r0 = group[1].split()
+    _,x1,y1,z1,r1 = group[2].split()
+    _,x2,y2,z2 = group[3].split()
+
+    start = (float(x0), float(y0), float(z0))
+    end = (float(x1), float(y1), float(z1))
+    center = (float(x2), float(y2), float(z2))
+    start_radius = float(r0)/2
+    end_radius = float(r1)/2
+
+    color =  (0,255,0)
+
+    return Elbow(start, end, center, start_radius, end_radius, color=color)
+     
+     
 

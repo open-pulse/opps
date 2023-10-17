@@ -5,11 +5,19 @@ import numpy as np
 from opps.model.bend import Bend
 from opps.model.flange import Flange
 from opps.model.pipe import Pipe
+from opps.io.pcf.pcf_reader import *
 
 
 class Pipeline:
     def __init__(self):
         self.components = []
+
+    def load(self, path):
+        with open(path) as c2:
+            lines = c2.readlines()
+        groups = group_structures(lines)    
+        self.components = create_classes(groups)
+        print(self.components)
 
     def add_pipe(self, *args, **kwargs) -> Pipe:
         pipe = Pipe(*args, **kwargs)

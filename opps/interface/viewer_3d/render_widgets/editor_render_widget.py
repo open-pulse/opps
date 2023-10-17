@@ -22,6 +22,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.editor = PipelineEditor()
 
         self.pipeline = Pipeline()
+        self.pipeline.load("teste.pcf")
         self.tmp_structure = None
 
         self.pipeline_actor = None
@@ -56,11 +57,11 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        # self.pipeline_actor = self.pipeline.as_vtk()
-        # self.renderer.AddActor(self.pipeline_actor)
-
-        self.pipeline_actor = self.editor.pipeline.as_vtk()
+        self.pipeline_actor = self.pipeline.as_vtk()
         self.renderer.AddActor(self.pipeline_actor)
+
+        # self.pipeline_actor = self.editor.pipeline.as_vtk()
+        # self.renderer.AddActor(self.pipeline_actor)
 
         # if self.tmp_structure is not None:
         #     self.tmp_structure_actor = self.tmp_structure.as_vtk()
