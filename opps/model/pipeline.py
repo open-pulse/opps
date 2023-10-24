@@ -52,10 +52,6 @@ class Pipeline:
 
     def add_structure(self, structure, *, auto_connect=False):
         self.components.append(structure)
-        if auto_connect and isinstance(structure, Pipe):
-            self.connect_last_2_pipes()
-        elif auto_connect and isinstance(structure, Flange):
-            self.orient_flange(structure)
 
     def remove_structure(self, structure):
         component_ids = [id(i) for i in self.components]

@@ -113,14 +113,34 @@ class PipelineEditor:
         for pipe_group in pipe_groups.values():
             if len(pipe_group) != 2:
                 continue
-            r = pipe_group[0].radius
-            bend = self.pipeline.connect_pipes_with_bend(*pipe_group, r)
+            bend = self.connect_pipes_with_bend(*pipe_group)
             if bend is not None:
                 bends.append(bend)
 
         structures.extend(bends)
 
         return bends
+    
+    def connect_pipes_with_bend(self, pipe_a, pipe_b):
+        # avoid configurations like ← → or → ←
+        if (pipe_a.start == pipe_b.end).all():
+            pipe_a, pipe_b = pipe_b, pipe_a
+        elif (pipe_a.end == pipe_b.end).all():
+            pipe_b.start, pipe_b.end = pipe_b.end, pipe_b.start
+        elif (pipe_a.start == pipe_b.start).all():
+            pipe_a.start, pipe_a.end = pipe_a.end, pipe_a.start
+
+        bend = Bend(start=pipe_a.start, 
+                    end=pipe_b.end, 
+                    corner=pipe_a.end,
+                    curvature=pipe_a.radius)
+
+        if np.isnan(bend.center).any():
+            return None
+
+        pipe_a.end = bend.start
+        pipe_b.start = bend.end
+        return bend
 
     def remove_joints(self, structures):
         joints = [i for i in structures if isinstance(i, Bend)]
