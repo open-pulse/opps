@@ -2,42 +2,61 @@ from dataclasses import dataclass
 
 import numpy as np
 
-
+def normalize(vector):
+    return vector / np.linalg.norm(vector)
 @dataclass
 class Bend:
     start: np.ndarray
     end: np.ndarray
-    center: np.ndarray
-    start_radius: float = 0.1
-    end_radius: float = 0.1
+    corner: np.ndarray
+    curvature: float
+    diameter: float = 0.1
     color: tuple = (255, 255, 255)
 
     def __post_init__(self):
         self.start = np.array(self.start)
         self.end = np.array(self.end)
-        self.center = np.array(self.center)
+        self.corner = np.array(self.corner)
+        self.normalize_values()
 
-    def get_corner(self):
-        """
-        Get the corner from center is the same procedure
-        as getting the center from corner.
-        """
-        def normalize(vector):
-          return vector / np.linalg.norm(vector)
+    def normalize_values(self):
+        a_vector = normalize(self.start - self.corner)
+        b_vector = normalize(self.end - self.corner)
 
-        bend_radius = np.linalg.norm(self.end - self.center)
-        a_vector = normalize(self.center - self.start)
-        b_vector = normalize(self.center - self.end)
-        c_vector = normalize(b_vector + a_vector)
+        if (a_vector == b_vector).all():
+            return
 
         if np.dot(a_vector, b_vector) == 1:
-            return None
+            return
 
         sin_angle = np.linalg.norm(a_vector - b_vector) / 2
         angle = np.arcsin(sin_angle)
-        center_distance = bend_radius / np.cos(angle)
-        corner = self.center - c_vector * center_distance         
-        return np.round(corner, 10)
+
+        corner_distance = np.cos(angle) * self.curvature / np.sin(angle)
+        self.start = self.corner + corner_distance * a_vector
+        self.end = self.corner + corner_distance * b_vector
+    
+    @property
+    def center(self):
+        a_vector = normalize(self.start - self.corner)
+        b_vector = normalize(self.end - self.corner)
+
+        if (a_vector == b_vector).all():
+            return self.corner * np.nan
+        
+        if np.dot(a_vector, b_vector) == 1:
+            return self.corner * np.nan
+
+        sin_angle = np.linalg.norm(a_vector - b_vector) / 2
+        angle = np.arcsin(sin_angle)
+        center_distance = self.curvature / np.sin(angle)
+        
+        # print(angle)
+        # print(center_distance)
+        # print()
+
+        c_vector = normalize(a_vector + b_vector)
+        return self.corner + c_vector * center_distance
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.bend_actor import BendActor
