@@ -9,11 +9,11 @@ from opps.model import Bend, Elbow, Flange, Pipe, Pipeline
 
 class PipelineEditor:
     def __init__(self, origin=(0, 0, 0)):
-        self.control_points_to_structure = defaultdict(list)
+        self.control_points_to_structures = defaultdict(list)
         self.structure_to_control_points = defaultdict(list)
 
         self.current_point = np.array(origin)
-        self.deltas = np.array(origin)
+        self.deltas = np.array([0,0,0])
 
         self.pipeline = Pipeline()
         self.staged_structures = []
@@ -48,7 +48,7 @@ class PipelineEditor:
 
     def add_flange(self):
         new_flange = Flange(self.current_point)
-        # self.control_points_to_structure[tuple(self.current_point)].append(new_flange)
+        # self.control_points_to_structures[tuple(self.current_point)].append(new_flange)
         # self.structure_to_control_points[new_flange].append(new_flange)
     
     def dismiss(self):
@@ -66,6 +66,7 @@ class PipelineEditor:
             structure.color = (255, 255, 255)
         self.staged_structures.clear()
         self.backup.clear()
+        self.recalculate_control_points()
 
     def reposition_structure(self, obj):
         if isinstance(obj, Pipe):
@@ -82,24 +83,86 @@ class PipelineEditor:
     def reposition_flange(self, flange: Flange):
         flange.position = flange
 
-    def move_control_point(self, origin, target):
-        origin_structures = self.control_points_to_structure[origin]
-        # do stuff...
+    def move_control_point(self, target):
+        origin = tuple(self.current_point)
+        target = tuple(target)
+
+        if origin == target:
+            return
+
+        if target in self.control_points_to_structures:
+            return
+
+        origin_structures = self.control_points_to_structures[origin]
+        if not origin_structures:
+            return
+
+        self.current_point = np.array(target)
+        # self.control_points_to_structures[target] = origin_structures
+        # self.control_points_to_structures.pop(origin)
+
+        new_coordinates = dict()
+        new_coordinates[origin] = target
+        for joint in origin_structures:
+            if not isinstance(joint, Bend | Elbow):
+                continue
+            for point in joint.get_points():
+                new_coordinates[tuple(point)] = target
+        
+        for structure in origin_structures:
+            structure.map_coords(new_coordinates)
+
+        self.recalculate_control_points()
+        
+        for structures in self.control_points_to_structures.values():
+            self.update_joints(structures)
+            to_remove = []
+            for i, struct in enumerate(structures):
+                if struct is None:
+                    to_remove.append(i)
+            for i in reversed(to_remove):
+                print("alguém?")
+                structures.pop(i)
+
+    def update_joints(self, structures):
+        for joint in structures:
+            if not isinstance(joint, Bend):
+                continue
+
+            oposite_a = self.get_oposite_point(joint.start, structures)
+            oposite_b = self.get_oposite_point(joint.end, structures)
+            
+            if oposite_a is None:
+                continue
+
+            if oposite_b is None:
+                continue
+                
+            old_start = joint.start
+            old_end = joint.end
+
+            joint.start = oposite_a
+            joint.end = oposite_b
+            joint.normalize_values()
+
+            self.replace_point(old_start, joint.start, structures)
+            self.replace_point(old_end, joint.end, structures)
+
 
     def recalculate_control_points(self):
-        self.control_points_to_structure.clear()
+        self.control_points_to_structures.clear()
         pipes = [i for i in self.pipeline.components if isinstance(i, Pipe)]
         joints = [i for i in self.pipeline.components if isinstance(i, Bend)]
 
         for pipe in pipes:
-            self.control_points_to_structure[tuple(pipe.start)].append(pipe)
-            self.control_points_to_structure[tuple(pipe.end)].append(pipe)
+            self.control_points_to_structures[tuple(pipe.start)].append(pipe)
+            self.control_points_to_structures[tuple(pipe.end)].append(pipe)
 
         for joint in joints:
-            start_structures = self.control_points_to_structure.pop(tuple(joint.start), None)
-            end_structures = self.control_points_to_structure.pop(tuple(joint.end), None)
+            start_structures = self.control_points_to_structures.pop(tuple(joint.start), [])
+            end_structures = self.control_points_to_structures.pop(tuple(joint.end), [])
             merged_structures = [joint] + start_structures + end_structures
-            self.control_points_to_structure[tuple(joint.get_corner())] = merged_structures
+            self.control_points_to_structures[tuple(joint.corner)] = merged_structures
         
     def add_joints(self, structures):
         pipe_groups = defaultdict(list)
@@ -121,6 +184,48 @@ class PipelineEditor:
 
         return bends
     
+    def get_pipes_at(self, point, structures):
+        pipes = []
+        for pipe in structures:
+            if not isinstance(pipe, Pipe):
+                continue
+            if (pipe.start == point).all():
+                oposite_point = pipe.end
+                break
+
+            elif (pipe.end == point).all():
+                oposite_point = pipe.start
+                break
+
+    def get_oposite_point(self, point, structures):
+        oposite_point = None
+        for pipe in structures:
+            if not isinstance(pipe, Pipe):
+                continue
+
+            if (pipe.start == point).all():
+                oposite_point = pipe.end
+                break
+
+            elif (pipe.end == point).all():
+                oposite_point = pipe.start
+                break
+
+        return oposite_point
+    
+    def replace_point(self, old_point, new_point, structures):
+        for pipe in structures:
+            if not isinstance(pipe, Pipe):
+                continue
+
+            if (pipe.start == old_point).all():
+                pipe.start = new_point
+                break
+
+            elif (pipe.end == old_point).all():
+                pipe.end = new_point
+                break
+
     def connect_pipes_with_bend(self, pipe_a, pipe_b):
         # avoid configurations like ← → or → ←
         if (pipe_a.start == pipe_b.end).all():

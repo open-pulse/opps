@@ -50,13 +50,25 @@ class Bend:
         sin_angle = np.linalg.norm(a_vector - b_vector) / 2
         angle = np.arcsin(sin_angle)
         center_distance = self.curvature / np.sin(angle)
-        
-        # print(angle)
-        # print(center_distance)
-        # print()
 
         c_vector = normalize(a_vector + b_vector)
         return self.corner + c_vector * center_distance
+
+    def get_points(self):
+        return [
+            self.start,
+            self.end,
+            self.corner,
+        ]
+    
+    def move_corner(self, new_corner):
+        self.corner = new_corner
+        self.normalize_values()
+
+    def map_coords(self, coords_map):
+        self.start = np.array(coords_map.get(tuple(self.start), self.start))
+        self.end = np.array(coords_map.get(tuple(self.end), self.end))
+        self.corner = np.array(coords_map.get(tuple(self.corner), self.corner))
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.bend_actor import BendActor
