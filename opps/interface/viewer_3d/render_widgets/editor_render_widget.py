@@ -20,12 +20,24 @@ class EditorRenderWidget(CommonRenderWidget):
         # self.render_interactor.SetInteractorStyle(self.style)
 
         self.editor = PipelineEditor()
+        self.editor.set_deltas((1, 0, 0))
+        self.editor.add_pipe()
+        self.editor.commit()
+        self.editor.set_deltas((0, 1, 0))
+        self.editor.add_pipe()
+        self.editor.commit()
+        # bend = self.editor.pipeline.components[-1]
+        # bend.corner = np.array([1.3, 0, 0])
+
+        self.editor.update_joints(self.editor.pipeline.components)
 
         self.pipeline = Pipeline()
         self.tmp_structure = None
 
         self.pipeline_actor = None
         self.tmp_structure_actor = None
+
+        self.bla = False
 
         self._previous_point = np.array([0, 0, 0])
         self._current_point = np.array([0, 0, 0])
@@ -74,12 +86,19 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def stage_pipe_deltas(self, dx, dy, dz):
-        self.editor.set_deltas((dx, dy, dz))
-        self.editor.add_pipe()
+        if self.bla:
+            self.editor.set_deltas((dx, dy, dz) - self.editor.deltas)
+        else:
+            self.editor.set_deltas((dx, dy, dz))
+            self.bla = True
 
-        self._current_point = self._previous_point + (dx, dy, dz)
-        pipe = Pipe(self._previous_point, self._current_point)
-        self.stage_structure(pipe)
+        self.editor.move_control_point()
+        # self.editor.move_control_point((dx, dy, dz))
+        self.update_plot()
+
+        # self._current_point = self._previous_point + (dx, dy, dz)
+        # pipe = Pipe(self._previous_point, self._current_point)
+        # self.stage_structure(pipe)
 
     def add_flange(self):
         self._current_point = self._previous_point
@@ -93,10 +112,11 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def commit_structure(self):
         self.editor.commit()
-        self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
-        self.tmp_structure = None
-        self._previous_point = self._current_point
-        self.update_plot()
+        self.editor.add_pipe()
+        # self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
+        # self.tmp_structure = None
+        # self._previous_point = self._current_point
+        # self.update_plot()
 
     def unstage_structure(self):
         self.editor.dismiss()
