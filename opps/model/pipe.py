@@ -7,7 +7,7 @@ import numpy as np
 class Pipe:
     start: np.ndarray
     end: np.ndarray
-    radius: float = 0.1
+    diameter: float = 0.1
     color: tuple = (255, 255, 255)
 
     def __post_init__(self):

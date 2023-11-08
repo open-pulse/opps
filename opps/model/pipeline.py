@@ -136,8 +136,8 @@ class Pipeline:
             start=curvature_points[0],
             end=curvature_points[1],
             center=curvature_points[2],
-            start_radius=pipe_a.radius,
-            end_radius=pipe_b.radius,
+            start_radius=pipe_a.diameter / 2,
+            end_radius=pipe_b.diameter / 2,
         )
 
         # resize the input tubes to fit the bend

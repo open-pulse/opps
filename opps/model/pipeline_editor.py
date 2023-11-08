@@ -328,7 +328,8 @@ class PipelineEditor:
         bend = Bend(start=pipe_a.start, 
                     end=pipe_b.end, 
                     corner=pipe_a.end,
-                    curvature=pipe_a.radius)
+                    curvature=pipe_a.diameter / 2,
+                    diameter=pipe_a.diameter)
 
         if np.isnan(bend.center).any():
             return None
