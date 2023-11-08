@@ -4,7 +4,22 @@ import numpy as np
 
 @dataclass
 class Point:
-    coords: np.ndarray
+    x: float
+    y: float
+    z: float
+
+    def coords(self):
+        return np.array([self.x, self.y, self.z])
+
+    def set_coords(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
 
     def __iter__(self):
-        yield from self.coords
+        yield self.x
+        yield self.y
+        yield self.z
+
+    def __hash__(self) -> int:
+        return hash(tuple(self))

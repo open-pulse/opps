@@ -16,8 +16,8 @@ class BendActor(vtk.vtkActor):
 
         arc_points = 50
         arc_source = vtk.vtkArcSource()
-        arc_source.SetPoint1(self.bend.start)
-        arc_source.SetPoint2(self.bend.end)
+        arc_source.SetPoint1(self.bend.start.coords())
+        arc_source.SetPoint2(self.bend.end.coords())
         arc_source.SetCenter(self.bend.center)
         arc_source.SetResolution(arc_points - 1)
         arc_source.Update()

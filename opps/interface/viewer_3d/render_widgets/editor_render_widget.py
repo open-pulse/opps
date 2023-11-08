@@ -23,24 +23,26 @@ class EditorRenderWidget(CommonRenderWidget):
         self.editor.set_deltas((1, 0, 0))
         self.editor.add_pipe()
         self.editor.commit()
-        self.editor.set_deltas((0, 1, 0))
-        self.editor.add_pipe()
-        self.editor.commit()
+
+        self.bla = True
+        # self.editor.set_deltas((0, 1, 0))
+        # self.editor.add_pipe()
+        # self.editor.commit()
         # bend = self.editor.pipeline.components[-1]
         # bend.corner = np.array([1.3, 0, 0])
 
-        self.editor.update_joints(self.editor.pipeline.components)
+        # self.editor.update_joints(self.editor.pipeline.components)
 
-        self.pipeline = Pipeline()
-        self.tmp_structure = None
+        # self.pipeline = Pipeline()
+        # self.tmp_structure = None
 
         self.pipeline_actor = None
-        self.tmp_structure_actor = None
+        # self.tmp_structure_actor = None
 
-        self.bla = False
+        # self.bla = False
 
-        self._previous_point = np.array([0, 0, 0])
-        self._current_point = np.array([0, 0, 0])
+        # self._previous_point = np.array([0, 0, 0])
+        # self._current_point = np.array([0, 0, 0])
         # self.pipeline.add_pipe_from_deltas(
         #     (236, 0, 0),
         #     (118, 0, 0),
@@ -68,28 +70,29 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        # self.pipeline_actor = self.pipeline.as_vtk()
-        # self.renderer.AddActor(self.pipeline_actor)
-
         self.pipeline_actor = self.editor.pipeline.as_vtk()
         self.renderer.AddActor(self.pipeline_actor)
-
-        # if self.tmp_structure is not None:
-        #     self.tmp_structure_actor = self.tmp_structure.as_vtk()
-        #     self.tmp_structure_actor.GetProperty().SetOpacity(0.6)
-        #     self.tmp_structure_actor.GetProperty().SetColor(1, 1, 0.5)
-        #     self.tmp_structure_actor.GetProperty().LightingOff()
-        #     self.renderer.AddActor(self.tmp_structure_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
         self.update()
 
     def stage_pipe_deltas(self, dx, dy, dz):
-        self.editor.move_control_point(
-            self.editor.current_point, 
-            self.editor.current_point + (dx, dy, dz)
-        )
+        if (dx, dy, dz) == (0, 0, 0):
+            return
+        
+        if self.bla: 
+            self.editor.add_bend()
+        self.bla = not self.bla
+
+        self.editor.set_deltas((dx, dy, dz))
+        self.editor.add_pipe()
+        self.editor.update_joints_2()
+
+        # self.editor.move_control_point(
+        #     self.editor.current_point, 
+        #     self.editor.current_point + (dx, dy, dz)
+        # )
         # self.editor.move_control_point((dx, dy, dz))
         self.update_plot()
 
@@ -116,6 +119,7 @@ class EditorRenderWidget(CommonRenderWidget):
         # self.update_plot()
 
     def unstage_structure(self):
+        return
         self.editor.dismiss()
         self.tmp_structure = None
         self._current_point = self._previous_point
@@ -123,6 +127,6 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
-        self.renderer.RemoveActor(self.tmp_structure_actor)
+        # self.renderer.RemoveActor(self.tmp_structure_actor)
         self.pipeline_actor = None
         self.tmp_structure_actor = None

@@ -18,8 +18,8 @@ class PipeActor(vtk.vtkActor):
         radius.SetTuple1(1, self.pipe.diameter / 2)
 
         line_source = vtk.vtkLineSource()
-        line_source.SetPoint1(self.pipe.start)
-        line_source.SetPoint2(self.pipe.end)
+        line_source.SetPoint1(self.pipe.start.coords())
+        line_source.SetPoint2(self.pipe.end.coords())
         line_source.Update()
 
         polydata = line_source.GetOutput()
