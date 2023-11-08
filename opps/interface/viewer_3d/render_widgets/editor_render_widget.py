@@ -86,13 +86,10 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def stage_pipe_deltas(self, dx, dy, dz):
-        if self.bla:
-            self.editor.set_deltas((dx, dy, dz) - self.editor.deltas)
-        else:
-            self.editor.set_deltas((dx, dy, dz))
-            self.bla = True
-
-        self.editor.move_control_point()
+        self.editor.move_control_point(
+            self.editor.current_point, 
+            self.editor.current_point + (dx, dy, dz)
+        )
         # self.editor.move_control_point((dx, dy, dz))
         self.update_plot()
 

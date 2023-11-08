@@ -42,12 +42,15 @@ class PipelineEditor:
         if bend is not None:
             self.pipeline.add_structure(bend)
 
-    def move_control_point(self):
+    def move_control_point(self, origin, target):
         coords_mapper = dict()
-        coords_mapper[tuple(self.current_point)] = self.current_point + self.deltas
+        coords_mapper[tuple(origin)] = target
+
         for structure in self.pipeline.components:
             structure.map_coords(coords_mapper)
-        self.current_point = self.current_point + self.deltas
+
+        if (self.current_point == origin).all:
+            self.current_point = target            
         self._update_joints()
 
     def _update_joints(self):
