@@ -87,7 +87,6 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.editor.set_deltas((dx, dy, dz))
         self.editor.add_pipe()
-        self.editor.update_joints_2()
 
         # self.editor.move_control_point(
         #     self.editor.current_point, 
