@@ -21,8 +21,6 @@ class EditorRenderWidget(CommonRenderWidget):
         self.editor.add_pipe()
         self.editor.commit()
 
-        self.sum_deltas = np.array([0,0,0])
-
         self.pipeline_actor = None
 
         self.create_axes()
@@ -42,8 +40,10 @@ class EditorRenderWidget(CommonRenderWidget):
         if (dx, dy, dz) == (0, 0, 0):
             return
 
-
-        self.editor.move_point(-1, self.sum_deltas)
+        self.editor.set_deltas((dx, dy, dz))
+        new_position = self.editor.control_points[-2].coords() + (dx, dy, dz)
+        self.editor.move_point(-1, new_position)
+        self.editor._update_joints()
 
         # self.editor.set_deltas((dx, dy, dz))
         # self.editor.add_pipe()
@@ -71,9 +71,8 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot()
 
     def commit_structure(self):
-        self.editor.add_pipe()
-        self.editor.add_bend()
         self.editor.commit()
+        self.editor.add_bend()
         self.editor.add_pipe()
         # self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
         # self.tmp_structure = None
