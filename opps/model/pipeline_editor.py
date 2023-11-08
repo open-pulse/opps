@@ -10,6 +10,7 @@ from opps.model import Bend, Elbow, Flange, Pipe, Pipeline, Point
 class PipelineEditor:
     def __init__(self, origin=(0, 0, 0)):
         self.pipeline = Pipeline()
+        self.deltas = np.array([0,0,0])
         self.control_points = [Point(0,0,0)]
         self.active_point = self.control_points[0]
 
@@ -18,6 +19,9 @@ class PipelineEditor:
 
     def set_deltas(self, deltas):
         self.deltas = np.array(deltas)
+
+    def move_point(self, index, position):
+        self.control_points[index].set_coords(*position)
 
     def add_pipe(self, deltas=None):
         if deltas != None:
