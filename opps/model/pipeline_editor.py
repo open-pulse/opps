@@ -21,6 +21,12 @@ class PipelineEditor:
         self.deltas = np.array(deltas)
 
     def move_point(self, index, position):
+        if index < -len(self.control_points):
+            return
+        
+        if index >= len(self.control_points):
+            return
+
         self.control_points[index].set_coords(*position)
 
     def add_pipe(self, deltas=None):
@@ -87,6 +93,9 @@ class PipelineEditor:
 
     def commit(self):
         self.set_active_point(-1)
+        for i, p in enumerate(self.control_points):
+            print(i, p)
+        print()
 
     def dismiss(self):
         pass

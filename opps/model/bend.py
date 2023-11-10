@@ -37,18 +37,24 @@ class Bend:
         self.start = self.corner + corner_distance * a_vector
         self.end = self.corner + corner_distance * b_vector
     
-    def normalize_values_2(self, start, end):
+    def normalize_values_2(self, start: Point, end: Point):
+        if (start.coords() == self.corner.coords()).all():
+            self.colapse()
+            return
+
+        if (end.coords() == self.corner.coords()).all():
+            self.colapse()
+            return
+
         a_vector = normalize(start.coords() - self.corner.coords())
         b_vector = normalize(end.coords() - self.corner.coords())
 
         if (a_vector == b_vector).all():
-            self.start.set_coords(*self.corner.coords())
-            self.end.set_coords(*self.corner.coords())
+            self.colapse()
             return
 
         if np.dot(a_vector, b_vector) == 1:
-            self.start.set_coords(*self.corner.coords())
-            self.end.set_coords(*self.corner.coords())
+            self.colapse()
             return
 
         sin_angle = np.linalg.norm(a_vector - b_vector) / 2
@@ -58,6 +64,10 @@ class Bend:
         self.start.set_coords(*(self.corner.coords() + corner_distance * a_vector))
         self.end.set_coords(*(self.corner.coords() + corner_distance * b_vector))
     
+    def colapse(self):
+        self.start.set_coords(*self.corner.coords())
+        self.end.set_coords(*self.corner.coords())
+
     @property
     def center(self):
         a_vector = normalize(self.start.coords() - self.corner.coords())
