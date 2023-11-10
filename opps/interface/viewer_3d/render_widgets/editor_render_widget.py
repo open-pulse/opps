@@ -69,10 +69,7 @@ class EditorRenderWidget(CommonRenderWidget):
         # self.stage_structure(pipe)
 
     def add_flange(self):
-        self._current_point = self._previous_point
-        self.pipeline.add_oriented_flange(self._current_point)
-        self.tmp_structure = None
-        self.update_plot()
+        pass
 
     def stage_structure(self, structure):
         self.tmp_structure = structure
