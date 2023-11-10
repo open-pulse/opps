@@ -42,9 +42,13 @@ class Bend:
         b_vector = normalize(end.coords() - self.corner.coords())
 
         if (a_vector == b_vector).all():
+            self.start.set_coords(*self.corner.coords())
+            self.end.set_coords(*self.corner.coords())
             return
 
         if np.dot(a_vector, b_vector) == 1:
+            self.start.set_coords(*self.corner.coords())
+            self.end.set_coords(*self.corner.coords())
             return
 
         sin_angle = np.linalg.norm(a_vector - b_vector) / 2
