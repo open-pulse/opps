@@ -19,7 +19,6 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.editor = PipelineEditor()
         self.editor.add_pipe()
-        self.editor.commit()
 
         self.pipeline_actor = None
         self.coords = np.array([0,0,0])
@@ -82,19 +81,11 @@ class EditorRenderWidget(CommonRenderWidget):
     def commit_structure(self):
         self.editor.commit()
         self.change_index(-1)
-        # self.editor.add_bend()
-        # self.editor.add_pipe()
-        # self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
-        # self.tmp_structure = None
-        # self._previous_point = self._current_point
-        # self.update_plot()
+        self.update_plot()
 
     def unstage_structure(self):
-        return
         self.editor.dismiss()
-        self.tmp_structure = None
-        self._current_point = self._previous_point
-        self.update_plot(reset_camera=False)
+        self.update_plot()
 
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)

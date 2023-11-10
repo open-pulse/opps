@@ -14,6 +14,8 @@ class PipelineEditor:
         self.control_points = [Point(0,0,0)]
         self.active_point = self.control_points[0]
 
+        self.staged_structures = []
+
     def set_active_point(self, index):
         self.active_point = self.control_points[index]
 
@@ -51,10 +53,12 @@ class PipelineEditor:
         new_pipe = Pipe(
             current_point, 
             next_point,
+            color=(255, 0, 0)
         )
 
         self.control_points.append(next_point)
         self.pipeline.add_structure(new_pipe)
+        self.staged_structures.append(new_pipe)
         self._update_joints()
         self.set_active_point(-1)
         return new_pipe
@@ -78,9 +82,11 @@ class PipelineEditor:
             start_point,
             end_point,
             corner_point,
-            0.3
+            0.3,
+            color=(255, 0, 0)
         )
         self.pipeline.add_structure(new_bend)
+        self.staged_structures.append(new_bend)
         self._update_joints() 
         self.set_active_point(-1)
         return new_bend
@@ -121,9 +127,18 @@ class PipelineEditor:
 
     def commit(self):
         self.set_active_point(-1)
+        for structure in self.staged_structures:
+            structure.color = (255, 255, 255)
+        self.staged_structures.clear()
+
         # for i, p in enumerate(self.control_points):
         #     print(i, p)
         # print()
 
     def dismiss(self):
-        pass
+        for structure in self.staged_structures:
+            index = self.pipeline.components.index(structure)
+            if index >= 0:
+                self.pipeline.components.pop(index)
+        self.staged_structures.clear()
+
