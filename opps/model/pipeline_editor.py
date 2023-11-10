@@ -17,6 +17,18 @@ class PipelineEditor:
     def set_active_point(self, index):
         self.active_point = self.control_points[index]
 
+        print("components")
+        for component in self.pipeline.components:
+            print(component)
+        print("points")
+        for i, p in enumerate(self.control_points):
+            bla = " "
+            if id(p) == id(self.active_point):
+                bla = "*"
+            print(bla, i, p)
+        print()
+
+
     def set_deltas(self, deltas):
         self.deltas = np.array(deltas)
 
@@ -33,7 +45,7 @@ class PipelineEditor:
         if deltas != None:
             self.deltas = deltas
 
-        current_point = self.control_points[-1]
+        current_point = self.active_point
         next_point = Point(*(current_point.coords() + self.deltas))
 
         new_pipe = Pipe(
@@ -44,14 +56,23 @@ class PipelineEditor:
         self.control_points.append(next_point)
         self.pipeline.add_structure(new_pipe)
         self._update_joints()
+        self.set_active_point(-1)
+        return new_pipe
 
     def add_bend(self):
-        start_point = self.control_points[-1]
+        start_point = self.active_point
         end_point = deepcopy(start_point)
         corner_point = deepcopy(start_point)
 
         self.control_points.append(corner_point)
         self.control_points.append(end_point)
+
+        # Reuse joints if it already exists
+        for joint in self.pipeline.components:
+            if not isinstance(joint, Bend):
+                continue
+            if joint.corner == start_point:
+                return joint
 
         new_bend = Bend(
             start_point,
@@ -61,21 +82,28 @@ class PipelineEditor:
         )
         self.pipeline.add_structure(new_bend)
         self._update_joints() 
+        self.set_active_point(-1)
+        return new_bend
     
     def _update_joints(self):
         for joint in self.pipeline.components:
             if not isinstance(joint, Bend):
                 continue
             
-            connected_points = self._connected_points(joint.start) + self._connected_points(joint.end)
-            if len(connected_points) < 2:
+            connected_points = (
+                self._connected_points(joint.start) 
+                + self._connected_points(joint.end) 
+                + self._connected_points(joint.corner)
+            )
+
+            print(len(connected_points))
+
+            if len(connected_points) != 2:
+                joint.colapse()
                 continue
 
             oposite_a, oposite_b, *_ = connected_points
-            # print(joint)
             joint.normalize_values_2(oposite_a, oposite_b)
-            # print(joint)
-            # print()
 
     def _connected_points(self, point):
         oposite_points = []
@@ -83,19 +111,19 @@ class PipelineEditor:
             if not isinstance(pipe, Pipe):
                 continue
 
-            if pipe.start == point:
+            if id(pipe.start) == id(point):
                 oposite_points.append(pipe.end)
 
-            elif pipe.end == point:
+            elif id(pipe.end) == id(point):
                 oposite_points.append(pipe.start)
         
         return oposite_points
 
     def commit(self):
         self.set_active_point(-1)
-        for i, p in enumerate(self.control_points):
-            print(i, p)
-        print()
+        # for i, p in enumerate(self.control_points):
+        #     print(i, p)
+        # print()
 
     def dismiss(self):
         pass

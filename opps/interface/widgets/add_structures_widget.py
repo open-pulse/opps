@@ -1,11 +1,12 @@
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QLineEdit, QPushButton, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QLineEdit, QPushButton, QVBoxLayout, QWidget, QLabel
 
 
 class AddStructuresWidget(QWidget):
-    modified = pyqtSignal(float, float, float)
-    applied = pyqtSignal(float, float, float)
+    # index_changed = pyqtSignal(int)
+    # modified = pyqtSignal(float, float, float)
+    # applied = pyqtSignal(float, float, float)
     on_close = pyqtSignal()
 
     def __init__(self, parent, render_widget):
@@ -14,6 +15,7 @@ class AddStructuresWidget(QWidget):
 
         self.render_widget = render_widget
 
+        self.index_box = QLineEdit()
         self.dx_box = QLineEdit()
         self.dy_box = QLineEdit()
         self.dz_box = QLineEdit()
@@ -21,13 +23,19 @@ class AddStructuresWidget(QWidget):
         self.apply_button = QPushButton("Apply")
 
         layout = QVBoxLayout()
+        layout.addWidget(QLabel("index"))
+        layout.addWidget(self.index_box)
+        layout.addWidget(QLabel("dx"))
         layout.addWidget(self.dx_box)
+        layout.addWidget(QLabel("dy"))
         layout.addWidget(self.dy_box)
+        layout.addWidget(QLabel("dz"))
         layout.addWidget(self.dz_box)
         layout.addWidget(self.flange_button)
         layout.addWidget(self.apply_button)
         self.setLayout(layout)
 
+        self.index_box.textEdited.connect(self.index_changed_callback)
         self.dx_box.textEdited.connect(self.coords_modified_callback)
         self.dy_box.textEdited.connect(self.coords_modified_callback)
         self.dz_box.textEdited.connect(self.coords_modified_callback)
@@ -49,6 +57,12 @@ class AddStructuresWidget(QWidget):
     def coords_modified_callback(self):
         dx, dy, dz = self.get_displacement()
         self.render_widget.stage_pipe_deltas(dx, dy, dz)
+    
+    def index_changed_callback(self):
+        i = self.index_box.text()
+        if not i:
+            return
+        self.render_widget.change_index(int(i))
 
     def add_flange_callback(self):
         self.render_widget.add_flange()

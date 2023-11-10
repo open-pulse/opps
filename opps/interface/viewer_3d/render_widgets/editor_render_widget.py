@@ -22,6 +22,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.editor.commit()
 
         self.pipeline_actor = None
+        self.coords = np.array([0,0,0])
 
         self.create_axes()
         self.update_plot()
@@ -36,12 +37,20 @@ class EditorRenderWidget(CommonRenderWidget):
             self.renderer.ResetCamera()
         self.update()
 
+    def change_index(self, i):
+        self.editor.dismiss()
+        self.coords = self.editor.control_points[i].coords()
+        self.editor.set_active_point(i)
+        self.editor.add_bend()
+        self.editor.add_pipe()
+        self.update_plot()
+
     def stage_pipe_deltas(self, dx, dy, dz):
         if (dx, dy, dz) == (0, 0, 0):
             return
 
         self.editor.set_deltas((dx, dy, dz))
-        new_position = self.editor.control_points[-2].coords() + (dx, dy, dz)
+        new_position = self.coords + (dx, dy, dz)
         self.editor.move_point(-1, new_position)
         self.editor._update_joints()
 
@@ -72,8 +81,9 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def commit_structure(self):
         self.editor.commit()
-        self.editor.add_bend()
-        self.editor.add_pipe()
+        self.change_index(-1)
+        # self.editor.add_bend()
+        # self.editor.add_pipe()
         # self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
         # self.tmp_structure = None
         # self._previous_point = self._current_point
