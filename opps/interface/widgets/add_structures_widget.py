@@ -62,6 +62,8 @@ class AddStructuresWidget(QWidget):
         i = self.index_box.text()
         if not i:
             return
+        if not i.isdecimal():
+            return
         self.render_widget.change_index(int(i))
 
     def add_flange_callback(self):
