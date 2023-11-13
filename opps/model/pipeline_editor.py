@@ -63,7 +63,7 @@ class PipelineEditor:
         self.set_active_point(-1)
         return new_pipe
 
-    def add_bend(self):
+    def add_bend(self, curvature_radius=0.3):
         start_point = self.active_point
         end_point = deepcopy(start_point)
         corner_point = deepcopy(start_point)
@@ -82,7 +82,7 @@ class PipelineEditor:
             start_point,
             end_point,
             corner_point,
-            0.3,
+            curvature_radius,
             color=(255, 0, 0)
         )
         self.pipeline.add_structure(new_bend)
@@ -90,6 +90,12 @@ class PipelineEditor:
         self._update_joints() 
         self.set_active_point(-1)
         return new_bend
+    
+    def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
+        bend = self.add_bend(curvature_radius)
+        self.active_point = bend.end
+        self.add_pipe(deltas)
+        self._update_joints()
     
     def _update_joints(self):
         for joint in self.pipeline.components:
@@ -110,6 +116,20 @@ class PipelineEditor:
 
             oposite_a, oposite_b, *_ = connected_points
             joint.normalize_values_2(oposite_a, oposite_b)
+
+    def _update_control_points(self):
+        control_points = set()
+        for structure in self.pipeline.components:
+            if isinstance(structure, Bend):
+                continue
+            control_points |= set(structure.get_points())
+
+        for structure in self.pipeline.components:
+            if not isinstance(structure, Bend):
+                continue
+            control_points.symmetric_difference_update([structure.start, structure.end])
+
+        self.control_points = list(control_points)
 
     def _connected_points(self, point):
         oposite_points = []

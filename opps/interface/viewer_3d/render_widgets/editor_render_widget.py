@@ -40,8 +40,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.editor.dismiss()
         self.coords = self.editor.control_points[i].coords()
         self.editor.set_active_point(i)
-        self.editor.add_bend()
-        self.editor.add_pipe()
+        self.editor.add_bent_pipe()
         self.update_plot()
 
     def stage_pipe_deltas(self, dx, dy, dz):

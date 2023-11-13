@@ -15,6 +15,12 @@ class Pipe:
         self.start = np.array(coords_map.get(tuple(self.start), self.start))
         self.end = np.array(coords_map.get(tuple(self.end), self.end))
 
+    def get_points(self):
+        return [
+            self.start,
+            self.end,
+        ]
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 
