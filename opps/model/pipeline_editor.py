@@ -19,9 +19,6 @@ class PipelineEditor:
     def set_active_point(self, index):
         self.active_point = self.control_points[index]
 
-        print("components")
-        for component in self.pipeline.components:
-            print(component)
         print("points")
         for i, p in enumerate(self.control_points):
             bla = " "
@@ -59,8 +56,7 @@ class PipelineEditor:
         self.control_points.append(next_point)
         self.pipeline.add_structure(new_pipe)
         self.staged_structures.append(new_pipe)
-        self._update_joints()
-        self.set_active_point(-1)
+        self.active_point = next_point
         return new_pipe
 
     def add_bend(self, curvature_radius=0.3):
@@ -88,12 +84,12 @@ class PipelineEditor:
         self.pipeline.add_structure(new_bend)
         self.staged_structures.append(new_bend)
         self._update_joints() 
-        self.set_active_point(-1)
+        self.active_point = end_point
         return new_bend
     
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
         bend = self.add_bend(curvature_radius)
-        self.active_point = bend.end
+        # self.active_point = bend.end
         self.add_pipe(deltas)
         self._update_joints()
     
@@ -118,6 +114,9 @@ class PipelineEditor:
             joint.normalize_values_2(oposite_a, oposite_b)
 
     def _update_control_points(self):
+        # It is leading a wrong behaviour
+        # because sets aren't ordered
+
         control_points = set()
         for structure in self.pipeline.components:
             if isinstance(structure, Bend):
@@ -128,8 +127,19 @@ class PipelineEditor:
             if not isinstance(structure, Bend):
                 continue
             control_points.symmetric_difference_update([structure.start, structure.end])
+            control_points.add(structure.corner)
 
         self.control_points = list(control_points)
+        self.control_points.sort(key=tuple)
+
+        print("Points")
+        for i, p in enumerate(self.control_points):
+            bla = " "
+            if id(p) == id(self.active_point):
+                bla = "*"
+            print(bla, i, p)
+        print()
+
 
     def _connected_points(self, point):
         oposite_points = []
@@ -147,7 +157,7 @@ class PipelineEditor:
 
     def commit(self):
         self._update_control_points()
-        self.set_active_point(-1)
+        # self.set_active_point(-1)
         for structure in self.staged_structures:
             structure.color = (255, 255, 255)
         self.staged_structures.clear()
