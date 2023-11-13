@@ -146,6 +146,7 @@ class PipelineEditor:
         return oposite_points
 
     def commit(self):
+        self._update_control_points()
         self.set_active_point(-1)
         for structure in self.staged_structures:
             structure.color = (255, 255, 255)
@@ -161,4 +162,5 @@ class PipelineEditor:
             if index >= 0:
                 self.pipeline.components.pop(index)
         self.staged_structures.clear()
+        self._update_control_points()
 

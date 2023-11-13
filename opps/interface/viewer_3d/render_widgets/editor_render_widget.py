@@ -11,6 +11,7 @@ from opps.interface.viewer_3d.render_widgets.common_render_widget import (
 )
 from opps.model import Flange, Pipe, Pipeline
 from opps.model.pipeline_editor import PipelineEditor
+from opps.interface.viewer_3d.actors.points_actor import PointsActor
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -21,6 +22,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.editor.add_pipe()
 
         self.pipeline_actor = None
+        self.control_points_actor = None
         self.coords = np.array([0,0,0])
 
         self.create_axes()
@@ -30,7 +32,10 @@ class EditorRenderWidget(CommonRenderWidget):
         self.remove_actors()
 
         self.pipeline_actor = self.editor.pipeline.as_vtk()
+        self.control_points_actor = PointsActor(self.editor.control_points)
+
         self.renderer.AddActor(self.pipeline_actor)
+        self.renderer.AddActor(self.control_points_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
@@ -85,6 +90,8 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
-        # self.renderer.RemoveActor(self.tmp_structure_actor)
+        self.renderer.RemoveActor(self.control_points_actor)
+
         self.pipeline_actor = None
+        self.control_points_actor = None
         self.tmp_structure_actor = None
