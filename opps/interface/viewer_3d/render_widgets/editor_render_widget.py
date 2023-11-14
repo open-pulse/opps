@@ -62,21 +62,10 @@ class EditorRenderWidget(CommonRenderWidget):
         new_position = self.coords + (dx, dy, dz)
         self.editor.move_point(new_position)
         self.editor._update_joints()
-
-        # self.editor.set_deltas((dx, dy, dz))
-        # self.editor.add_pipe()
-        # self.editor.add_bend()
-
-        # self.editor.move_control_point(
-        #     self.editor.current_point, 
-        #     self.editor.current_point + (dx, dy, dz)
-        # )
-        # self.editor.move_control_point((dx, dy, dz))
         self.update_plot()
 
-        # self._current_point = self._previous_point + (dx, dy, dz)
-        # pipe = Pipe(self._previous_point, self._current_point)
-        # self.stage_structure(pipe)
+    def update_radius(self, r1, r2=0):
+        print(r1, r2)
 
     def add_flange(self):
         self.editor.add_flange()

@@ -19,6 +19,8 @@ class AddStructuresWidget(QWidget):
         self.dx_box = QLineEdit()
         self.dy_box = QLineEdit()
         self.dz_box = QLineEdit()
+        self.radius_1_box = QLineEdit()
+        self.radius_2_box = QLineEdit()
         self.flange_button = QPushButton("Add Flange")
         self.apply_button = QPushButton("Apply")
 
@@ -31,6 +33,10 @@ class AddStructuresWidget(QWidget):
         layout.addWidget(self.dy_box)
         layout.addWidget(QLabel("dz"))
         layout.addWidget(self.dz_box)
+        layout.addWidget(QLabel("radius 1"))
+        layout.addWidget(self.radius_1_box)
+        layout.addWidget(QLabel("radius 2"))
+        layout.addWidget(self.radius_2_box)
         layout.addWidget(self.flange_button)
         layout.addWidget(self.apply_button)
         self.setLayout(layout)
@@ -39,6 +45,8 @@ class AddStructuresWidget(QWidget):
         self.dx_box.textEdited.connect(self.coords_modified_callback)
         self.dy_box.textEdited.connect(self.coords_modified_callback)
         self.dz_box.textEdited.connect(self.coords_modified_callback)
+        self.radius_1_box.textEdited.connect(self.radius_modified_callback)
+        self.radius_2_box.textEdited.connect(self.radius_modified_callback)
         self.flange_button.clicked.connect(self.add_flange_callback)
         self.apply_button.clicked.connect(self.apply_callback)
 
@@ -58,6 +66,14 @@ class AddStructuresWidget(QWidget):
         dx, dy, dz = self.get_displacement()
         self.render_widget.stage_pipe_deltas(dx, dy, dz)
     
+    def radius_modified_callback(self):
+        try:
+            r1 = float(self.radius_1_box.text() or 0)
+            r2 = float(self.radius_2_box.text() or 0)
+        except:
+            return
+        self.render_widget.update_radius(r1, r2)
+
     def index_changed_callback(self):
         i = self.index_box.text()
         if not i:
