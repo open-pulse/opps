@@ -42,7 +42,13 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def change_index(self, i):
+        if not self.editor.control_points:
+            return
+
         self.editor.dismiss()
+        if i >= len(self.editor.control_points):
+            i = len(self.editor.control_points) - 1
+
         self.coords = self.editor.control_points[i].coords()
         self.editor.set_active_point(i)
         self.editor.add_bent_pipe()
@@ -54,7 +60,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.editor.set_deltas((dx, dy, dz))
         new_position = self.coords + (dx, dy, dz)
-        self.editor.move_point(-1, new_position)
+        self.editor.move_point(new_position)
         self.editor._update_joints()
 
         # self.editor.set_deltas((dx, dy, dz))
@@ -80,8 +86,9 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot()
 
     def commit_structure(self):
+        self.coords = self.editor.active_point.coords()
         self.editor.commit()
-        self.change_index(-1)
+        self.editor.add_bent_pipe()
         self.update_plot()
 
     def unstage_structure(self):

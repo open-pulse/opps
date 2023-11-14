@@ -31,14 +31,8 @@ class PipelineEditor:
     def set_deltas(self, deltas):
         self.deltas = np.array(deltas)
 
-    def move_point(self, index, position):
-        if index < -len(self.control_points):
-            return
-        
-        if index >= len(self.control_points):
-            return
-
-        self.control_points[index].set_coords(*position)
+    def move_point(self, position):
+        self.active_point.set_coords(*position)
 
     def add_pipe(self, deltas=None):
         if deltas != None:
@@ -56,6 +50,7 @@ class PipelineEditor:
         self.control_points.append(next_point)
         self.pipeline.add_structure(new_pipe)
         self.staged_structures.append(new_pipe)
+        self._update_control_points()
         self.active_point = next_point
         return new_pipe
 
@@ -84,12 +79,12 @@ class PipelineEditor:
         self.pipeline.add_structure(new_bend)
         self.staged_structures.append(new_bend)
         self._update_joints() 
+        self._update_control_points()
         self.active_point = end_point
         return new_bend
     
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
         bend = self.add_bend(curvature_radius)
-        # self.active_point = bend.end
         self.add_pipe(deltas)
         self._update_joints()
     
@@ -114,23 +109,35 @@ class PipelineEditor:
             joint.normalize_values_2(oposite_a, oposite_b)
 
     def _update_control_points(self):
-        # It is leading a wrong behaviour
-        # because sets aren't ordered
-
-        control_points = set()
+        control_points = list()
         for structure in self.pipeline.components:
             if isinstance(structure, Bend):
+                control_points.append(structure.corner)
                 continue
-            control_points |= set(structure.get_points())
+            control_points.extend(structure.get_points())
+            # control_points |= set(structure.get_points())
+
+        point_to_index = {v:i for i, v in enumerate(control_points)}
+        indexes_to_remove = []
 
         for structure in self.pipeline.components:
             if not isinstance(structure, Bend):
                 continue
-            control_points.symmetric_difference_update([structure.start, structure.end])
-            control_points.add(structure.corner)
+
+            if structure.start in point_to_index:
+                indexes_to_remove.append(point_to_index[structure.start])
+            else:
+                control_points.append(structure.start)
+
+            if structure.end in point_to_index:
+                indexes_to_remove.append(point_to_index[structure.end])
+            else:
+                control_points.append(structure.end)
+
+        for i in reversed(indexes_to_remove):
+            control_points.pop(i)
 
         self.control_points = list(control_points)
-        self.control_points.sort(key=tuple)
 
         print("Points")
         for i, p in enumerate(self.control_points):
