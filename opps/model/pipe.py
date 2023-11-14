@@ -11,10 +11,6 @@ class Pipe:
     diameter: float = 0.1
     color: tuple = (255, 255, 255)
 
-    def map_coords(self, coords_map):
-        self.start = np.array(coords_map.get(tuple(self.start), self.start))
-        self.end = np.array(coords_map.get(tuple(self.end), self.end))
-
     def get_points(self):
         return [
             self.start,

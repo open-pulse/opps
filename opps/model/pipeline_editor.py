@@ -120,7 +120,7 @@ class PipelineEditor:
                 continue
 
             oposite_a, oposite_b, *_ = connected_points
-            joint.normalize_values_2(oposite_a, oposite_b)
+            joint.normalize_values(oposite_a, oposite_b)
 
     def _update_flanges(self):
         for flange in self.pipeline.components:
