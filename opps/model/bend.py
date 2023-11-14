@@ -30,7 +30,7 @@ class Bend:
         center_distance = self.curvature / np.sin(angle)
 
         c_vector = normalize(a_vector + b_vector)
-        return self.corner.coords() + c_vector * center_distance
+        return Point(*(self.corner.coords() + c_vector * center_distance))
     
     def normalize_values(self, start: Point, end: Point):
         if (start.coords() == self.corner.coords()).all():

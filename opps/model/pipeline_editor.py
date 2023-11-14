@@ -19,15 +19,6 @@ class PipelineEditor:
     def set_active_point(self, index):
         self.active_point = self.control_points[index]
 
-        # print("points")
-        # for i, p in enumerate(self.control_points):
-        #     bla = " "
-        #     if id(p) == id(self.active_point):
-        #         bla = "*"
-        #     print(bla, i, p)
-        # print()
-
-
     def set_deltas(self, deltas):
         self.deltas = np.array(deltas)
 
@@ -57,8 +48,9 @@ class PipelineEditor:
         corner_point = deepcopy(start_point)
 
         # Reuse joints if it already exists
+        # Actually it should replace the existing joint
         for joint in self.pipeline.components:
-            if not isinstance(joint, Bend):
+            if not isinstance(joint, Bend | Elbow):
                 continue
             if joint.corner == start_point:
                 return joint
@@ -89,7 +81,7 @@ class PipelineEditor:
         self.add_structure(new_flange)
 
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
-        bend = self.add_bend(curvature_radius)
+        self.add_bend(curvature_radius)
         self.add_pipe(deltas)
         self._update_joints()
     
@@ -101,12 +93,12 @@ class PipelineEditor:
         return structure
 
     def _update_joints(self):
-        self._update_bends()
+        self._update_curvatures()
         self._update_flanges()
 
-    def _update_bends(self):
+    def _update_curvatures(self):
         for joint in self.pipeline.components:
-            if not isinstance(joint, Bend):
+            if not isinstance(joint, Bend | Elbow):
                 continue
             
             connected_points = (
@@ -137,17 +129,16 @@ class PipelineEditor:
     def _update_control_points(self):
         control_points = list()
         for structure in self.pipeline.components:
-            if isinstance(structure, Bend):
+            if isinstance(structure, Bend | Elbow):
                 control_points.append(structure.corner)
                 continue
             control_points.extend(structure.get_points())
-            # control_points |= set(structure.get_points())
 
         point_to_index = {v:i for i, v in enumerate(control_points)}
         indexes_to_remove = []
 
         for structure in self.pipeline.components:
-            if not isinstance(structure, Bend):
+            if not isinstance(structure, Bend | Elbow):
                 continue
 
             if structure.start in point_to_index:
@@ -165,15 +156,6 @@ class PipelineEditor:
 
         self.control_points = list(control_points)
 
-        # print("Points")
-        # for i, p in enumerate(self.control_points):
-        #     bla = " "
-        #     if id(p) == id(self.active_point):
-        #         bla = "*"
-        #     print(bla, i, p)
-        # print()
-
-
     def _connected_points(self, point):
         oposite_points = []
         for pipe in self.pipeline.components:
@@ -189,7 +171,7 @@ class PipelineEditor:
         return oposite_points
 
     def remove_structure(self, structure):
-        if isinstance(structure, Bend):
+        if isinstance(structure, Bend | Elbow):
             structure.colapse()
         index = self.pipeline.components.index(structure)
         if index >= 0:
@@ -206,4 +188,3 @@ class PipelineEditor:
             self.remove_structure(structure)
         self.staged_structures.clear()
         self._update_control_points()
-

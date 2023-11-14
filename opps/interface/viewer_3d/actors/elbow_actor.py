@@ -18,9 +18,9 @@ class ElbowActor(vtk.vtkActor):
 
         arc_points = 10
         arc_source = vtk.vtkArcSource()
-        arc_source.SetPoint1(self.elbow.start)
-        arc_source.SetPoint2(self.elbow.end)
-        arc_source.SetCenter(self.elbow.center)
+        arc_source.SetPoint1(self.elbow.start.coords())
+        arc_source.SetPoint2(self.elbow.end.coords())
+        arc_source.SetCenter(self.elbow.center.coords())
         arc_source.SetResolution(arc_points - 1)
         arc_source.Update()
 
@@ -28,7 +28,7 @@ class ElbowActor(vtk.vtkActor):
         radius.SetName("TubeRadius")
         radius.SetNumberOfTuples(arc_points)
         for i in range(arc_points):
-            r = lerp(i / (arc_points - 1), self.elbow.start_radius, self.elbow.end_radius)
+            r = lerp(i / (arc_points - 1), self.elbow.diameter/2, self.elbow.diameter/2)
             radius.SetTuple1(i, r)
 
         polydata = arc_source.GetOutput()
@@ -42,18 +42,19 @@ class ElbowActor(vtk.vtkActor):
         tube_filter.Update()
 
         plane_normal = np.cross(
-            (self.elbow.start - self.elbow.center), (self.elbow.end - self.elbow.center)
+            (self.elbow.start.coords() - self.elbow.center.coords()), 
+            (self.elbow.end.coords() - self.elbow.center.coords())
         )
         start_flange = Flange(
             self.elbow.start,
-            np.cross(plane_normal, (self.elbow.start - self.elbow.center)),
-            self.elbow.start_radius,
+            np.cross(plane_normal, (self.elbow.start.coords() - self.elbow.center.coords())),
+            self.elbow.diameter,
         )
         start_flange_data = FlangeActor(start_flange).GetMapper().GetInput()
         end_flange = Flange(
             self.elbow.end,
-            np.cross(plane_normal, (self.elbow.end - self.elbow.center)),
-            self.elbow.end_radius,
+            np.cross(plane_normal, (self.elbow.end.coords() - self.elbow.center.coords())),
+            self.elbow.diameter,
         )
         end_flange_data = FlangeActor(end_flange).GetMapper().GetInput()
 
