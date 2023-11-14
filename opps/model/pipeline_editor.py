@@ -13,6 +13,7 @@ class PipelineEditor:
         self.deltas = np.array([0,0,0])
         self.control_points = [Point(0,0,0)]
         self.active_point = self.control_points[0]
+        self.default_diameter = 0.1
 
         self.staged_structures = []
 
@@ -24,6 +25,11 @@ class PipelineEditor:
 
     def move_point(self, position):
         self.active_point.set_coords(*position)
+
+    def change_diameter(self, diameter):
+        self.default_diameter = diameter
+        for structure in self.pipeline.components:
+            structure.set_diameter(diameter, point=self.active_point)
 
     def add_pipe(self, deltas=None):
         if deltas != None:
@@ -37,6 +43,7 @@ class PipelineEditor:
             next_point,
             color=(255, 0, 0)
         )
+        new_pipe.set_diameter(self.default_diameter)
 
         self.add_structure(new_pipe)
         self.active_point = next_point
@@ -62,6 +69,7 @@ class PipelineEditor:
             curvature_radius,
             color=(255, 0, 0)
         )
+        new_bend.set_diameter(self.default_diameter)
         self.add_structure(new_bend)
         self.active_point = end_point
         return new_bend
@@ -86,6 +94,7 @@ class PipelineEditor:
             curvature_radius,
             color=(255, 0, 0)
         )
+        new_elbow.set_diameter(self.default_diameter)
         self.add_structure(new_elbow)
         self.active_point = end_point
         return new_elbow
@@ -102,12 +111,13 @@ class PipelineEditor:
             normal=np.array([1,0,0]),
             color=(255, 0, 0)
         )
+        new_flange.set_diameter(self.default_diameter)
         self.add_structure(new_flange)
+        return new_flange
 
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
-        self.add_bend(curvature_radius)
-        self.add_pipe(deltas)
-        self._update_joints()
+        self.add_elbow(curvature_radius)
+        return self.add_pipe(deltas)
     
     def add_structure(self, structure):
         self.pipeline.add_structure(structure)

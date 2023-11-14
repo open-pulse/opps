@@ -14,8 +14,12 @@ class PipeActor(vtk.vtkActor):
         radius = vtk.vtkDoubleArray()
         radius.SetName("TubeRadius")
         radius.SetNumberOfTuples(2)
-        radius.SetTuple1(0, self.pipe.diameter / 2)
-        radius.SetTuple1(1, self.pipe.diameter / 2)
+        radius.SetTuple1(0, self.pipe.start_diameter / 2)
+
+        if self.pipe.end_diameter == 0:
+            radius.SetTuple1(1, self.pipe.start_diameter / 2)
+        else:
+            radius.SetTuple1(1, self.pipe.end_diameter / 2)
 
         line_source = vtk.vtkLineSource()
         line_source.SetPoint1(self.pipe.start.coords())

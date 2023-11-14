@@ -19,7 +19,7 @@ class EditorRenderWidget(CommonRenderWidget):
         super().__init__(parent)
 
         self.editor = PipelineEditor()
-        self.editor.add_pipe()
+        self.current_pipe = self.editor.add_pipe()
 
         self.pipeline_actor = None
         self.control_points_actor = None
@@ -65,7 +65,8 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot()
 
     def update_radius(self, r1, r2=0):
-        print(r1, r2)
+        self.editor.change_diameter(r1)
+        self.update_plot()
 
     def add_flange(self):
         self.editor.add_flange()
@@ -77,7 +78,7 @@ class EditorRenderWidget(CommonRenderWidget):
     def commit_structure(self):
         self.coords = self.editor.active_point.coords()
         self.editor.commit()
-        self.editor.add_bent_pipe()
+        self.current_pipe = self.editor.add_bent_pipe()
         self.update_plot()
 
     def unstage_structure(self):
@@ -90,4 +91,3 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.pipeline_actor = None
         self.control_points_actor = None
-        self.tmp_structure_actor = None

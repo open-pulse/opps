@@ -63,6 +63,25 @@ class Bend:
         self.start.set_coords(*self.corner.coords())
         self.end.set_coords(*self.corner.coords())
 
+    def set_diameter(self, diameter, point=None):
+        if point is None:
+            self.start_diameter = diameter
+            self.end_diameter = diameter
+            return
+
+        if point == self.start:
+            self.start_diameter = diameter
+
+        if point == self.end:
+            self.end_diameter = diameter
+
+        if point == self.corner:
+            self.start_diameter = diameter
+            self.end_diameter = diameter
+    
+    def get_diameters(self):
+        return [self.start_diameter, self.end_diameter]
+
     def get_points(self):
         return [
             self.start,
