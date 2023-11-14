@@ -65,6 +65,30 @@ class PipelineEditor:
         self.add_structure(new_bend)
         self.active_point = end_point
         return new_bend
+
+    def add_elbow(self, curvature_radius=0.3):
+        start_point = self.active_point
+        end_point = deepcopy(start_point)
+        corner_point = deepcopy(start_point)
+
+        # Reuse joints if it already exists
+        # Actually it should replace the existing joint
+        for joint in self.pipeline.components:
+            if not isinstance(joint, Bend | Elbow):
+                continue
+            if joint.corner == start_point:
+                return joint
+
+        new_elbow = Elbow(
+            start_point,
+            end_point,
+            corner_point,
+            curvature_radius,
+            color=(255, 0, 0)
+        )
+        self.add_structure(new_elbow)
+        self.active_point = end_point
+        return new_elbow
     
     def add_flange(self):
         for flange in self.pipeline.components:
