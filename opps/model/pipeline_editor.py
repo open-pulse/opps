@@ -19,13 +19,13 @@ class PipelineEditor:
     def set_active_point(self, index):
         self.active_point = self.control_points[index]
 
-        print("points")
-        for i, p in enumerate(self.control_points):
-            bla = " "
-            if id(p) == id(self.active_point):
-                bla = "*"
-            print(bla, i, p)
-        print()
+        # print("points")
+        # for i, p in enumerate(self.control_points):
+        #     bla = " "
+        #     if id(p) == id(self.active_point):
+        #         bla = "*"
+        #     print(bla, i, p)
+        # print()
 
 
     def set_deltas(self, deltas):
@@ -47,10 +47,7 @@ class PipelineEditor:
             color=(255, 0, 0)
         )
 
-        self.control_points.append(next_point)
-        self.pipeline.add_structure(new_pipe)
-        self.staged_structures.append(new_pipe)
-        self._update_control_points()
+        self.add_structure(new_pipe)
         self.active_point = next_point
         return new_pipe
 
@@ -58,9 +55,6 @@ class PipelineEditor:
         start_point = self.active_point
         end_point = deepcopy(start_point)
         corner_point = deepcopy(start_point)
-
-        self.control_points.append(corner_point)
-        self.control_points.append(end_point)
 
         # Reuse joints if it already exists
         for joint in self.pipeline.components:
@@ -76,19 +70,41 @@ class PipelineEditor:
             curvature_radius,
             color=(255, 0, 0)
         )
-        self.pipeline.add_structure(new_bend)
-        self.staged_structures.append(new_bend)
-        self._update_joints() 
-        self._update_control_points()
+        self.add_structure(new_bend)
         self.active_point = end_point
         return new_bend
     
+    def add_flange(self):
+        for flange in self.pipeline.components:
+            if not isinstance(flange, Flange):
+                continue
+            if flange.position == self.active_point:
+               return flange
+
+        new_flange = Flange(
+            self.active_point,
+            normal=np.array([1,0,0]),
+            color=(255, 0, 0)
+        )
+        self.add_structure(new_flange)
+
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
         bend = self.add_bend(curvature_radius)
         self.add_pipe(deltas)
         self._update_joints()
     
+    def add_structure(self, structure):
+        self.pipeline.add_structure(structure)
+        self.staged_structures.append(structure)
+        self._update_joints() 
+        self._update_control_points()
+        return structure
+
     def _update_joints(self):
+        self._update_bends()
+        self._update_flanges()
+
+    def _update_bends(self):
         for joint in self.pipeline.components:
             if not isinstance(joint, Bend):
                 continue
@@ -99,14 +115,24 @@ class PipelineEditor:
                 + self._connected_points(joint.corner)
             )
 
-            print(len(connected_points))
-
             if len(connected_points) != 2:
                 joint.colapse()
                 continue
 
             oposite_a, oposite_b, *_ = connected_points
             joint.normalize_values_2(oposite_a, oposite_b)
+
+    def _update_flanges(self):
+        for flange in self.pipeline.components:
+            if not isinstance(flange, Flange):
+                continue
+            
+            connected_points = self._connected_points(flange.position) 
+            if not connected_points:
+                continue
+
+            oposite_a, *_ = connected_points
+            flange.normal = flange.position.coords() - oposite_a.coords()
 
     def _update_control_points(self):
         control_points = list()
@@ -139,13 +165,13 @@ class PipelineEditor:
 
         self.control_points = list(control_points)
 
-        print("Points")
-        for i, p in enumerate(self.control_points):
-            bla = " "
-            if id(p) == id(self.active_point):
-                bla = "*"
-            print(bla, i, p)
-        print()
+        # print("Points")
+        # for i, p in enumerate(self.control_points):
+        #     bla = " "
+        #     if id(p) == id(self.active_point):
+        #         bla = "*"
+        #     print(bla, i, p)
+        # print()
 
 
     def _connected_points(self, point):

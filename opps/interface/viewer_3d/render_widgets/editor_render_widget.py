@@ -79,7 +79,7 @@ class EditorRenderWidget(CommonRenderWidget):
         # self.stage_structure(pipe)
 
     def add_flange(self):
-        pass
+        self.editor.add_flange()
 
     def stage_structure(self, structure):
         self.tmp_structure = structure

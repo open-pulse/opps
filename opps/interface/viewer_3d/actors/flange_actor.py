@@ -12,14 +12,14 @@ class FlangeActor(vtk.vtkActor):
         self.create_geometry()
 
     def create_geometry(self):
-        width = 0.3 * self.flange.radius
+        width = 0.15 * self.flange.diameter
         y_vector = np.array((0, 1, 0))
 
         disk_source = vtk.vtkDiskSource()
         disk_source.SetCenter((0, 0, 0) - y_vector * width / 2)
         disk_source.SetNormal(y_vector)
-        disk_source.SetInnerRadius(self.flange.radius)
-        disk_source.SetOuterRadius(self.flange.radius + width)
+        disk_source.SetInnerRadius(self.flange.diameter / 2)
+        disk_source.SetOuterRadius(self.flange.diameter / 2 + width)
         disk_source.SetCircumferentialResolution(50)
         disk_source.Update()
 
@@ -40,9 +40,9 @@ class FlangeActor(vtk.vtkActor):
             nut.SetHeight(width * 3 / 2)
             nut.SetRadius(width / 3)
             nut.SetCenter(
-                (self.flange.radius + width / 2) * np.sin(angle),
+                (self.flange.diameter / 2 + width / 2) * np.sin(angle),
                 0,
-                (self.flange.radius + width / 2) * np.cos(angle),
+                (self.flange.diameter / 2 + width / 2) * np.cos(angle),
             )
             nut.Update()
             append_polydata.AddInputData(nut.GetOutput())
@@ -51,8 +51,9 @@ class FlangeActor(vtk.vtkActor):
         unit_normal = self.flange.normal / np.linalg.norm(self.flange.normal)
         angle_x = np.arccos(np.dot(y_vector, unit_normal))
         angle_y = np.arccos(np.dot((0, 0, 1), unit_normal))
+
         transform = vtk.vtkTransform()
-        transform.Translate(self.flange.position)
+        transform.Translate(self.flange.position.coords())
         transform.RotateY(np.degrees(angle_y))
         transform.RotateX(np.degrees(angle_x))
         transform.Update()
