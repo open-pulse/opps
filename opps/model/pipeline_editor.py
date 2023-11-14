@@ -162,22 +162,22 @@ class PipelineEditor:
         
         return oposite_points
 
+    def remove_structure(self, structure):
+        if isinstance(structure, Bend):
+            structure.colapse()
+        index = self.pipeline.components.index(structure)
+        if index >= 0:
+            self.pipeline.components.pop(index)
+
     def commit(self):
         self._update_control_points()
-        # self.set_active_point(-1)
         for structure in self.staged_structures:
             structure.color = (255, 255, 255)
         self.staged_structures.clear()
 
-        # for i, p in enumerate(self.control_points):
-        #     print(i, p)
-        # print()
-
     def dismiss(self):
         for structure in self.staged_structures:
-            index = self.pipeline.components.index(structure)
-            if index >= 0:
-                self.pipeline.components.pop(index)
+            self.remove_structure(structure)
         self.staged_structures.clear()
         self._update_control_points()
 
