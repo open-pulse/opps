@@ -64,8 +64,8 @@ class EditorRenderWidget(CommonRenderWidget):
         self.editor._update_joints()
         self.update_plot()
 
-    def update_radius(self, r1, r2=0):
-        self.editor.change_diameter(r1)
+    def update_diameter(self, d):
+        self.editor.change_diameter(d)
         self.update_plot()
 
     def add_flange(self):

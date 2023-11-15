@@ -26,7 +26,7 @@ class BendActor(vtk.vtkActor):
         radius.SetName("TubeRadius")
         radius.SetNumberOfTuples(arc_points)
         for i in range(arc_points):
-            r = lerp(i / (arc_points - 1), self.bend.diameter/2, self.bend.diameter/2)
+            r = lerp(i / (arc_points - 1), self.bend.start_diameter/2, self.bend.end_diameter/2)
             radius.SetTuple1(i, r)
 
         polydata = arc_source.GetOutput()

@@ -116,7 +116,7 @@ class PipelineEditor:
         return new_flange
 
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
-        self.add_elbow(curvature_radius)
+        self.add_bend(curvature_radius)
         return self.add_pipe(deltas)
     
     def add_structure(self, structure):
