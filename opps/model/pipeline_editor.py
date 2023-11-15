@@ -35,6 +35,13 @@ class PipelineEditor:
         for structure in self.pipeline.components:
             structure.set_diameter(diameter, point=self.active_point)
 
+    def get_diameters_at_point(self):
+        diameters = []
+        for structure in self.pipeline.components:
+            if self.active_point in structure.get_points():
+                diameters.extend(structure.get_diameters())
+        return diameters
+
     def add_pipe(self, deltas=None):
         if deltas != None:
             self.deltas = deltas
@@ -166,7 +173,7 @@ class PipelineEditor:
 
     def _update_control_points(self):
         control_points = list()
-        control_points.append(self.origin)
+        # control_points.append(self.origin)
         for structure in self.pipeline.components:
             if isinstance(structure, Bend | Elbow):
                 control_points.append(structure.corner)
@@ -192,6 +199,9 @@ class PipelineEditor:
 
         for i in sorted(indexes_to_remove, reverse=True):
             control_points.pop(i)
+
+        if not control_points:
+            control_points.append(self.origin)
 
         self.control_points = list(control_points)
 
@@ -223,8 +233,21 @@ class PipelineEditor:
         self.staged_structures.clear()
 
     def dismiss(self):
+        staged_points = []
         for structure in self.staged_structures:
+            staged_points.extend(structure.get_points())
             self.remove_structure(structure)
         self.staged_structures.clear()
         self._update_control_points()
-        self.set_active_point(-1)
+
+        
+        control_hashes = set(self.control_points)
+        if self.active_point in control_hashes:
+            return
+
+        for point in staged_points:
+            if point in control_hashes:
+                self.active_point = point
+                break
+        else:
+            self.set_active_point(-1)

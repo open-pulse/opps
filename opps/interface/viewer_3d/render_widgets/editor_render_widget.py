@@ -23,6 +23,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.pipeline_actor = None
         self.control_points_actor = None
+        self.active_point_actor = None
         self.coords = np.array([0,0,0])
 
         self.create_axes()
@@ -37,8 +38,13 @@ class EditorRenderWidget(CommonRenderWidget):
         self.control_points_actor.GetProperty().SetColor(1, 0.7, 0.2)
         self.control_points_actor.GetProperty().LightingOff()
 
+        self.active_point_actor = PointsActor([self.editor.active_point])
+        self.active_point_actor.GetProperty().SetColor(1, 0, 0)
+        self.active_point_actor.GetProperty().LightingOff()
+
         self.renderer.AddActor(self.pipeline_actor)
         self.renderer.AddActor(self.control_points_actor)
+        self.renderer.AddActor(self.active_point_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
@@ -54,6 +60,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.coords = self.editor.control_points[i].coords()
         self.editor.set_active_point(i)
+        self.editor.default_diameter = max(self.editor.get_diameters_at_point())
         self.editor.add_bent_pipe()
         self.update_plot()
 
@@ -95,6 +102,8 @@ class EditorRenderWidget(CommonRenderWidget):
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
         self.renderer.RemoveActor(self.control_points_actor)
+        self.renderer.RemoveActor(self.active_point_actor)
 
         self.pipeline_actor = None
         self.control_points_actor = None
+        self.active_point_actor = None
