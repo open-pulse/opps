@@ -63,8 +63,8 @@ class EditorRenderWidget(CommonRenderWidget):
             return
 
         if not self.editor.staged_structures:
-            self.editor.add_bent_pipe()
             self.coords = self.editor.active_point.coords()
+            self.editor.add_bent_pipe()
 
         self.editor.set_deltas((dx, dy, dz))
         new_position = self.coords + (dx, dy, dz)
