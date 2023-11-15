@@ -59,7 +59,12 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def stage_pipe_deltas(self, dx, dy, dz):
         if (dx, dy, dz) == (0, 0, 0):
+            self.unstage_structure()
             return
+
+        if not self.editor.staged_structures:
+            self.editor.add_bent_pipe()
+            self.coords = self.editor.active_point.coords()
 
         self.editor.set_deltas((dx, dy, dz))
         new_position = self.coords + (dx, dy, dz)
@@ -81,7 +86,6 @@ class EditorRenderWidget(CommonRenderWidget):
     def commit_structure(self):
         self.coords = self.editor.active_point.coords()
         self.editor.commit()
-        self.current_pipe = self.editor.add_bent_pipe()
         self.update_plot()
 
     def unstage_structure(self):

@@ -10,8 +10,10 @@ from opps.model import Bend, Elbow, Flange, Pipe, Pipeline, Point
 class PipelineEditor:
     def __init__(self, origin=(0, 0, 0)):
         self.pipeline = Pipeline()
+
+        self.origin = Point(*origin)
+        self.control_points = [self.origin]
         self.deltas = np.array([0,0,0])
-        self.control_points = [Point(0,0,0)]
         self.active_point = self.control_points[0]
 
         self.default_diameter = 0.2
@@ -164,6 +166,7 @@ class PipelineEditor:
 
     def _update_control_points(self):
         control_points = list()
+        control_points.append(self.origin)
         for structure in self.pipeline.components:
             if isinstance(structure, Bend | Elbow):
                 control_points.append(structure.corner)
@@ -224,3 +227,4 @@ class PipelineEditor:
             self.remove_structure(structure)
         self.staged_structures.clear()
         self._update_control_points()
+        self.set_active_point(-1)
