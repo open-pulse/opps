@@ -23,6 +23,8 @@ class AddStructuresWidget(QWidget):
         self.flange_button = QPushButton("Add Flange")
         self.apply_button = QPushButton("Apply")
 
+        self.apply_button.setShortcut("ctrl+return")
+
         layout = QVBoxLayout()
         layout.addWidget(QLabel("index"))
         layout.addWidget(self.index_box)

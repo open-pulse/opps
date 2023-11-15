@@ -25,11 +25,15 @@ class PointsActor(vtk.vtkActor):
         data.GetCellData().SetScalars(cell_colors)
 
         mapper.SetInputData(data)
+        mapper.SetResolveCoincidentTopologyToPolygonOffset()
+        mapper.SetRelativeCoincidentTopologyLineOffsetParameters(0, -66000)
+        mapper.SetRelativeCoincidentTopologyPolygonOffsetParameters(0, -66000)
+        mapper.SetRelativeCoincidentTopologyPointOffsetParameter(-66000)
         self.SetMapper(mapper)
 
     def configure_appearance(self):
         self.GetProperty().RenderPointsAsSpheresOn()
-        self.GetProperty().SetPointSize(50)
+        self.GetProperty().SetPointSize(20)
         self.clear_colors()
 
     def clear_colors(self):

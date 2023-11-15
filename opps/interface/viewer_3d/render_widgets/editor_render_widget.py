@@ -32,7 +32,10 @@ class EditorRenderWidget(CommonRenderWidget):
         self.remove_actors()
 
         self.pipeline_actor = self.editor.pipeline.as_vtk()
+
         self.control_points_actor = PointsActor(self.editor.control_points)
+        self.control_points_actor.GetProperty().SetColor(1, 0.7, 0.2)
+        self.control_points_actor.GetProperty().LightingOff()
 
         self.renderer.AddActor(self.pipeline_actor)
         self.renderer.AddActor(self.control_points_actor)

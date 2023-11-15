@@ -13,7 +13,9 @@ class PipelineEditor:
         self.deltas = np.array([0,0,0])
         self.control_points = [Point(0,0,0)]
         self.active_point = self.control_points[0]
-        self.default_diameter = 0.1
+
+        self.default_diameter = 0.2
+        self.selection_color = (247, 0, 20)
 
         self.staged_structures = []
 
@@ -41,7 +43,7 @@ class PipelineEditor:
         new_pipe = Pipe(
             current_point, 
             next_point,
-            color=(255, 0, 0)
+            color=self.selection_color
         )
         new_pipe.set_diameter(self.default_diameter)
 
@@ -67,7 +69,7 @@ class PipelineEditor:
             end_point,
             corner_point,
             curvature_radius,
-            color=(255, 0, 0)
+            color=self.selection_color
         )
         new_bend.set_diameter(self.default_diameter)
         self.add_structure(new_bend)
@@ -92,7 +94,7 @@ class PipelineEditor:
             end_point,
             corner_point,
             curvature_radius,
-            color=(255, 0, 0)
+            color=self.selection_color
         )
         new_elbow.set_diameter(self.default_diameter)
         self.add_structure(new_elbow)
@@ -109,7 +111,7 @@ class PipelineEditor:
         new_flange = Flange(
             self.active_point,
             normal=np.array([1,0,0]),
-            color=(255, 0, 0)
+            color=self.selection_color
         )
         new_flange.set_diameter(self.default_diameter)
         self.add_structure(new_flange)
@@ -185,7 +187,7 @@ class PipelineEditor:
             else:
                 control_points.append(structure.end)
 
-        for i in reversed(indexes_to_remove):
+        for i in sorted(indexes_to_remove, reverse=True):
             control_points.pop(i)
 
         self.control_points = list(control_points)
