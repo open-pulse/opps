@@ -11,7 +11,8 @@ class Bend:
     end: Point
     corner: Point
     curvature: float
-    diameter: float = 0.1
+    start_diameter: float = 0.1
+    end_diameter: float = 0.1
     color: tuple = (255, 255, 255)
 
     @property
