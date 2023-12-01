@@ -13,10 +13,16 @@ from opps.model import Flange, Pipe, Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 from opps.interface.viewer_3d.actors.points_actor import PointsActor
 
+from opps.interface.viewer_3d.interactor_styles.selection_interactor import SelectionInteractor
+
 
 class EditorRenderWidget(CommonRenderWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self.interactor_style = SelectionInteractor()
+        self.interactor_style.AddObserver("SelectionEvent", self.selection_callback)
+        self.render_interactor.SetInteractorStyle(self.interactor_style)
 
         self.editor = PipelineEditor()
         self.current_pipe = self.editor.add_pipe()
@@ -33,6 +39,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.remove_actors()
 
         self.pipeline_actor = self.editor.pipeline.as_vtk()
+        self.pipeline_actor.PickableOff()
 
         self.control_points_actor = PointsActor(self.editor.control_points)
         self.control_points_actor.GetProperty().SetColor(1, 0.7, 0.2)
@@ -107,3 +114,10 @@ class EditorRenderWidget(CommonRenderWidget):
         self.pipeline_actor = None
         self.control_points_actor = None
         self.active_point_actor = None
+    
+    def selection_callback(self, obj, event):
+        clicked_cell = obj.selection_picker.GetCellId()
+        clicked_actor = obj.selection_picker.GetActor()
+        
+        if clicked_actor == self.control_points_actor:
+            self.change_index(clicked_cell)

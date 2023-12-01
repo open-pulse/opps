@@ -26,12 +26,12 @@ class CommonRenderWidget(QFrame):
         super().__init__(parent)
 
         self.renderer = vtk.vtkRenderer()
-        self.style = vtkInteractorStyleArcballCamera()
+        self.interactor_style = vtkInteractorStyleArcballCamera()
         self.render_interactor = QVTKRenderWindowInteractor(self)
 
         self.render_interactor.Initialize()
         self.render_interactor.GetRenderWindow().AddRenderer(self.renderer)
-        self.render_interactor.SetInteractorStyle(self.style)
+        self.render_interactor.SetInteractorStyle(self.interactor_style)
         self.renderer.ResetCamera()
 
         self.playing_animation = False
