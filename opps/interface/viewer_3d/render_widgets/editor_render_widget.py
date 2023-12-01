@@ -101,7 +101,9 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot()
 
     def add_flange(self):
+        self.unstage_structure()
         self.editor.add_flange()
+        self.editor.add_bent_pipe()
 
     def stage_structure(self, structure):
         self.tmp_structure = structure

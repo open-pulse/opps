@@ -55,20 +55,20 @@ class AddStructuresWidget(QWidget):
         self.apply_button.clicked.connect(self.apply_callback)
 
     def get_displacement(self):
-        try:
-            dx = self.dx_box.text() or 0
-            dy = self.dy_box.text() or 0
-            dz = self.dz_box.text() or 0
-            dx = float(dx)
-            dy = float(dy)
-            dz = float(dz)
-        except ValueError:
-            dx, dy, dz = 0, 0, 0
+        dx = self.dx_box.text() or 0
+        dy = self.dy_box.text() or 0
+        dz = self.dz_box.text() or 0
+        dx = float(dx)
+        dy = float(dy)
+        dz = float(dz)
         return dx, dy, dz
 
     def coords_modified_callback(self):
-        dx, dy, dz = self.get_displacement()
-        self.render_widget.stage_pipe_deltas(dx, dy, dz)
+        try:
+            dx, dy, dz = self.get_displacement()
+            self.render_widget.stage_pipe_deltas(dx, dy, dz)
+        except ValueError:
+            pass
 
     def radius_modified_callback(self):
         try:

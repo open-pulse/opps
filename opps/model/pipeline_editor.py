@@ -132,6 +132,9 @@ class PipelineEditor:
             if not isinstance(joint, Bend | Elbow):
                 continue
 
+            if not joint.auto:
+                continue
+
             connected_points = (
                 self._connected_points(joint.start)
                 + self._connected_points(joint.end)
@@ -148,6 +151,9 @@ class PipelineEditor:
     def _update_flanges(self):
         for flange in self.pipeline.components:
             if not isinstance(flange, Flange):
+                continue
+
+            if not flange.auto:
                 continue
 
             connected_points = self._connected_points(flange.position)

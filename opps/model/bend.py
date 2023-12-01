@@ -18,6 +18,7 @@ class Bend:
     start_diameter: float = 0.1
     end_diameter: float = 0.1
     color: tuple = (255, 255, 255)
+    auto: bool = True
 
     @property
     def center(self):
