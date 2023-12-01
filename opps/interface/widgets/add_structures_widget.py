@@ -2,10 +2,14 @@ from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QLabel,
+    QFrame,
     QLineEdit,
     QPushButton,
-    QVBoxLayout,
     QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGridLayout,
+    QCheckBox,
 )
 
 
@@ -21,37 +25,50 @@ class AddStructuresWidget(QWidget):
 
         self.render_widget = render_widget
 
-        self.index_box = QLineEdit()
         self.dx_box = QLineEdit()
         self.dy_box = QLineEdit()
         self.dz_box = QLineEdit()
-        self.diameter_box = QLineEdit()
-        self.flange_button = QPushButton("Add Flange")
-        self.apply_button = QPushButton("Apply")
 
+        self.section_button = QPushButton("Section")
+        self.material_button = QPushButton("Material")
+        self.apply_button = QPushButton("Apply")
         self.apply_button.setShortcut("ctrl+return")
+        
+        self.bend_checkbox = QCheckBox("Automatic Bending")
+        self.elbow_checkbox = QCheckBox("Elbow")
+        self.flange_checkbox = QCheckBox("Flange")
+        self.bend_checkbox.setChecked(True)
+
+        deltas_layout = QGridLayout()
+        deltas_layout.addWidget(QLabel("ΔX"), 0, 0)
+        deltas_layout.addWidget(self.dx_box, 0, 1)
+        deltas_layout.addWidget(QLabel("ΔY"), 1, 0)
+        deltas_layout.addWidget(self.dy_box, 1, 1)
+        deltas_layout.addWidget(QLabel("ΔZ"), 2, 0)
+        deltas_layout.addWidget(self.dz_box, 2, 1)
+
+        config_pipes_layout = QHBoxLayout()
+        config_pipes_layout.addWidget(self.section_button)
+        config_pipes_layout.addWidget(self.material_button)
+
+        acessories_layout = QVBoxLayout()
+        acessories_layout.addWidget(self.bend_checkbox)
+        # acessories_layout.addWidget(self.elbow_checkbox)
+        # acessories_layout.addWidget(self.flange_checkbox)
 
         layout = QVBoxLayout()
-        layout.addWidget(QLabel("index"))
-        layout.addWidget(self.index_box)
-        layout.addWidget(QLabel("dx"))
-        layout.addWidget(self.dx_box)
-        layout.addWidget(QLabel("dy"))
-        layout.addWidget(self.dy_box)
-        layout.addWidget(QLabel("dz"))
-        layout.addWidget(self.dz_box)
-        layout.addWidget(QLabel("diameter"))
-        layout.addWidget(self.diameter_box)
-        layout.addWidget(self.flange_button)
+        layout.addLayout(deltas_layout)
+        layout.addLayout(config_pipes_layout)
+        layout.addLayout(acessories_layout)
+        # layout.addStretch()
         layout.addWidget(self.apply_button)
+        layout.setSpacing(20)
         self.setLayout(layout)
 
-        self.index_box.textEdited.connect(self.index_changed_callback)
         self.dx_box.textEdited.connect(self.coords_modified_callback)
         self.dy_box.textEdited.connect(self.coords_modified_callback)
         self.dz_box.textEdited.connect(self.coords_modified_callback)
-        self.diameter_box.textEdited.connect(self.radius_modified_callback)
-        self.flange_button.clicked.connect(self.add_flange_callback)
+        self.bend_checkbox.stateChanged.connect(self.auto_bend_callback)
         self.apply_button.clicked.connect(self.apply_callback)
 
     def get_displacement(self):
@@ -66,27 +83,17 @@ class AddStructuresWidget(QWidget):
     def coords_modified_callback(self):
         try:
             dx, dy, dz = self.get_displacement()
-            self.render_widget.stage_pipe_deltas(dx, dy, dz)
+            auto_bend = self.bend_checkbox.isChecked()
+            self.render_widget.stage_pipe_deltas(dx, dy, dz, auto_bend)
         except ValueError:
             pass
 
-    def radius_modified_callback(self):
-        try:
-            d = float(self.diameter_box.text() or 0)
-        except:
-            return
-        self.render_widget.update_diameter(d)
-
-    def index_changed_callback(self):
-        i = self.index_box.text()
-        if not i:
-            return
-        if not i.isdecimal():
-            return
-        self.render_widget.change_index(int(i))
-
     def add_flange_callback(self):
         self.render_widget.add_flange()
+        self.coords_modified_callback()
+    
+    def auto_bend_callback(self, checked):
+        self.render_widget.unstage_structure()
         self.coords_modified_callback()
 
     def apply_callback(self):
@@ -98,7 +105,7 @@ class AddStructuresWidget(QWidget):
 
     def configure_window(self):
         self.setWindowTitle("Add Structures")
-        self.setGeometry(200, 200, 400, 350)
+        self.setGeometry(200, 200, 300, 350)
 
         self.setWindowFlags(
             Qt.Window
@@ -113,3 +120,9 @@ class AddStructuresWidget(QWidget):
     def closeEvent(self, a0) -> None:
         self.on_close.emit()
         return super().closeEvent(a0)
+
+    def separator(self):
+        s = QFrame()
+        s.setFrameShape(QFrame.Shape.HLine)
+        s.setFrameShadow(QFrame.Shadow.Sunken)
+        return s

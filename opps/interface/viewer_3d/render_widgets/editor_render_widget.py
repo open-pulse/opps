@@ -16,26 +16,12 @@ from opps.interface.viewer_3d.render_widgets.common_render_widget import (
 from opps.model import Flange, Pipe, Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 
-SelectionMode = Enum("SelectionMode", ["SELECT_POINTS", "SELECT_OBJECTS"])
-
-OperationMode = Enum("OperationMode", ["CREATION_MODE", "EDITION_MODE"])
-
-
-@dataclass
-class EditorConfig:
-    selection_mode = SelectionMode.SELECT_POINTS
-    operation_mode = OperationMode.EDITION_MODE
-
 
 class EditorRenderWidget(CommonRenderWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.left_clicked.connect(self.selection_callback)
 
-        self.interactor_style = SelectionInteractor()
-        self.interactor_style.AddObserver("SelectionEvent", self.selection_callback)
-        self.render_interactor.SetInteractorStyle(self.interactor_style)
-
-        self.config = EditorConfig()
         self.editor = PipelineEditor()
         self.current_pipe = self.editor.add_pipe()
 
@@ -51,7 +37,6 @@ class EditorRenderWidget(CommonRenderWidget):
         self.remove_actors()
 
         self.pipeline_actor = self.editor.pipeline.as_vtk()
-        self.pipeline_actor.PickableOff()
 
         self.control_points_actor = PointsActor(self.editor.control_points)
         self.control_points_actor.GetProperty().SetColor(1, 0.7, 0.2)
@@ -79,16 +64,19 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.coords = self.editor.control_points[i].coords()
         self.editor.set_active_point(i)
-        self.update_plot()
+        self.update_plot(reset_camera=False)
 
-    def stage_pipe_deltas(self, dx, dy, dz):
+    def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
         if (dx, dy, dz) == (0, 0, 0):
             self.unstage_structure()
             return
 
         if not self.editor.staged_structures:
             self.coords = self.editor.active_point.coords()
-            self.editor.add_bent_pipe()
+            if auto_bend:
+                self.editor.add_bent_pipe()
+            else:
+                self.editor.add_pipe()
 
         self.editor.set_deltas((dx, dy, dz))
         new_position = self.coords + (dx, dy, dz)
@@ -127,18 +115,26 @@ class EditorRenderWidget(CommonRenderWidget):
         self.control_points_actor = None
         self.active_point_actor = None
 
-    def selection_callback(self, obj, event):
-        clicked_cell = obj.selection_picker.GetCellId()
-        clicked_actor = obj.selection_picker.GetActor()
+    def selection_callback(self, x, y):
+        self.selection_picker = vtk.vtkCellPicker()
+        self.selection_picker.SetTolerance(0.02)
 
-        if (
-            self.config.selection_mode == SelectionMode.SELECT_POINTS
-            and clicked_actor == self.control_points_actor
-        ):
-            self.change_index(clicked_cell)
+        # Disable pipeline actor pickability to give priority to points
+        if self.pipeline_actor.GetPickable():
+            self.pipeline_actor.PickableOff()
+            self.selection_picker.Pick(x, y, 0, self.renderer)
+            self.pipeline_actor.PickableOn()
 
-        if (
-            self.config.selection_mode == SelectionMode.SELECT_POINTS
-            and clicked_actor == self.pipeline_actor
-        ):
-            print("OPSI")
+            clicked_actor = self.selection_picker.GetActor()
+            clicked_cell = self.selection_picker.GetCellId()
+            if clicked_actor == self.control_points_actor:
+                self.change_index(clicked_cell)
+                return
+
+        # if no points were selected then try the pipeline
+        self.selection_picker.Pick(x, y, 0, self.renderer)
+        clicked_actor = self.selection_picker.GetActor()
+        clicked_cell = self.selection_picker.GetCellId()
+
+        if clicked_actor == self.pipeline_actor:
+            pass

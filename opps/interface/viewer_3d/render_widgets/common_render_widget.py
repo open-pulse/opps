@@ -5,6 +5,7 @@ from time import time
 import vtk
 from PIL import Image
 from PyQt5.QtWidgets import QFrame, QStackedLayout
+from PyQt5.QtCore import Qt, pyqtSignal
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtk.util.numpy_support import vtk_to_numpy
 
@@ -21,6 +22,9 @@ class CommonRenderWidget(QFrame):
 
     A vtk widget must always have a renderer, even if it is empty.
     """
+
+    left_clicked = pyqtSignal(int, int)
+    right_clicked = pyqtSignal(int, int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -43,6 +47,9 @@ class CommonRenderWidget(QFrame):
         self._animation_timer = self.render_interactor.CreateRepeatingTimer(500)
         self.render_interactor.AddObserver("TimerEvent", self._animation_callback)
 
+        self.render_interactor.AddObserver("LeftButtonReleaseEvent", self.left_click_event)
+        self.render_interactor.AddObserver("RightButtonReleaseEvent", self.right_click_event)
+
         layout = QStackedLayout()
         layout.addWidget(self.render_interactor)
         self.setLayout(layout)
@@ -58,12 +65,14 @@ class CommonRenderWidget(QFrame):
     def update_theme(self):
         pass
 
-    #     try:
-    #         main_window = get_main_window()
-    #     except RuntimeError as e:
-    #         logging.warn(e)
-    #     else:
-    #         self.set_theme(main_window.user_config.theme)
+    def left_click_event(self, obj, event):
+        x, y, *_ = self.render_interactor.GetEventPosition()
+        self.left_clicked.emit(x, y)
+
+    def right_click_event(self, obj, event):
+        x, y, *_ = self.render_interactor.GetEventPosition()
+        self.right_clicked.emit(x, y)
+
 
     def get_thumbnail(self):
         image_filter = vtk.vtkWindowToImageFilter()
