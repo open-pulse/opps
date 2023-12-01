@@ -58,8 +58,8 @@ class AddStructuresWidget(QWidget):
 
         layout = QVBoxLayout()
         layout.addLayout(deltas_layout)
-        layout.addLayout(config_pipes_layout)
         layout.addLayout(acessories_layout)
+        layout.addLayout(config_pipes_layout)
         # layout.addStretch()
         layout.addWidget(self.apply_button)
         layout.setSpacing(20)

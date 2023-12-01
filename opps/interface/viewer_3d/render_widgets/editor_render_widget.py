@@ -23,7 +23,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.left_clicked.connect(self.selection_callback)
 
         self.editor = PipelineEditor()
-        self.current_pipe = self.editor.add_pipe()
+        self.selected_structure = None
 
         self.pipeline_actor = None
         self.control_points_actor = None
@@ -67,6 +67,8 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
+        self.deselect()
+
         if (dx, dy, dz) == (0, 0, 0):
             self.unstage_structure()
             return
@@ -116,8 +118,10 @@ class EditorRenderWidget(CommonRenderWidget):
         self.active_point_actor = None
 
     def selection_callback(self, x, y):
+        self.deselect()
+
         self.selection_picker = vtk.vtkCellPicker()
-        self.selection_picker.SetTolerance(0.02)
+        self.selection_picker.SetTolerance(0.005)
 
         # Disable pipeline actor pickability to give priority to points
         if self.pipeline_actor.GetPickable():
@@ -137,4 +141,18 @@ class EditorRenderWidget(CommonRenderWidget):
         clicked_cell = self.selection_picker.GetCellId()
 
         if clicked_actor == self.pipeline_actor:
-            pass
+            data: vtk.vtkPolyData = clicked_actor.GetMapper().GetInput()
+            cell_identifier = data.GetCellData().GetArray("cell_identifier")
+            if cell_identifier is None:
+                return
+            structure_index = cell_identifier.GetValue(clicked_cell)
+            self.selected_structure = self.editor.pipeline.components[structure_index]
+            self.selected_structure.color = self.editor.selection_color
+            self.editor.dismiss()
+
+        self.update_plot(reset_camera=False)
+
+    def deselect(self):
+        if self.selected_structure is not None:
+            self.selected_structure.color = (255, 255, 255)
+            self.selected_structure = None
