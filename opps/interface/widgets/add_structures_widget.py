@@ -1,6 +1,12 @@
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QLineEdit, QPushButton, QVBoxLayout, QWidget, QLabel
+from PyQt5.QtWidgets import (
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class AddStructuresWidget(QWidget):
@@ -63,7 +69,7 @@ class AddStructuresWidget(QWidget):
     def coords_modified_callback(self):
         dx, dy, dz = self.get_displacement()
         self.render_widget.stage_pipe_deltas(dx, dy, dz)
-    
+
     def radius_modified_callback(self):
         try:
             d = float(self.diameter_box.text() or 0)

@@ -1,10 +1,14 @@
 from dataclasses import dataclass
-from opps.model.point import Point
 
 import numpy as np
 
+from opps.model.point import Point
+
+
 def normalize(vector):
     return vector / np.linalg.norm(vector)
+
+
 @dataclass
 class Bend:
     start: Point
@@ -22,7 +26,7 @@ class Bend:
 
         if (a_vector == b_vector).all():
             return self.corner * np.nan
-        
+
         if np.dot(a_vector, b_vector) == 1:
             return self.corner * np.nan
 
@@ -32,7 +36,7 @@ class Bend:
 
         c_vector = normalize(a_vector + b_vector)
         return Point(*(self.corner.coords() + c_vector * center_distance))
-    
+
     def normalize_values(self, start: Point, end: Point):
         if (start.coords() == self.corner.coords()).all():
             self.colapse()
@@ -59,7 +63,7 @@ class Bend:
         corner_distance = np.cos(angle) * self.curvature / np.sin(angle)
         self.start.set_coords(*(self.corner.coords() + corner_distance * a_vector))
         self.end.set_coords(*(self.corner.coords() + corner_distance * b_vector))
-    
+
     def colapse(self):
         self.start.set_coords(*self.corner.coords())
         self.end.set_coords(*self.corner.coords())
@@ -79,7 +83,7 @@ class Bend:
         if point == self.corner:
             self.start_diameter = diameter
             self.end_diameter = diameter
-    
+
     def get_diameters(self):
         return [self.start_diameter, self.end_diameter]
 

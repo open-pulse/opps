@@ -1,8 +1,12 @@
+from dataclasses import dataclass
+from enum import Enum
+
 import numpy as np
 import vtk
 
 from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
 from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
+from opps.interface.viewer_3d.actors.points_actor import PointsActor
 from opps.interface.viewer_3d.interactor_styles.selection_interactor import (
     SelectionInteractor,
 )
@@ -11,9 +15,16 @@ from opps.interface.viewer_3d.render_widgets.common_render_widget import (
 )
 from opps.model import Flange, Pipe, Pipeline
 from opps.model.pipeline_editor import PipelineEditor
-from opps.interface.viewer_3d.actors.points_actor import PointsActor
 
-from opps.interface.viewer_3d.interactor_styles.selection_interactor import SelectionInteractor
+SelectionMode = Enum("SelectionMode", ["SELECT_POINTS", "SELECT_OBJECTS"])
+
+OperationMode = Enum("OperationMode", ["CREATION_MODE", "EDITION_MODE"])
+
+
+@dataclass
+class EditorConfig:
+    selection_mode = SelectionMode.SELECT_POINTS
+    operation_mode = OperationMode.EDITION_MODE
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -24,13 +35,14 @@ class EditorRenderWidget(CommonRenderWidget):
         self.interactor_style.AddObserver("SelectionEvent", self.selection_callback)
         self.render_interactor.SetInteractorStyle(self.interactor_style)
 
+        self.config = EditorConfig()
         self.editor = PipelineEditor()
         self.current_pipe = self.editor.add_pipe()
 
         self.pipeline_actor = None
         self.control_points_actor = None
         self.active_point_actor = None
-        self.coords = np.array([0,0,0])
+        self.coords = np.array([0, 0, 0])
 
         self.create_axes()
         self.update_plot()
@@ -67,8 +79,6 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.coords = self.editor.control_points[i].coords()
         self.editor.set_active_point(i)
-        self.editor.default_diameter = max(self.editor.get_diameters_at_point())
-        self.editor.add_bent_pipe()
         self.update_plot()
 
     def stage_pipe_deltas(self, dx, dy, dz):
@@ -114,10 +124,19 @@ class EditorRenderWidget(CommonRenderWidget):
         self.pipeline_actor = None
         self.control_points_actor = None
         self.active_point_actor = None
-    
+
     def selection_callback(self, obj, event):
         clicked_cell = obj.selection_picker.GetCellId()
         clicked_actor = obj.selection_picker.GetActor()
-        
-        if clicked_actor == self.control_points_actor:
+
+        if (
+            self.config.selection_mode == SelectionMode.SELECT_POINTS
+            and clicked_actor == self.control_points_actor
+        ):
             self.change_index(clicked_cell)
+
+        if (
+            self.config.selection_mode == SelectionMode.SELECT_POINTS
+            and clicked_actor == self.pipeline_actor
+        ):
+            print("OPSI")

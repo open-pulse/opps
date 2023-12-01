@@ -1,11 +1,15 @@
 from dataclasses import dataclass
-from opps.model.point import Point
-from opps.model.bend import Bend
 
 import numpy as np
 
+from opps.model.bend import Bend
+from opps.model.point import Point
+
+
 def normalize(vector):
     return vector / np.linalg.norm(vector)
+
+
 @dataclass
 class Elbow(Bend):
     start: Point

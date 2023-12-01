@@ -13,7 +13,7 @@ class PipelineEditor:
 
         self.origin = Point(*origin)
         self.control_points = [self.origin]
-        self.deltas = np.array([0,0,0])
+        self.deltas = np.array([0, 0, 0])
         self.active_point = self.control_points[0]
 
         self.default_diameter = 0.2
@@ -49,11 +49,7 @@ class PipelineEditor:
         current_point = self.active_point
         next_point = Point(*(current_point.coords() + self.deltas))
 
-        new_pipe = Pipe(
-            current_point, 
-            next_point,
-            color=self.selection_color
-        )
+        new_pipe = Pipe(current_point, next_point, color=self.selection_color)
         new_pipe.set_diameter(self.default_diameter)
 
         self.add_structure(new_pipe)
@@ -74,11 +70,7 @@ class PipelineEditor:
                 return joint
 
         new_bend = Bend(
-            start_point,
-            end_point,
-            corner_point,
-            curvature_radius,
-            color=self.selection_color
+            start_point, end_point, corner_point, curvature_radius, color=self.selection_color
         )
         new_bend.set_diameter(self.default_diameter)
         self.add_structure(new_bend)
@@ -99,28 +91,22 @@ class PipelineEditor:
                 return joint
 
         new_elbow = Elbow(
-            start_point,
-            end_point,
-            corner_point,
-            curvature_radius,
-            color=self.selection_color
+            start_point, end_point, corner_point, curvature_radius, color=self.selection_color
         )
         new_elbow.set_diameter(self.default_diameter)
         self.add_structure(new_elbow)
         self.active_point = end_point
         return new_elbow
-    
+
     def add_flange(self):
         for flange in self.pipeline.components:
             if not isinstance(flange, Flange):
                 continue
             if flange.position == self.active_point:
-               return flange
+                return flange
 
         new_flange = Flange(
-            self.active_point,
-            normal=np.array([1,0,0]),
-            color=self.selection_color
+            self.active_point, normal=np.array([1, 0, 0]), color=self.selection_color
         )
         new_flange.set_diameter(self.default_diameter)
         self.add_structure(new_flange)
@@ -129,11 +115,11 @@ class PipelineEditor:
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
         self.add_bend(curvature_radius)
         return self.add_pipe(deltas)
-    
+
     def add_structure(self, structure):
         self.pipeline.add_structure(structure)
         self.staged_structures.append(structure)
-        self._update_joints() 
+        self._update_joints()
         self._update_control_points()
         return structure
 
@@ -145,10 +131,10 @@ class PipelineEditor:
         for joint in self.pipeline.components:
             if not isinstance(joint, Bend | Elbow):
                 continue
-            
+
             connected_points = (
-                self._connected_points(joint.start) 
-                + self._connected_points(joint.end) 
+                self._connected_points(joint.start)
+                + self._connected_points(joint.end)
                 + self._connected_points(joint.corner)
             )
 
@@ -163,8 +149,8 @@ class PipelineEditor:
         for flange in self.pipeline.components:
             if not isinstance(flange, Flange):
                 continue
-            
-            connected_points = self._connected_points(flange.position) 
+
+            connected_points = self._connected_points(flange.position)
             if not connected_points:
                 continue
 
@@ -180,7 +166,7 @@ class PipelineEditor:
                 continue
             control_points.extend(structure.get_points())
 
-        point_to_index = {v:i for i, v in enumerate(control_points)}
+        point_to_index = {v: i for i, v in enumerate(control_points)}
         indexes_to_remove = []
 
         for structure in self.pipeline.components:
@@ -216,7 +202,7 @@ class PipelineEditor:
 
             elif id(pipe.end) == id(point):
                 oposite_points.append(pipe.start)
-        
+
         return oposite_points
 
     def remove_structure(self, structure):
@@ -238,9 +224,9 @@ class PipelineEditor:
             staged_points.extend(structure.get_points())
             self.remove_structure(structure)
         self.staged_structures.clear()
+        self._update_joints()
         self._update_control_points()
 
-        
         control_hashes = set(self.control_points)
         if self.active_point in control_hashes:
             return

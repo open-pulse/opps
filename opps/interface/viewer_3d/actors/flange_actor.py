@@ -50,16 +50,15 @@ class FlangeActor(vtk.vtkActor):
 
         unit_normal = self.flange.normal / np.linalg.norm(self.flange.normal)
 
-
         proj_xz = self.flange.normal.copy()
         proj_xz[1] = 0
         if np.linalg.norm(proj_xz) == 0:
             ry = 0
         else:
             proj_xz = proj_xz / np.linalg.norm(proj_xz)
-            ry = np.arccos(np.dot(proj_xz, [1,0,0]))
-        
-        rz = -np.arccos(np.dot(unit_normal, [0,1,0]))
+            ry = np.arccos(np.dot(proj_xz, [1, 0, 0]))
+
+        rz = -np.arccos(np.dot(unit_normal, [0, 1, 0]))
         if unit_normal[2] > 0:
             ry = -ry
 

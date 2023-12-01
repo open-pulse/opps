@@ -16,7 +16,7 @@ class PointsActor(vtk.vtkActor):
         data.Allocate(len(self.points))
         cell_colors.SetNumberOfComponents(3)
         cell_colors.SetNumberOfTuples(len(self.points))
-    
+
         for i, point in enumerate(self.points):
             points.InsertNextPoint(*point.coords())
             data.InsertNextCell(vtk.VTK_VERTEX, 1, [i])

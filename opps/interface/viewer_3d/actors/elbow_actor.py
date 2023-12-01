@@ -28,7 +28,9 @@ class ElbowActor(vtk.vtkActor):
         radius.SetName("TubeRadius")
         radius.SetNumberOfTuples(arc_points)
         for i in range(arc_points):
-            r = lerp(i / (arc_points - 1), self.elbow.start_diameter/2, self.elbow.end_diameter/2)
+            r = lerp(
+                i / (arc_points - 1), self.elbow.start_diameter / 2, self.elbow.end_diameter / 2
+            )
             radius.SetTuple1(i, r)
 
         polydata = arc_source.GetOutput()
@@ -42,8 +44,8 @@ class ElbowActor(vtk.vtkActor):
         tube_filter.Update()
 
         plane_normal = np.cross(
-            (self.elbow.start.coords() - self.elbow.center.coords()), 
-            (self.elbow.end.coords() - self.elbow.center.coords())
+            (self.elbow.start.coords() - self.elbow.center.coords()),
+            (self.elbow.end.coords() - self.elbow.center.coords()),
         )
         start_flange = Flange(
             self.elbow.start,

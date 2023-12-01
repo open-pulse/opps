@@ -4,6 +4,7 @@ import numpy as np
 
 from opps.model.point import Point
 
+
 @dataclass
 class Pipe:
     start: Point
@@ -20,7 +21,7 @@ class Pipe:
 
         if point == self.start:
             self.start_diameter = diameter
-        
+
         if point == self.end:
             self.end_diameter = diameter
 
