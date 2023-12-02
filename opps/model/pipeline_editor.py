@@ -165,10 +165,8 @@ class PipelineEditor:
 
     def _update_control_points(self):
         control_points = list()
-        # control_points.append(self.origin)
         for structure in self.pipeline.components:
             if isinstance(structure, Bend | Elbow):
-                control_points.append(structure.corner)
                 continue
             control_points.extend(structure.get_points())
 
@@ -179,15 +177,23 @@ class PipelineEditor:
             if not isinstance(structure, Bend | Elbow):
                 continue
 
-            if structure.start in point_to_index:
+            if (structure.start in point_to_index) and (structure.end in point_to_index):
                 indexes_to_remove.append(point_to_index[structure.start])
-            else:
+                indexes_to_remove.append(point_to_index[structure.end])
+                control_points.append(structure.corner)
+
+            elif (structure.start in point_to_index):
+                indexes_to_remove.append(point_to_index[structure.start])
+                control_points.append(structure.end)
+
+            elif (structure.end in point_to_index):
+                indexes_to_remove.append(point_to_index[structure.end])
                 control_points.append(structure.start)
 
-            if structure.end in point_to_index:
-                indexes_to_remove.append(point_to_index[structure.end])
             else:
                 control_points.append(structure.end)
+                control_points.append(structure.start)
+                control_points.append(structure.corner)
 
         for i in sorted(indexes_to_remove, reverse=True):
             control_points.pop(i)
