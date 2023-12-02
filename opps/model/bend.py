@@ -68,6 +68,9 @@ class Bend:
     def colapse(self):
         self.start.set_coords(*self.corner.coords())
         self.end.set_coords(*self.corner.coords())
+    
+    def is_colapsed(self):
+        return self.start == self.end == self.corner
 
     def set_diameter(self, diameter, point=None):
         if point is None:
