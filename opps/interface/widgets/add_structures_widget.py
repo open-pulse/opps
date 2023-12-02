@@ -29,8 +29,8 @@ class AddStructuresWidget(QWidget):
         self.dy_box = QLineEdit()
         self.dz_box = QLineEdit()
 
-        self.section_button = QPushButton("Section")
-        self.material_button = QPushButton("Material")
+        self.section_button = QPushButton("Default Section")
+        self.material_button = QPushButton("Default Material")
         self.apply_button = QPushButton("Apply")
         self.apply_button.setShortcut("ctrl+return")
         
@@ -105,7 +105,7 @@ class AddStructuresWidget(QWidget):
 
     def configure_window(self):
         self.setWindowTitle("Add Structures")
-        self.setGeometry(200, 200, 300, 350)
+        self.setGeometry(200, 200, 400, 400)
 
         self.setWindowFlags(
             Qt.Window
@@ -118,7 +118,7 @@ class AddStructuresWidget(QWidget):
         )
 
     def closeEvent(self, a0) -> None:
-        self.on_close.emit()
+        self.render_widget.unstage_structure()
         return super().closeEvent(a0)
 
     def separator(self):

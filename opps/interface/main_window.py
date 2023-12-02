@@ -33,9 +33,6 @@ class MainWindow(QMainWindow):
     def create_periferic_widgets(self):
         self.add_structures = AddStructuresWidget(self, self.render_widget)
         self.add_structures.show()
-        # self.add_structures.modified.connect(self.stage_structure_callback)
-        # self.add_structures.applied.connect(self.commit_structure_callback)
-        self.add_structures.on_close.connect(self.render_widget.unstage_structure)
 
     def stage_structure_callback(self, dx, dy, dz):
         self.render_widget.stage_pipe_deltas(dx, dy, dz)
