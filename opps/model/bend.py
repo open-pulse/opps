@@ -22,14 +22,17 @@ class Bend:
 
     @property
     def center(self):
+        if self.is_colapsed():
+            return self.corner
+
         a_vector = normalize(self.start.coords() - self.corner.coords())
         b_vector = normalize(self.end.coords() - self.corner.coords())
 
         if (a_vector == b_vector).all():
-            return self.corner * np.nan
+            return self.corner
 
         if np.dot(a_vector, b_vector) == 1:
-            return self.corner * np.nan
+            return self.corner
 
         sin_angle = np.linalg.norm(a_vector - b_vector) / 2
         angle = np.arcsin(sin_angle)
