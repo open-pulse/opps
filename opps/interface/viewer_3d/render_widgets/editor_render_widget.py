@@ -15,6 +15,7 @@ from opps.interface.viewer_3d.render_widgets.common_render_widget import (
 )
 from opps.model import Flange, Pipe, Pipeline
 from opps.model.pipeline_editor import PipelineEditor
+from opps import app
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -22,7 +23,6 @@ class EditorRenderWidget(CommonRenderWidget):
         super().__init__(parent)
         self.left_clicked.connect(self.selection_callback)
 
-        self.editor = PipelineEditor()
         self.selected_structure = None
 
         self.pipeline_actor = None
@@ -36,13 +36,13 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        self.pipeline_actor = self.editor.pipeline.as_vtk()
+        self.pipeline_actor = app().pipeline.as_vtk()
 
-        self.control_points_actor = PointsActor(self.editor.control_points)
+        self.control_points_actor = PointsActor(app().editor.control_points)
         self.control_points_actor.GetProperty().SetColor(1, 0.7, 0.2)
         self.control_points_actor.GetProperty().LightingOff()
 
-        self.active_point_actor = PointsActor([self.editor.active_point])
+        self.active_point_actor = PointsActor([app().editor.active_point])
         self.active_point_actor.GetProperty().SetColor(1, 0, 0)
         self.active_point_actor.GetProperty().LightingOff()
 
@@ -55,15 +55,15 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def change_index(self, i):
-        if not self.editor.control_points:
+        if not app().editor.control_points:
             return
 
-        self.editor.dismiss()
-        if i >= len(self.editor.control_points):
-            i = len(self.editor.control_points) - 1
+        app().editor.dismiss()
+        if i >= len(app().editor.control_points):
+            i = len(app().editor.control_points) - 1
 
-        self.coords = self.editor.control_points[i].coords()
-        self.editor.set_active_point(i)
+        self.coords = app().editor.control_points[i].coords()
+        app().editor.set_active_point(i)
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
@@ -73,39 +73,39 @@ class EditorRenderWidget(CommonRenderWidget):
             self.unstage_structure()
             return
 
-        if not self.editor.staged_structures:
-            self.coords = self.editor.active_point.coords()
+        if not app().editor.staged_structures:
+            self.coords = app().editor.active_point.coords()
             if auto_bend:
-                self.editor.add_bent_pipe()
+                app().editor.add_bent_pipe()
             else:
-                self.editor.add_pipe()
+                app().editor.add_pipe()
 
-        self.editor.set_deltas((dx, dy, dz))
+        app().editor.set_deltas((dx, dy, dz))
         new_position = self.coords + (dx, dy, dz)
-        self.editor.move_point(new_position)
-        self.editor._update_joints()
+        app().editor.move_point(new_position)
+        app().editor._update_joints()
         self.update_plot()
 
     def update_diameter(self, d):
-        self.editor.change_diameter(d)
+        app().editor.change_diameter(d)
         self.update_plot()
 
     def add_flange(self):
         self.unstage_structure()
-        self.editor.add_flange()
-        self.editor.add_bent_pipe()
+        app().editor.add_flange()
+        app().editor.add_bent_pipe()
 
     def stage_structure(self, structure):
         self.tmp_structure = structure
         self.update_plot()
 
     def commit_structure(self):
-        self.coords = self.editor.active_point.coords()
-        self.editor.commit()
+        self.coords = app().editor.active_point.coords()
+        app().editor.commit()
         self.update_plot()
 
     def unstage_structure(self):
-        self.editor.dismiss()
+        app().editor.dismiss()
         self.update_plot()
 
     def remove_actors(self):
@@ -146,9 +146,9 @@ class EditorRenderWidget(CommonRenderWidget):
             if cell_identifier is None:
                 return
             structure_index = cell_identifier.GetValue(clicked_cell)
-            self.selected_structure = self.editor.pipeline.components[structure_index]
-            self.selected_structure.color = self.editor.selection_color
-            self.editor.dismiss()
+            self.selected_structure = app().pipeline.components[structure_index]
+            self.selected_structure.color = app().editor.selection_color
+            app().editor.dismiss()
 
         self.update_plot(reset_camera=False)
 
