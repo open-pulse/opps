@@ -99,9 +99,11 @@ class AddStructuresWidget(QWidget):
         bla = CrossSectionWidget()
         bla.exec()
 
-        if bla.selected_cross_section is not None:
-            diameter = bla.selected_cross_section["diameter"]
-            self.render_widget.update_diameter(diameter)
+        if bla.selected_cross_section is None:
+            return
+        
+        diameter = bla.selected_cross_section.diameter
+        self.render_widget.update_diameter(diameter)
 
     def auto_bend_callback(self, checked):
         self.render_widget.unstage_structure()

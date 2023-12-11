@@ -5,16 +5,32 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QVBoxLayout,
 )
+from PyQt5.QtCore import Qt
+
 
 from .filtrable_table import FiltrableTableWidget
+
+from opps.properties import PipeCrossSection
+
+# tmp structure
+project_sections = [
+    PipeCrossSection(0.1, 0.005),
+    PipeCrossSection(0.2, 0.005),
+    PipeCrossSection(0.5, 0.01),
+    PipeCrossSection(1, 0.5),
+    PipeCrossSection(2, 0.5),
+    PipeCrossSection(5, 1),
+]
 
 
 class CrossSectionWidget(QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.configure_window()
+
         self.selected_cross_section = None
-        self.header = ["shape", "diameter", "wall_thickness"]
+        self.header = ["index", "type", "details"]
 
         self.text_filter = QLineEdit()
 
@@ -23,11 +39,9 @@ class CrossSectionWidget(QDialog):
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.set_header(self.header)
-        self.table.add_row([1, 2, 3])
-        self.table.add_row([4, 5, 6])
-        self.table.add_row([6, 7, 8])
-        self.table.add_row([6, 7, 9])
-        self.table.add_row([5, 4, 6])
+
+        for i, section in enumerate(project_sections):
+            self.table.add_row([i, section.name(), section.info()])
         self.table.update()
 
         self.apply_button = QPushButton("Apply")
@@ -40,13 +54,28 @@ class CrossSectionWidget(QDialog):
 
         self.apply_button.clicked.connect(self.apply_callback)
         self.text_filter.textChanged.connect(self.table.filter)
+    
+    def add_section(self, section):
+        pass
 
     def apply_callback(self):
-        selected_rows_indexes = {i.row() for i in self.table.selectedIndexes()}
-        if selected_rows_indexes:
-            row_index, *_ = selected_rows_indexes
-
-            self.selected_cross_section = {
-                key: val for key, val in zip(self.header, self.table.filtered_content[row_index])
-            }
+        if self.table.selectedIndexes():
+            table_index, *_ = self.table.selectedIndexes()
+            table_selected_content = self.table.filtered_content[table_index.row()]
+            sections_index = table_selected_content[0]  # index is in the first collumn
+            self.selected_cross_section = project_sections[sections_index]
         self.close()
+
+    def configure_window(self):
+        self.setWindowTitle("Select Cross Section")
+        self.setGeometry(200, 200, 600, 400)
+
+        self.setWindowFlags(
+            Qt.Window
+            | Qt.CustomizeWindowHint
+            | Qt.WindowTitleHint
+            | Qt.WindowStaysOnTopHint
+            | Qt.WindowCloseButtonHint
+            | Qt.FramelessWindowHint
+            | Qt.WindowShadeButtonHint
+        )

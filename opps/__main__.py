@@ -16,4 +16,4 @@ if __name__ == "__main__":
     from opps.interface.application import Application
 
     _app = Application(sys.argv)
-    sys.exit(_app.exec())
+    sys.exit(_app.exec_())
