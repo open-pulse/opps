@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
 from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
     EditorRenderWidget,
 )
-from opps.interface.widgets.add_structures_widget import AddStructuresWidget
+from opps.interface.widgets import AddStructuresWidget
+from opps.interface.menus import ProjectMenu
 from opps.model import Pipe
 
 
@@ -13,6 +14,7 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
 
+        self.create_menu_bar()
         self.configure_window()
         self.create_central_widget()
         self.create_periferic_widgets()
@@ -24,6 +26,10 @@ class MainWindow(QMainWindow):
         qdarktheme.setup_theme("dark")
         self.showMaximized()
         self.setWindowTitle("OPPS")
+
+    def create_menu_bar(self):
+        self.menu_bar = self.menuBar()
+        self.menu_bar.addMenu(ProjectMenu(self))
 
     def create_central_widget(self):
         self.render_widget = EditorRenderWidget()
@@ -39,3 +45,12 @@ class MainWindow(QMainWindow):
 
     def commit_structure_callback(self, *args, **kwargs):
         self.render_widget.commit_structure()
+
+    def open_dialog(self):
+        pass
+
+    def save_dialog(self):
+        pass
+
+    def save_as_dialog(self):
+        pass

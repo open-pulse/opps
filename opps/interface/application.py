@@ -12,8 +12,12 @@ class Application(QApplication):
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
 
-        self.window = MainWindow()
-        self.window.show()
+        self.main_window = MainWindow()
+        self.main_window.show()
+
+    def new(self):
+        self.pipeline = Pipeline()
+        self.editor = PipelineEditor(self.pipeline)
 
     def open(self, path):
         pass

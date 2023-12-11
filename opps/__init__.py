@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QApplication
 
-def app():
+
+def app() -> "Application":
     return QApplication.instance()
