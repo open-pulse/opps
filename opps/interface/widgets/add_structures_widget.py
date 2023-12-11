@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QCheckBox,
 )
-
+from .cross_section_widget import CrossSectionWidget
 
 class AddStructuresWidget(QWidget):
     # index_changed = pyqtSignal(int)
@@ -68,6 +68,7 @@ class AddStructuresWidget(QWidget):
         self.dx_box.textEdited.connect(self.coords_modified_callback)
         self.dy_box.textEdited.connect(self.coords_modified_callback)
         self.dz_box.textEdited.connect(self.coords_modified_callback)
+        self.section_button.clicked.connect(self.section_callback)
         self.bend_checkbox.stateChanged.connect(self.auto_bend_callback)
         self.apply_button.clicked.connect(self.apply_callback)
 
@@ -91,7 +92,15 @@ class AddStructuresWidget(QWidget):
     def add_flange_callback(self):
         self.render_widget.add_flange()
         self.coords_modified_callback()
-    
+
+    def section_callback(self):
+        bla = CrossSectionWidget()
+        bla.exec()
+
+        if bla.selected_cross_section is not None:
+            diameter = bla.selected_cross_section["diameter"]
+            self.render_widget.update_diameter(diameter)
+
     def auto_bend_callback(self, checked):
         self.render_widget.unstage_structure()
         self.coords_modified_callback()
