@@ -1,14 +1,15 @@
 import qdarktheme
 from PyQt5.QtCore import QSize
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QWidget
 
+from opps import app
+from opps.interface.menus import ProjectMenu
 from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
     EditorRenderWidget,
 )
 from opps.interface.widgets import AddStructuresWidget
-from opps.interface.menus import ProjectMenu
 from opps.model import Pipe
-from opps import app
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -28,7 +29,7 @@ class MainWindow(QMainWindow):
 
         if not check:
             return
-        
+
         app().open(path)
 
     def save_dialog(self):
@@ -46,7 +47,7 @@ class MainWindow(QMainWindow):
 
         if not check:
             return
-        
+
         app().save(path)
 
     def sizeHint(self) -> QSize:

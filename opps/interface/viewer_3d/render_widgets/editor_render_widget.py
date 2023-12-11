@@ -4,6 +4,7 @@ from enum import Enum
 import numpy as np
 import vtk
 
+from opps import app
 from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
 from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
 from opps.interface.viewer_3d.actors.points_actor import PointsActor
@@ -15,7 +16,6 @@ from opps.interface.viewer_3d.render_widgets.common_render_widget import (
 )
 from opps.model import Flange, Pipe, Pipeline
 from opps.model.pipeline_editor import PipelineEditor
-from opps import app
 
 
 class EditorRenderWidget(CommonRenderWidget):

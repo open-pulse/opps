@@ -4,8 +4,8 @@ from time import time
 
 import vtk
 from PIL import Image
-from PyQt5.QtWidgets import QFrame, QStackedLayout
 from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QFrame, QStackedLayout
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtk.util.numpy_support import vtk_to_numpy
 
@@ -72,7 +72,6 @@ class CommonRenderWidget(QFrame):
     def right_click_event(self, obj, event):
         x, y, *_ = self.render_interactor.GetEventPosition()
         self.right_clicked.emit(x, y)
-
 
     def get_thumbnail(self):
         image_filter = vtk.vtkWindowToImageFilter()

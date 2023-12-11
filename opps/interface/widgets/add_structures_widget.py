@@ -1,17 +1,19 @@
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
-    QLabel,
+    QCheckBox,
     QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
     QLineEdit,
     QPushButton,
-    QWidget,
     QVBoxLayout,
-    QHBoxLayout,
-    QGridLayout,
-    QCheckBox,
+    QWidget,
 )
+
 from .cross_section_widget import CrossSectionWidget
+
 
 class AddStructuresWidget(QWidget):
     # index_changed = pyqtSignal(int)
@@ -33,7 +35,7 @@ class AddStructuresWidget(QWidget):
         self.material_button = QPushButton("Default Material")
         self.apply_button = QPushButton("Apply")
         self.apply_button.setShortcut("ctrl+return")
-        
+
         self.bend_checkbox = QCheckBox("Automatic Bending")
         self.elbow_checkbox = QCheckBox("Elbow")
         self.flange_checkbox = QCheckBox("Flange")

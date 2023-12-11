@@ -1,6 +1,7 @@
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QLineEdit
 import re
+
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QFrame, QLabel, QLineEdit, QVBoxLayout
 
 
 class ErrorLineEdit(QFrame):
@@ -20,7 +21,7 @@ class ErrorLineEdit(QFrame):
         layout.addWidget(self.line_edit)
         layout.addWidget(self.error_label)
         self.setLayout(layout)
-        
+
     def text(self) -> str:
         return self.line_edit.text()
 
@@ -37,7 +38,7 @@ class ErrorLineEdit(QFrame):
 
     def add_error_check(self, validator, error_message):
         self.error_checks.append((validator, error_message))
-    
+
     def add_regex_check(self, regex, error_message):
         validator = re.compile(regex).match
         self.add_error_check(validator, error_message)

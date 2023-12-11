@@ -3,9 +3,7 @@ import sys
 
 import vtk
 
-
 if __name__ == "__main__":
-
     # disables the terrible vtk error handler and its logs
     # you may want to enable them while debugging something
     vtk.vtkObject.GlobalWarningDisplayOff()

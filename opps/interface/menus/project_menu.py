@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QAction, QMenu
 
 from opps import app
 
+
 class ProjectMenu(QMenu):
     def __init__(self, parent):
         super().__init__(parent)

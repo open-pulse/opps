@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QApplication
 from pathlib import Path
+
+from PyQt5.QtWidgets import QApplication
 
 from opps.interface.main_window import MainWindow
 from opps.model import Pipeline

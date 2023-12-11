@@ -8,7 +8,7 @@ from opps.model import Bend, Elbow, Flange, Pipe, Pipeline, Point
 
 
 class PipelineEditor:
-    def __init__(self, pipeline:Pipeline, origin=(0, 0, 0)):
+    def __init__(self, pipeline: Pipeline, origin=(0, 0, 0)):
         self.pipeline = pipeline
 
         self.origin = Point(*origin)
@@ -182,11 +182,11 @@ class PipelineEditor:
                 indexes_to_remove.append(point_to_index[structure.end])
                 control_points.append(structure.corner)
 
-            elif (structure.start in point_to_index):
+            elif structure.start in point_to_index:
                 indexes_to_remove.append(point_to_index[structure.start])
                 control_points.append(structure.end)
 
-            elif (structure.end in point_to_index):
+            elif structure.end in point_to_index:
                 indexes_to_remove.append(point_to_index[structure.end])
                 control_points.append(structure.start)
 
