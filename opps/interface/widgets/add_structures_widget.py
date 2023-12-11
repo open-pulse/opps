@@ -122,6 +122,7 @@ class AddStructuresWidget(QWidget):
             Qt.Window
             | Qt.CustomizeWindowHint
             | Qt.WindowTitleHint
+            | Qt.WindowStaysOnTopHint
             | Qt.WindowCloseButtonHint
             | Qt.FramelessWindowHint
             | Qt.WindowShadeButtonHint
