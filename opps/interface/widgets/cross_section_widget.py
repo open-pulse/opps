@@ -57,10 +57,16 @@ class CrossSectionWidget(QDialog):
         self.apply_button.clicked.connect(self.apply_callback)
         self.text_filter.textChanged.connect(self.table.filter)
 
+    @classmethod
+    def get_cross_section(cls):
+        obj = cls()
+        obj.exec()
+        return obj.selected_cross_section
+
     def apply_callback(self):
         if self.table.selectedIndexes():
-            table_selected_content = self.table.filtered_content[self.table.currentRow()]
-            sections_index = table_selected_content[0]  # index is in the first collumn
+            selected_content = self.table.filtered_content[self.table.currentRow()]
+            sections_index = selected_content[0]  # index is in the first collumn
             self.selected_cross_section = project_sections[sections_index]
         self.close()
 

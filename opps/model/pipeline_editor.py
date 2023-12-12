@@ -32,8 +32,6 @@ class PipelineEditor:
 
     def change_diameter(self, diameter):
         self.default_diameter = diameter
-        for structure in self.pipeline.components:
-            structure.set_diameter(diameter, point=self.active_point)
 
     def get_diameters_at_point(self):
         diameters = []

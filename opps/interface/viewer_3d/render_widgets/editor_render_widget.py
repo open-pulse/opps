@@ -86,8 +86,10 @@ class EditorRenderWidget(CommonRenderWidget):
         app().editor._update_joints()
         self.update_plot()
 
-    def update_diameter(self, d):
+    def update_default_diameter(self, d):
         app().editor.change_diameter(d)
+        for structure in app().editor.staged_structures:
+            structure.set_diameter(d)
         self.update_plot()
 
     def add_flange(self):
