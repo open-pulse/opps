@@ -20,6 +20,8 @@ project_sections = [
     PipeCrossSection(1, 0.5),
     PipeCrossSection(2, 0.5),
     PipeCrossSection(5, 1),
+    PipeCrossSection(10, 1),
+    PipeCrossSection(20, 1),
 ]
 
 
