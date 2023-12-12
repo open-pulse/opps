@@ -7,7 +7,7 @@ from opps.interface.menus import ProjectMenu, ModeMenu
 from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
     EditorRenderWidget,
 )
-from opps.interface.widgets import AddStructuresWidget
+from opps.interface.widgets import AddStructuresWidget, EditStructuresWidget
 from opps.interface.widgets.cross_section_widget import CrossSectionWidget
 from opps.model import Pipe
 
@@ -85,5 +85,5 @@ class MainWindow(QMainWindow):
         if self.floating_widget is not None:
             self.floating_widget.close()
 
-        self.floating_widget = CrossSectionWidget(self)
+        self.floating_widget = EditStructuresWidget(self, self.render_widget)
         self.floating_widget.show()

@@ -1,4 +1,3 @@
-from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QCheckBox,
@@ -115,7 +114,7 @@ class AddStructuresWidget(QWidget):
         self.coords_modified_callback()
 
     def configure_window(self):
-        self.setWindowTitle("Add Structures")
+        self.setWindowTitle("Creation Mode")
         self.setGeometry(200, 200, 400, 400)
 
         self.setWindowFlags(

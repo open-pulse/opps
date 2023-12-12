@@ -1,1 +1,2 @@
 from .add_structures_widget import AddStructuresWidget
+from .edit_structures_widget import EditStructuresWidget
