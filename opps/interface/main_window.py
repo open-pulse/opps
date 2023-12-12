@@ -3,11 +3,12 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QWidget
 
 from opps import app
-from opps.interface.menus import ProjectMenu
+from opps.interface.menus import ProjectMenu, ModeMenu
 from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
     EditorRenderWidget,
 )
 from opps.interface.widgets import AddStructuresWidget
+from opps.interface.widgets.cross_section_widget import CrossSectionWidget
 from opps.model import Pipe
 
 
@@ -15,10 +16,12 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
 
+        self.floating_widget = None
+
         self._create_menu_bar()
         self._configure_window()
         self._create_central_widget()
-        self._create_periferic_widgets()
+        self.start_creation_mode()
 
     def open_dialog(self):
         path, check = QFileDialog.getOpenFileName(
@@ -61,6 +64,7 @@ class MainWindow(QMainWindow):
     def _create_menu_bar(self):
         self.menu_bar = self.menuBar()
         self.menu_bar.addMenu(ProjectMenu(self))
+        self.menu_bar.addMenu(ModeMenu(self))
 
     def _create_central_widget(self):
         self.render_widget = EditorRenderWidget()
@@ -68,5 +72,18 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.render_widget)
 
     def _create_periferic_widgets(self):
-        self.add_structures = AddStructuresWidget(self, self.render_widget)
-        self.add_structures.show()
+        pass 
+
+    def start_creation_mode(self):
+        if self.floating_widget is not None:
+            self.floating_widget.close()
+
+        self.floating_widget = AddStructuresWidget(self, self.render_widget)
+        self.floating_widget.show()
+
+    def start_edition_mode(self):
+        if self.floating_widget is not None:
+            self.floating_widget.close()
+
+        self.floating_widget = CrossSectionWidget(self)
+        self.floating_widget.show()
