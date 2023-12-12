@@ -30,18 +30,20 @@ class CrossSectionWidget(QDialog):
         self.configure_window()
 
         self.selected_cross_section = None
-        self.header = ["index", "type", "details"]
+        self.header = ["id", "Type", "Outside diameter (mm)", "Wall thickness (mm)"]
 
         self.text_filter = QLineEdit()
+        self.text_filter.setPlaceholderText("Search a cross section.")
 
         self.table = FiltrableTableWidget()
+        self.table.verticalHeader().setVisible(False)
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.set_header(self.header)
 
         for i, section in enumerate(project_sections):
-            self.table.add_row([i, section.name(), section.info()])
+            self.table.add_row([i, section.name(), section.diameter, section.thickness])
         self.table.update()
 
         self.apply_button = QPushButton("Apply")
@@ -54,21 +56,17 @@ class CrossSectionWidget(QDialog):
 
         self.apply_button.clicked.connect(self.apply_callback)
         self.text_filter.textChanged.connect(self.table.filter)
-    
-    def add_section(self, section):
-        pass
 
     def apply_callback(self):
         if self.table.selectedIndexes():
-            table_index, *_ = self.table.selectedIndexes()
-            table_selected_content = self.table.filtered_content[table_index.row()]
+            table_selected_content = self.table.filtered_content[self.table.currentRow()]
             sections_index = table_selected_content[0]  # index is in the first collumn
             self.selected_cross_section = project_sections[sections_index]
         self.close()
 
     def configure_window(self):
         self.setWindowTitle("Select Cross Section")
-        self.setGeometry(200, 200, 600, 400)
+        self.setGeometry(300, 200, 700, 400)
 
         self.setWindowFlags(
             Qt.Window
