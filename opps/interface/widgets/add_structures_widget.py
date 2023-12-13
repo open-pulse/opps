@@ -49,7 +49,7 @@ class AddStructuresWidget(QWidget):
     def coords_modified_callback(self):
         dx, dy, dz = self.get_displacement()
         self.render_widget.stage_pipe_deltas(dx, dy, dz)
-    
+
     def add_flange_callback(self):
         self.render_widget.add_flange()
         self.coords_modified_callback()

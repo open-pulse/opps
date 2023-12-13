@@ -2,6 +2,8 @@ import vtk
 
 from opps.model.bend import Bend
 
+from .utils import paint_data
+
 
 class BendActor(vtk.vtkActor):
     def __init__(self, bend: Bend):
@@ -24,7 +26,7 @@ class BendActor(vtk.vtkActor):
         radius.SetName("TubeRadius")
         radius.SetNumberOfTuples(arc_points)
         for i in range(arc_points):
-            r = lerp(i / (arc_points - 1), self.bend.start_radius, self.bend.end_radius)
+            r = lerp(i / (arc_points - 1), self.bend.diameter, self.bend.diameter)
             radius.SetTuple1(i, r)
 
         polydata = arc_source.GetOutput()
@@ -37,7 +39,11 @@ class BendActor(vtk.vtkActor):
         tube_filter.SetVaryRadiusToVaryRadiusByAbsoluteScalar()
         tube_filter.Update()
 
+        data = tube_filter.GetOutput()
+        color = self.bend.color
+        paint_data(data, color)
+
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(tube_filter.GetOutput())
-        mapper.ScalarVisibilityOff()
+        mapper.SetInputData(data)
+        mapper.SetScalarModeToUseCellData()
         self.SetMapper(mapper)

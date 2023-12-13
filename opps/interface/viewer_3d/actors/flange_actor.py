@@ -3,6 +3,8 @@ import vtk
 
 from opps.model.flange import Flange
 
+from .utils import paint_data
+
 
 class FlangeActor(vtk.vtkActor):
     def __init__(self, flange: Flange):
@@ -10,15 +12,14 @@ class FlangeActor(vtk.vtkActor):
         self.create_geometry()
 
     def create_geometry(self):
-        bigger_radius = max(self.flange.start_radius, self.flange.end_radius)
-        width = 0.3 * bigger_radius
+        width = 0.3 * self.flange.radius
         y_vector = np.array((0, 1, 0))
 
         disk_source = vtk.vtkDiskSource()
         disk_source.SetCenter((0, 0, 0) - y_vector * width / 2)
         disk_source.SetNormal(y_vector)
-        disk_source.SetInnerRadius(self.flange.start_radius)
-        disk_source.SetOuterRadius(bigger_radius + width)
+        disk_source.SetInnerRadius(self.flange.radius)
+        disk_source.SetOuterRadius(self.flange.radius + width)
         disk_source.SetCircumferentialResolution(50)
         disk_source.Update()
 
@@ -39,9 +40,9 @@ class FlangeActor(vtk.vtkActor):
             nut.SetHeight(width * 3 / 2)
             nut.SetRadius(width / 3)
             nut.SetCenter(
-                (bigger_radius + width / 2) * np.sin(angle),
+                (self.flange.radius + width / 2) * np.sin(angle),
                 0,
-                (bigger_radius + width / 2) * np.cos(angle),
+                (self.flange.radius + width / 2) * np.cos(angle),
             )
             nut.Update()
             append_polydata.AddInputData(nut.GetOutput())
@@ -61,6 +62,10 @@ class FlangeActor(vtk.vtkActor):
         transform_filter.SetTransform(transform)
         transform_filter.Update()
 
+        data = transform_filter.GetOutput()
+        color = self.flange.color
+        paint_data(data, color)
+
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(transform_filter.GetOutput())
+        mapper.SetInputData(data)
         self.SetMapper(mapper)

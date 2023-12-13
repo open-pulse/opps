@@ -10,7 +10,8 @@ from opps.interface.viewer_3d.interactor_styles.selection_interactor import (
 from opps.interface.viewer_3d.render_widgets.common_render_widget import (
     CommonRenderWidget,
 )
-from opps.model import Pipeline, Pipe, Flange
+from opps.model import Flange, Pipe, Pipeline
+from opps.model.pipeline_editor import PipelineEditor
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -19,11 +20,25 @@ class EditorRenderWidget(CommonRenderWidget):
         # self.style = SelectionInteractor()
         # self.render_interactor.SetInteractorStyle(self.style)
 
+        self.editor = PipelineEditor()
+        self.editor.set_deltas((1, 0, 0))
+        self.editor.add_pipe()
+        self.editor.commit()
+        self.editor.set_deltas((0, 1, 0))
+        self.editor.add_pipe()
+        self.editor.commit()
+        # bend = self.editor.pipeline.components[-1]
+        # bend.corner = np.array([1.3, 0, 0])
+
+        self.editor.update_joints(self.editor.pipeline.components)
+
         self.pipeline = Pipeline()
         self.tmp_structure = None
 
         self.pipeline_actor = None
         self.tmp_structure_actor = None
+
+        self.bla = False
 
         self._previous_point = np.array([0, 0, 0])
         self._current_point = np.array([0, 0, 0])
@@ -54,24 +69,37 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        self.pipeline_actor = self.pipeline.as_vtk()
+        # self.pipeline_actor = self.pipeline.as_vtk()
+        # self.renderer.AddActor(self.pipeline_actor)
+
+        self.pipeline_actor = self.editor.pipeline.as_vtk()
         self.renderer.AddActor(self.pipeline_actor)
 
-        if self.tmp_structure is not None:
-            self.tmp_structure_actor = self.tmp_structure.as_vtk()
-            self.tmp_structure_actor.GetProperty().SetOpacity(0.6)
-            self.tmp_structure_actor.GetProperty().SetColor(1, 1, 0.5)
-            self.tmp_structure_actor.GetProperty().LightingOff()
-            self.renderer.AddActor(self.tmp_structure_actor)
+        # if self.tmp_structure is not None:
+        #     self.tmp_structure_actor = self.tmp_structure.as_vtk()
+        #     self.tmp_structure_actor.GetProperty().SetOpacity(0.6)
+        #     self.tmp_structure_actor.GetProperty().SetColor(1, 1, 0.5)
+        #     self.tmp_structure_actor.GetProperty().LightingOff()
+        #     self.renderer.AddActor(self.tmp_structure_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
         self.update()
 
     def stage_pipe_deltas(self, dx, dy, dz):
-        self._current_point = self._previous_point + (dx, dy, dz)
-        pipe = Pipe(self._previous_point, self._current_point)
-        self.stage_structure(pipe)
+        if self.bla:
+            self.editor.set_deltas((dx, dy, dz) - self.editor.deltas)
+        else:
+            self.editor.set_deltas((dx, dy, dz))
+            self.bla = True
+
+        self.editor.move_control_point()
+        # self.editor.move_control_point((dx, dy, dz))
+        self.update_plot()
+
+        # self._current_point = self._previous_point + (dx, dy, dz)
+        # pipe = Pipe(self._previous_point, self._current_point)
+        # self.stage_structure(pipe)
 
     def add_flange(self):
         self._current_point = self._previous_point
@@ -84,12 +112,15 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot()
 
     def commit_structure(self):
-        self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
-        self.tmp_structure = None
-        self._previous_point = self._current_point
-        self.update_plot()
+        self.editor.commit()
+        self.editor.add_pipe()
+        # self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
+        # self.tmp_structure = None
+        # self._previous_point = self._current_point
+        # self.update_plot()
 
     def unstage_structure(self):
+        self.editor.dismiss()
         self.tmp_structure = None
         self._current_point = self._previous_point
         self.update_plot(reset_camera=False)
