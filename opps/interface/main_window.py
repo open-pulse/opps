@@ -1,11 +1,14 @@
 import qdarktheme
 from PyQt5.QtCore import QSize
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QWidget
 
+from opps import app
+from opps.interface.menus import ProjectMenu, ModeMenu
 from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
     EditorRenderWidget,
 )
-from opps.interface.widgets.add_structures_widget import AddStructuresWidget
+from opps.interface.widgets import AddStructuresWidget, EditStructuresWidget
+from opps.interface.widgets.cross_section_widget import CrossSectionWidget
 from opps.model import Pipe
 
 
@@ -13,32 +16,74 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
 
-        self.configure_window()
-        self.create_central_widget()
-        self.create_periferic_widgets()
+        self.floating_widget = None
+
+        self._create_menu_bar()
+        self._configure_window()
+        self._create_central_widget()
+        self.start_creation_mode()
+
+    def open_dialog(self):
+        path, check = QFileDialog.getOpenFileName(
+            self,
+            "Select Geometry",
+            filter="Piping Component File (*.pcf), Geometry Files (*.stp *.step *.iges)",
+        )
+
+        if not check:
+            return
+
+        app().open(path)
+
+    def save_dialog(self):
+        if app().save_path is None:
+            self.save_as_dialog()
+        else:
+            app().save(app().save_path)
+
+    def save_as_dialog(self):
+        path, check = QFileDialog.getSaveFileName(
+            self,
+            "Save As",
+            filter="Piping Component File (*.pcf), Geometry Files (*.stp *.step *.iges)",
+        )
+
+        if not check:
+            return
+
+        app().save(path)
 
     def sizeHint(self) -> QSize:
         return QSize(800, 600)
 
-    def configure_window(self):
+    def _configure_window(self):
         qdarktheme.setup_theme("dark")
         self.showMaximized()
         self.setWindowTitle("OPPS")
 
-    def create_central_widget(self):
+    def _create_menu_bar(self):
+        self.menu_bar = self.menuBar()
+        self.menu_bar.addMenu(ProjectMenu(self))
+        self.menu_bar.addMenu(ModeMenu(self))
+
+    def _create_central_widget(self):
         self.render_widget = EditorRenderWidget()
         self.render_widget.set_theme("dark")
         self.setCentralWidget(self.render_widget)
 
-    def create_periferic_widgets(self):
-        self.add_structures = AddStructuresWidget(self, self.render_widget)
-        self.add_structures.show()
-        self.add_structures.modified.connect(self.stage_structure_callback)
-        self.add_structures.applied.connect(self.commit_structure_callback)
-        self.add_structures.on_close.connect(self.render_widget.unstage_structure)
+    def _create_periferic_widgets(self):
+        pass 
 
-    def stage_structure_callback(self, dx, dy, dz):
-        self.render_widget.stage_pipe_deltas(dx, dy, dz)
+    def start_creation_mode(self):
+        if self.floating_widget is not None:
+            self.floating_widget.close()
 
-    def commit_structure_callback(self, *args, **kwargs):
-        self.render_widget.commit_structure()
+        self.floating_widget = AddStructuresWidget(self, self.render_widget)
+        self.floating_widget.show()
+
+    def start_edition_mode(self):
+        if self.floating_widget is not None:
+            self.floating_widget.close()
+
+        self.floating_widget = EditStructuresWidget(self, self.render_widget)
+        self.floating_widget.show()
