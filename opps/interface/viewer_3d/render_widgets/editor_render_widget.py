@@ -125,19 +125,38 @@ class EditorRenderWidget(CommonRenderWidget):
         self.selection_picker = vtk.vtkCellPicker()
         self.selection_picker.SetTolerance(0.005)
 
-        # Disable pipeline actor pickability to give priority to points
-        if self.pipeline_actor.GetPickable():
-            self.pipeline_actor.PickableOff()
-            self.selection_picker.Pick(x, y, 0, self.renderer)
-            self.pipeline_actor.PickableOn()
+        # First try points
+        point_index = self._pick_point(x, y)
+        if point_index is not None:
+            self.change_index(point_index)
+            return
 
-            clicked_actor = self.selection_picker.GetActor()
-            clicked_cell = self.selection_picker.GetCellId()
-            if clicked_actor == self.control_points_actor:
-                self.change_index(clicked_cell)
-                return
+        # If no points were found try structures
+        structure_index = self._pick_structure(x, y)
+        if structure_index is not None:
+            self.selected_structure = app().pipeline.components[structure_index]
+            self.selected_structure.color = app().editor.selection_color
+            app().editor.dismiss()
 
-        # if no points were selected then try the pipeline
+        self.update_plot(reset_camera=False)
+    
+    def _pick_point(self, x, y):
+        # save pickability
+        pickable = self.pipeline_actor.GetPickable()
+
+        # Disable pipeline actor pickability to only select points
+        self.pipeline_actor.PickableOff()
+        self.selection_picker.Pick(x, y, 0, self.renderer)
+
+        # restore pickability
+        self.pipeline_actor.SetPickable(pickable)
+
+        clicked_actor = self.selection_picker.GetActor()
+        clicked_cell = self.selection_picker.GetCellId()
+        if clicked_actor == self.control_points_actor:
+            return clicked_cell
+
+    def _pick_structure(self, x, y):
         self.selection_picker.Pick(x, y, 0, self.renderer)
         clicked_actor = self.selection_picker.GetActor()
         clicked_cell = self.selection_picker.GetCellId()
@@ -148,11 +167,7 @@ class EditorRenderWidget(CommonRenderWidget):
             if cell_identifier is None:
                 return
             structure_index = cell_identifier.GetValue(clicked_cell)
-            self.selected_structure = app().pipeline.components[structure_index]
-            self.selected_structure.color = app().editor.selection_color
-            app().editor.dismiss()
-
-        self.update_plot(reset_camera=False)
+            return structure_index
 
     def deselect(self):
         if self.selected_structure is not None:
