@@ -13,6 +13,9 @@ class Application(QApplication):
 
         self.save_path = None
 
+        self.selected_points = set()
+        self.selected_structures = set()
+
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
 
@@ -54,3 +57,21 @@ class Application(QApplication):
 
     def _save_pcf(self, path):
         print("Saving PCF")
+
+    def get_point(self, point_index):
+        return self.editor.control_points[point_index]
+
+    def get_structure(self, structure_index):
+        return self.pipeline.components[structure_index]
+    
+    def select_points(self, points):
+        self.clear_selection()
+        self.selected_points |= points
+
+    def select_structures(self, structures):
+        self.clear_selection()
+        self.selected_structures |= structures
+    
+    def clear_selection(self):
+        self.selected_points.clear()
+        self.selected_structures.clear()

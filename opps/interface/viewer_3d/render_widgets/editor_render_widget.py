@@ -128,12 +128,16 @@ class EditorRenderWidget(CommonRenderWidget):
         # First try points
         point_index = self._pick_point(x, y)
         if point_index is not None:
+            app().select_points([point_index])
+
             self.change_index(point_index)
             return
 
         # If no points were found try structures
         structure_index = self._pick_structure(x, y)
         if structure_index is not None:
+            app().select_structures([structure_index])
+
             self.selected_structure = app().pipeline.components[structure_index]
             self.selected_structure.color = app().editor.selection_color
             app().editor.dismiss()
