@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import pyqtSignal
+
 
 from opps.interface.main_window import MainWindow
 from opps.model import Pipeline
@@ -8,6 +10,8 @@ from opps.model.pipeline_editor import PipelineEditor
 
 
 class Application(QApplication):
+    selection_changed = pyqtSignal()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -66,12 +70,15 @@ class Application(QApplication):
     
     def select_points(self, points):
         self.clear_selection()
-        self.selected_points |= points
+        self.selected_points |= set(points)
+        self.selection_changed.emit()
 
     def select_structures(self, structures):
         self.clear_selection()
-        self.selected_structures |= structures
+        self.selected_structures |= set(structures)
+        self.selection_changed.emit()
     
     def clear_selection(self):
         self.selected_points.clear()
         self.selected_structures.clear()
+        self.selection_changed.emit()
