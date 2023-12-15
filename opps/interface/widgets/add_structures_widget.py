@@ -1,4 +1,5 @@
 from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5 import uic
 from PyQt5.QtWidgets import (
     QCheckBox,
     QFrame,
@@ -12,6 +13,7 @@ from PyQt5.QtWidgets import (
 )
 
 from .cross_section_widget import CrossSectionWidget
+from pathlib import Path
 
 
 class AddStructuresWidget(QWidget):
@@ -22,50 +24,26 @@ class AddStructuresWidget(QWidget):
 
     def __init__(self, parent, render_widget):
         super().__init__(parent)
-        self.configure_window()
+        uic.loadUi(Path("data/ui_files/add_structure.ui"), self)
 
         self.render_widget = render_widget
 
-        self.dx_box = QLineEdit()
-        self.dy_box = QLineEdit()
-        self.dz_box = QLineEdit()
+        self.configure_window()
+        self._define_qt_variables()
+        self._create_connections()
+    
+    def _define_qt_variables(self):
+        self.dx_box: QLineEdit = self.findChild(QLineEdit, "dx_box")
+        self.dy_box: QLineEdit = self.findChild(QLineEdit, "dy_box")
+        self.dz_box: QLineEdit = self.findChild(QLineEdit, "dz_box")
 
-        self.section_button = QPushButton("Default Section")
-        self.material_button = QPushButton("Default Material")
-        self.apply_button = QPushButton("Apply")
-        self.apply_button.setShortcut("ctrl+return")
+        self.bend_checkbox: QCheckBox = self.findChild(QCheckBox, "bend_checkbox")
 
-        self.bend_checkbox = QCheckBox("Automatic Bending")
-        self.elbow_checkbox = QCheckBox("Elbow")
-        self.flange_checkbox = QCheckBox("Flange")
-        self.bend_checkbox.setChecked(True)
-
-        deltas_layout = QGridLayout()
-        deltas_layout.addWidget(QLabel("ΔX"), 0, 0)
-        deltas_layout.addWidget(self.dx_box, 0, 1)
-        deltas_layout.addWidget(QLabel("ΔY"), 1, 0)
-        deltas_layout.addWidget(self.dy_box, 1, 1)
-        deltas_layout.addWidget(QLabel("ΔZ"), 2, 0)
-        deltas_layout.addWidget(self.dz_box, 2, 1)
-
-        config_pipes_layout = QHBoxLayout()
-        config_pipes_layout.addWidget(self.section_button)
-        config_pipes_layout.addWidget(self.material_button)
-
-        acessories_layout = QVBoxLayout()
-        acessories_layout.addWidget(self.bend_checkbox)
-        # acessories_layout.addWidget(self.elbow_checkbox)
-        # acessories_layout.addWidget(self.flange_checkbox)
-
-        layout = QVBoxLayout()
-        layout.addLayout(deltas_layout)
-        layout.addLayout(acessories_layout)
-        layout.addLayout(config_pipes_layout)
-        # layout.addStretch()
-        layout.addWidget(self.apply_button)
-        layout.setSpacing(20)
-        self.setLayout(layout)
-
+        self.section_button: QPushButton = self.findChild(QPushButton, "section_button")
+        self.material_button: QPushButton = self.findChild(QPushButton, "material_button")
+        self.apply_button: QPushButton = self.findChild(QPushButton, "apply_button")
+    
+    def _create_connections(self):
         self.dx_box.textEdited.connect(self.coords_modified_callback)
         self.dy_box.textEdited.connect(self.coords_modified_callback)
         self.dz_box.textEdited.connect(self.coords_modified_callback)
@@ -114,7 +92,6 @@ class AddStructuresWidget(QWidget):
         self.coords_modified_callback()
 
     def configure_window(self):
-        self.setWindowTitle("Creation Mode")
         self.setGeometry(200, 200, 400, 400)
 
         self.setWindowFlags(
