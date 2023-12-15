@@ -16,10 +16,33 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
+     <property name="topMargin">
+      <number>30</number>
+     </property>
+     <property name="bottomMargin">
+      <number>30</number>
+     </property>
+     <property name="verticalSpacing">
+      <number>30</number>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Curvature Radius</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>Set Material</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Material</string>
        </property>
       </widget>
      </item>
@@ -40,19 +63,18 @@
      <item row="0" column="1">
       <widget class="QLineEdit" name="lineEdit"/>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Material</string>
+     <item row="3" column="1">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="pushButton_2">
-       <property name="text">
-        <string>Set Material</string>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
        </property>
-      </widget>
+      </spacer>
      </item>
     </layout>
    </item>
