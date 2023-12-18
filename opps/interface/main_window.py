@@ -1,6 +1,6 @@
 import qdarktheme
 from PyQt5.QtCore import QSize
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QWidget, QAction
 
 from opps import app
 from opps.interface.menus import ProjectMenu, ModeMenu
@@ -17,6 +17,11 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self, parent)
 
         self.floating_widget = None
+
+        self.delete_action = QAction(self)
+        self.delete_action.setShortcut("del")
+        self.delete_action.triggered.connect(app().delete_selection)
+        self.addAction(self.delete_action)
 
         self._create_menu_bar()
         self._configure_window()

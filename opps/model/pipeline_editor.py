@@ -30,9 +30,10 @@ class PipelineEditor:
     def move_point(self, position):
         self.active_point.set_coords(*position)
 
-    def remove_structure(self, structure):
-        if isinstance(structure, Bend | Elbow):
+    def remove_structure(self, structure, rejoin=True):
+        if rejoin and isinstance(structure, Bend | Elbow):
             structure.colapse()
+
         index = self.pipeline.components.index(structure)
         if index >= 0:
             self.pipeline.components.pop(index)

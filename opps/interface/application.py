@@ -80,6 +80,12 @@ class Application(QApplication):
         first_index, *_ = self.selected_structures
         return self.get_structure(first_index)
 
+    def delete_selection(self):
+        structures = [self.get_structure(i) for i in self.selected_structures]
+        for structure in structures:
+            self.editor.remove_structure(structure, rejoin=False)
+        self.update()
+
     def select_points(self, points):
         self.clear_selection()
         self.selected_points |= set(points)
