@@ -1,6 +1,6 @@
 from collections import defaultdict
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 
 import numpy as np
 
@@ -29,6 +29,47 @@ class PipelineEditor:
 
     def move_point(self, position):
         self.active_point.set_coords(*position)
+
+    def remove_structure(self, structure):
+        if isinstance(structure, Bend | Elbow):
+            structure.colapse()
+        index = self.pipeline.components.index(structure)
+        if index >= 0:
+            self.pipeline.components.pop(index)
+
+    def morph(self, structure, new_type):
+        params = self._structure_params(structure)
+        new_structure = new_type(**params)
+
+        self.remove_structure(structure)
+        self.pipeline.add_structure(new_structure)
+        return new_structure
+
+    def commit(self):
+        self._update_control_points()
+        for structure in self.staged_structures:
+            structure.color = (255, 255, 255)
+        self.staged_structures.clear()
+
+    def dismiss(self):
+        staged_points = []
+        for structure in self.staged_structures:
+            staged_points.extend(structure.get_points())
+            self.remove_structure(structure)
+        self.staged_structures.clear()
+        self._update_joints()
+        self._update_control_points()
+
+        control_hashes = set(self.control_points)
+        if self.active_point in control_hashes:
+            return
+
+        for point in staged_points:
+            if point in control_hashes:
+                self.active_point = point
+                break
+        else:
+            self.set_active_point(-1)
 
     def change_diameter(self, diameter):
         self.default_diameter = diameter
@@ -59,13 +100,12 @@ class PipelineEditor:
         end_point = deepcopy(start_point)
         corner_point = deepcopy(start_point)
 
-        # Reuse joints if it already exists
-        # Actually it should replace the existing joint
+        # If a joint already exists morph it into a Bend
         for joint in self.pipeline.components:
             if not isinstance(joint, Bend | Elbow):
                 continue
             if joint.corner == start_point:
-                return joint
+                return self.morph(joint, Bend)
 
         new_bend = Bend(
             start_point, end_point, corner_point, curvature_radius, color=self.selection_color
@@ -80,13 +120,12 @@ class PipelineEditor:
         end_point = deepcopy(start_point)
         corner_point = deepcopy(start_point)
 
-        # Reuse joints if it already exists
-        # Actually it should replace the existing joint
+        # If a joint already exists morph it into an Elbow
         for joint in self.pipeline.components:
             if not isinstance(joint, Bend | Elbow):
                 continue
             if joint.corner == start_point:
-                return joint
+                return self.morph(joint, Elbow)
 
         new_elbow = Elbow(
             start_point, end_point, corner_point, curvature_radius, color=self.selection_color
@@ -215,35 +254,9 @@ class PipelineEditor:
 
         return oposite_points
 
-    def remove_structure(self, structure):
-        if isinstance(structure, Bend | Elbow):
-            structure.colapse()
-        index = self.pipeline.components.index(structure)
-        if index >= 0:
-            self.pipeline.components.pop(index)
-
-    def commit(self):
-        self._update_control_points()
-        for structure in self.staged_structures:
-            structure.color = (255, 255, 255)
-        self.staged_structures.clear()
-
-    def dismiss(self):
-        staged_points = []
-        for structure in self.staged_structures:
-            staged_points.extend(structure.get_points())
-            self.remove_structure(structure)
-        self.staged_structures.clear()
-        self._update_joints()
-        self._update_control_points()
-
-        control_hashes = set(self.control_points)
-        if self.active_point in control_hashes:
-            return
-
-        for point in staged_points:
-            if point in control_hashes:
-                self.active_point = point
-                break
-        else:
-            self.set_active_point(-1)
+    def _structure_params(self, structure):
+        '''
+        Get the params that can create a similar structure. 
+        It only works if the structure is a dataclass.
+        '''
+        return {field.name:getattr(structure, field.name) for field in fields(structure)}

@@ -68,6 +68,18 @@ class Application(QApplication):
     def get_structure(self, structure_index):
         return self.pipeline.components[structure_index]
     
+    def get_selected_point(self):
+        if not self.selected_points:
+            return
+        first_index, *_ = self.selected_points
+        return self.get_point(first_index)
+    
+    def get_selected_structure(self):
+        if not self.selected_structures:
+            return
+        first_index, *_ = self.selected_structures
+        return self.get_structure(first_index)
+
     def select_points(self, points):
         self.clear_selection()
         self.selected_points |= set(points)
@@ -82,3 +94,8 @@ class Application(QApplication):
         self.selected_points.clear()
         self.selected_structures.clear()
         self.selection_changed.emit()
+
+    def update(self):
+        self.editor._update_joints()
+        self.editor._update_control_points()
+        self.main_window.render_widget.update_plot()

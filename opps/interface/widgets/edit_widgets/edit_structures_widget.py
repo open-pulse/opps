@@ -12,8 +12,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from opps.interface.widgets.edit_bend_widget import EditBendWidget
-from opps.interface.widgets.edit_pipe_widget import EditPipeWidget
+from opps.interface.widgets.edit_widgets.edit_bend_widget import EditBendWidget
+from opps.interface.widgets.edit_widgets.edit_pipe_widget import EditPipeWidget
 from opps.model import Bend, Pipe
 from opps import app
 
@@ -38,6 +38,7 @@ class EditStructuresWidget(QWidget):
         self.configure_window()
 
         app().selection_changed.connect(self.selection_callback)
+        self.selection_callback()
 
     def configure_window(self):
         self.setWindowTitle("Edition Mode")
@@ -67,5 +68,6 @@ class EditStructuresWidget(QWidget):
             layout.setCurrentWidget(self.edit_pipe_widget)
         elif isinstance(structure, Bend):
             layout.setCurrentWidget(self.edit_bend_widget)
+            self.edit_bend_widget.update()
         else:
             layout.setCurrentWidget(self.empty_text_widget)
