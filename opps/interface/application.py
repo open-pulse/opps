@@ -104,4 +104,4 @@ class Application(QApplication):
     def update(self):
         self.editor._update_joints()
         self.editor._update_control_points()
-        self.main_window.render_widget.update_plot()
+        self.main_window.render_widget.update_plot(reset_camera=False)

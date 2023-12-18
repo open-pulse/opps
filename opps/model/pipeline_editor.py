@@ -8,7 +8,7 @@ from opps.model import Bend, Elbow, Flange, Pipe, Pipeline, Point
 
 
 class PipelineEditor:
-    def __init__(self, pipeline: Pipeline, origin=(0, 0, 0)):
+    def __init__(self, pipeline: Pipeline, origin=(0.0, 0.0, 0.0)):
         self.pipeline = pipeline
 
         self.origin = Point(*origin)

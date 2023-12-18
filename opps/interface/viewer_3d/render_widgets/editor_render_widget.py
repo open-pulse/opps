@@ -174,6 +174,7 @@ class EditorRenderWidget(CommonRenderWidget):
             return structure_index
 
     def deselect(self):
+        app().clear_selection()
         if self.selected_structure is not None:
             self.selected_structure.color = (255, 255, 255)
             self.selected_structure = None
