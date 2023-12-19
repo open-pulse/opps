@@ -40,7 +40,7 @@ class EditBendWidget(QWidget):
 
     def _create_connections(self):
         self.curvature_box.textEdited.connect(self.curvature_modified_callback)
-        self.morph_list.itemSelectionChanged.connect(self.moph_list_callback)
+        self.morph_list.itemClicked.connect(self.moph_list_callback)
 
     def curvature_modified_callback(self, text):
         structure = app().get_selected_structure()
