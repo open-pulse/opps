@@ -129,8 +129,6 @@ class EditorRenderWidget(CommonRenderWidget):
         point_index = self._pick_point(x, y)
         if point_index is not None:
             app().select_points([point_index])
-
-            self.change_index(point_index)
             return
 
         # If no points were found try structures
@@ -168,5 +166,9 @@ class EditorRenderWidget(CommonRenderWidget):
             return structure_index
 
     def update_selection(self):
+        if app().selected_points:
+            *_, point_index = app().selected_points
+            self.change_index(point_index)
+
         app().editor.dismiss()
         self.update_plot(reset_camera=False)
