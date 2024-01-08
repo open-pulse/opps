@@ -28,7 +28,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.pipeline_actor = None
         self.control_points_actor = None
-        self.active_point_actor = None
+        self.selected_points = None
         self.coords = np.array([0, 0, 0])
 
         self.create_axes()
@@ -41,14 +41,16 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.control_points_actor = PointsActor(app().editor.control_points)
         self.control_points_actor.set_color((255, 178, 51))
-        self.control_points_actor.paint_cells((255, 0, 0), app().selected_points)
 
-        self.active_point_actor = PointsActor([app().editor.active_point])
-        self.active_point_actor.GetProperty().SetColor(1, 0, 0)
-        self.active_point_actor.GetProperty().LightingOff()
+        index = app().get_selected_point()
+        list_indexes = [] if index is None else [index]
+        self.selected_points = PointsActor(list_indexes)
+        self.selected_points.GetProperty().SetColor(1, 0, 0)
+        self.selected_points.GetProperty().LightingOff()
 
         self.renderer.AddActor(self.pipeline_actor)
         self.renderer.AddActor(self.control_points_actor)
+        self.renderer.AddActor(self.selected_points)
 
         if reset_camera:
             self.renderer.ResetCamera()
@@ -113,11 +115,11 @@ class EditorRenderWidget(CommonRenderWidget):
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
         self.renderer.RemoveActor(self.control_points_actor)
-        self.renderer.RemoveActor(self.active_point_actor)
+        self.renderer.RemoveActor(self.selected_points)
 
         self.pipeline_actor = None
         self.control_points_actor = None
-        self.active_point_actor = None
+        self.selected_points = None
 
     def selection_callback(self, x, y):
         app().clear_selection()
