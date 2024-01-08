@@ -18,6 +18,7 @@ class PipelineEditor:
 
         self.default_diameter = 0.2
         self.selection_color = (247, 0, 20)
+        self.default_color = (255, 255, 255)
 
         self.staged_structures = []
 
@@ -34,9 +35,9 @@ class PipelineEditor:
         if rejoin and isinstance(structure, Bend | Elbow):
             structure.colapse()
 
-        index = self.pipeline.components.index(structure)
+        index = self.pipeline.structures.index(structure)
         if index >= 0:
-            self.pipeline.components.pop(index)
+            self.pipeline.structures.pop(index)
 
     def morph(self, structure, new_type):
         params = self._structure_params(structure)
@@ -49,7 +50,7 @@ class PipelineEditor:
     def commit(self):
         self._update_control_points()
         for structure in self.staged_structures:
-            structure.color = (255, 255, 255)
+            structure.color = self.default_color
         self.staged_structures.clear()
 
     def dismiss(self):
@@ -77,7 +78,7 @@ class PipelineEditor:
 
     def get_diameters_at_point(self):
         diameters = []
-        for structure in self.pipeline.components:
+        for structure in self.pipeline.structures:
             if self.active_point in structure.get_points():
                 diameters.extend(structure.get_diameters())
         return diameters
@@ -102,7 +103,7 @@ class PipelineEditor:
         corner_point = deepcopy(start_point)
 
         # If a joint already exists morph it into a Bend
-        for joint in self.pipeline.components:
+        for joint in self.pipeline.structures:
             if not isinstance(joint, Bend | Elbow):
                 continue
             if joint.corner == start_point:
@@ -122,7 +123,7 @@ class PipelineEditor:
         corner_point = deepcopy(start_point)
 
         # If a joint already exists morph it into an Elbow
-        for joint in self.pipeline.components:
+        for joint in self.pipeline.structures:
             if not isinstance(joint, Bend | Elbow):
                 continue
             if joint.corner == start_point:
@@ -137,7 +138,7 @@ class PipelineEditor:
         return new_elbow
 
     def add_flange(self):
-        for flange in self.pipeline.components:
+        for flange in self.pipeline.structures:
             if not isinstance(flange, Flange):
                 continue
             if flange.position == self.active_point:
@@ -166,7 +167,7 @@ class PipelineEditor:
         self._update_flanges()
 
     def _update_curvatures(self):
-        for joint in self.pipeline.components:
+        for joint in self.pipeline.structures:
             if not isinstance(joint, Bend | Elbow):
                 continue
 
@@ -187,7 +188,7 @@ class PipelineEditor:
             joint.normalize_values(oposite_a, oposite_b)
 
     def _update_flanges(self):
-        for flange in self.pipeline.components:
+        for flange in self.pipeline.structures:
             if not isinstance(flange, Flange):
                 continue
 
@@ -203,7 +204,7 @@ class PipelineEditor:
 
     def _update_control_points(self):
         control_points = list()
-        for structure in self.pipeline.components:
+        for structure in self.pipeline.structures:
             if isinstance(structure, Bend | Elbow):
                 continue
             control_points.extend(structure.get_points())
@@ -211,7 +212,7 @@ class PipelineEditor:
         point_to_index = {v: i for i, v in enumerate(control_points)}
         indexes_to_remove = []
 
-        for structure in self.pipeline.components:
+        for structure in self.pipeline.structures:
             if not isinstance(structure, Bend | Elbow):
                 continue
 
@@ -243,7 +244,7 @@ class PipelineEditor:
 
     def _connected_points(self, point):
         oposite_points = []
-        for pipe in self.pipeline.components:
+        for pipe in self.pipeline.structures:
             if not isinstance(pipe, Pipe):
                 continue
 

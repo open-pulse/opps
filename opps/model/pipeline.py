@@ -9,10 +9,10 @@ from opps.model.pipe import Pipe
 
 class Pipeline:
     def __init__(self):
-        self.components = []
+        self.structures = []
 
     def add_structure(self, structure, *, auto_connect=False):
-        self.components.append(structure)
+        self.structures.append(structure)
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipeline_actor import (

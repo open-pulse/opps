@@ -22,6 +22,7 @@ class EditorRenderWidget(CommonRenderWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.left_clicked.connect(self.selection_callback)
+        app().selection_changed.connect(self.update_selection)
 
         self.selected_structure = None
 
@@ -67,7 +68,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
-        self.deselect()
+        app().clear_selection()
 
         if (dx, dy, dz) == (0, 0, 0):
             self.unstage_structure()
@@ -120,7 +121,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.active_point_actor = None
 
     def selection_callback(self, x, y):
-        self.deselect()
+        app().clear_selection()
 
         self.selection_picker = vtk.vtkCellPicker()
         self.selection_picker.SetTolerance(0.005)
@@ -137,12 +138,6 @@ class EditorRenderWidget(CommonRenderWidget):
         structure_index = self._pick_structure(x, y)
         if structure_index is not None:
             app().select_structures([structure_index])
-
-            self.selected_structure = app().pipeline.components[structure_index]
-            self.selected_structure.color = app().editor.selection_color
-            app().editor.dismiss()
-
-        self.update_plot(reset_camera=False)
     
     def _pick_point(self, x, y):
         # save pickability
@@ -173,8 +168,15 @@ class EditorRenderWidget(CommonRenderWidget):
             structure_index = cell_identifier.GetValue(clicked_cell)
             return structure_index
 
-    def deselect(self):
-        app().clear_selection()
-        if self.selected_structure is not None:
-            self.selected_structure.color = (255, 255, 255)
-            self.selected_structure = None
+    def update_selection(self):
+        for structure in app().pipeline.structures:
+            if structure in app().editor.staged_structures:
+                continue
+            structure.color = app().editor.default_color
+
+        for structure_index in app().selected_structures:
+            selected_structure = app().pipeline.structures[structure_index]
+            selected_structure.color = app().editor.selection_color
+
+        app().editor.dismiss()
+        self.update_plot(reset_camera=False)

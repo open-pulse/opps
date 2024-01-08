@@ -66,7 +66,7 @@ class Application(QApplication):
         return self.editor.control_points[point_index]
 
     def get_structure(self, structure_index):
-        return self.pipeline.components[structure_index]
+        return self.pipeline.structures[structure_index]
     
     def get_selected_point(self):
         if not self.selected_points:

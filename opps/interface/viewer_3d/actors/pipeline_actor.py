@@ -18,7 +18,7 @@ class PipelineActor(vtk.vtkActor):
     def create_geometry(self):
         append_filter = vtk.vtkAppendPolyData()
 
-        for i, shape in enumerate(self.pipeline.components):
+        for i, shape in enumerate(self.pipeline.structures):
             shape_data = shape.as_vtk().GetMapper().GetInput()
             fill_cell_identifier(shape_data, i)
             append_filter.AddInputData(shape_data)
