@@ -38,22 +38,26 @@ class PointsActor(vtk.vtkActor):
     def configure_appearance(self):
         self.GetProperty().RenderPointsAsSpheresOn()
         self.GetProperty().SetPointSize(20)
-        self.clear_colors()
-
-    def clear_colors(self):
-        data = self.GetMapper().GetInput()
-        cell_colors = data.GetCellData().GetScalars()
+        self.GetProperty().LightingOff()
 
         r, g, b = self.GetProperty().GetColor()
         r = int(r * 255)
         g = int(g * 255)
         b = int(b * 255)
+        self.set_color((r,g,b))
 
+    def set_color(self, color):
+        data = self.GetMapper().GetInput()
+        cell_colors = data.GetCellData().GetScalars()
+
+        r, g, b = color
         cell_colors.FillComponent(0, r)
         cell_colors.FillComponent(1, g)
         cell_colors.FillComponent(2, b)
 
-        self.GetMapper().ScalarVisibilityOff()
+        self.GetMapper().SetScalarModeToUseCellData()
+        self.GetMapper().ScalarVisibilityOff()  # Just to force color updates
+        self.GetMapper().ScalarVisibilityOn()
 
     def paint_cells(self, color: tuple[3], cells: tuple[int]):
         data = self.GetMapper().GetInput()

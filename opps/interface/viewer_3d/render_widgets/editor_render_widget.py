@@ -40,8 +40,8 @@ class EditorRenderWidget(CommonRenderWidget):
         self.pipeline_actor = app().pipeline.as_vtk()
 
         self.control_points_actor = PointsActor(app().editor.control_points)
-        self.control_points_actor.GetProperty().SetColor(1, 0.7, 0.2)
-        self.control_points_actor.GetProperty().LightingOff()
+        self.control_points_actor.set_color((255, 178, 51))
+        self.control_points_actor.paint_cells((255, 0, 0), app().selected_points)
 
         self.active_point_actor = PointsActor([app().editor.active_point])
         self.active_point_actor.GetProperty().SetColor(1, 0, 0)
@@ -49,7 +49,6 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.renderer.AddActor(self.pipeline_actor)
         self.renderer.AddActor(self.control_points_actor)
-        # self.renderer.AddActor(self.active_point_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
