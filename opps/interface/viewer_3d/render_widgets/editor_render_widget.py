@@ -169,14 +169,5 @@ class EditorRenderWidget(CommonRenderWidget):
             return structure_index
 
     def update_selection(self):
-        for structure in app().pipeline.structures:
-            if structure in app().editor.staged_structures:
-                continue
-            structure.color = app().editor.default_structures_color
-
-        for structure_index in app().selected_structures:
-            selected_structure = app().pipeline.structures[structure_index]
-            selected_structure.color = app().editor.selection_color
-
         app().editor.dismiss()
         self.update_plot(reset_camera=False)

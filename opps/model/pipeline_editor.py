@@ -17,9 +17,6 @@ class PipelineEditor:
         self.active_point = self.control_points[0]
 
         self.default_diameter = 0.2
-        self.selection_color = (247, 0, 20)
-        self.default_structures_color = (255, 255, 255)
-
         self.staged_structures = []
 
     def set_active_point(self, index):
@@ -50,7 +47,7 @@ class PipelineEditor:
     def commit(self):
         self._update_control_points()
         for structure in self.staged_structures:
-            structure.color = self.default_structures_color
+            structure.staged = False
         self.staged_structures.clear()
 
     def dismiss(self):
@@ -90,7 +87,7 @@ class PipelineEditor:
         current_point = self.active_point
         next_point = Point(*(current_point.coords() + self.deltas))
 
-        new_pipe = Pipe(current_point, next_point, color=self.selection_color)
+        new_pipe = Pipe(current_point, next_point)
         new_pipe.set_diameter(self.default_diameter)
 
         self.add_structure(new_pipe)
@@ -110,7 +107,7 @@ class PipelineEditor:
                 return self.morph(joint, Bend)
 
         new_bend = Bend(
-            start_point, end_point, corner_point, curvature_radius, color=self.selection_color
+            start_point, end_point, corner_point, curvature_radius
         )
         new_bend.set_diameter(self.default_diameter)
         self.add_structure(new_bend)
@@ -130,7 +127,7 @@ class PipelineEditor:
                 return self.morph(joint, Elbow)
 
         new_elbow = Elbow(
-            start_point, end_point, corner_point, curvature_radius, color=self.selection_color
+            start_point, end_point, corner_point, curvature_radius
         )
         new_elbow.set_diameter(self.default_diameter)
         self.add_structure(new_elbow)
@@ -145,7 +142,7 @@ class PipelineEditor:
                 return flange
 
         new_flange = Flange(
-            self.active_point, normal=np.array([1, 0, 0]), color=self.selection_color
+            self.active_point, normal=np.array([1, 0, 0])
         )
         new_flange.set_diameter(self.default_diameter)
         self.add_structure(new_flange)
@@ -156,6 +153,7 @@ class PipelineEditor:
         return self.add_pipe(deltas)
 
     def add_structure(self, structure):
+        structure.staged = True
         self.pipeline.add_structure(structure)
         self.staged_structures.append(structure)
         self._update_joints()

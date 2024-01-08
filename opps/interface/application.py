@@ -94,9 +94,14 @@ class Application(QApplication):
     def select_structures(self, structures):
         self.clear_selection()
         self.selected_structures |= set(structures)
+        for index in self.selected_structures:
+            structure = self.get_structure(index)
+            structure.selected = True
         self.selection_changed.emit()
     
     def clear_selection(self):
+        for structure in self.pipeline.structures:
+            structure.selected = False
         self.selected_points.clear()
         self.selected_structures.clear()
         self.selection_changed.emit()
