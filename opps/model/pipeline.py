@@ -5,9 +5,10 @@ import numpy as np
 from opps.model.bend import Bend
 from opps.model.flange import Flange
 from opps.model.pipe import Pipe
+from opps.model.structure import Structure
 
 
-class Pipeline:
+class Pipeline(Structure):
     def __init__(self):
         self.structures = []
 

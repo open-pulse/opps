@@ -18,7 +18,7 @@ class PipelineEditor:
 
         self.default_diameter = 0.2
         self.selection_color = (247, 0, 20)
-        self.default_color = (255, 255, 255)
+        self.default_structures_color = (255, 255, 255)
 
         self.staged_structures = []
 
@@ -50,7 +50,7 @@ class PipelineEditor:
     def commit(self):
         self._update_control_points()
         for structure in self.staged_structures:
-            structure.color = self.default_color
+            structure.color = self.default_structures_color
         self.staged_structures.clear()
 
     def dismiss(self):

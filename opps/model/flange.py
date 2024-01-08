@@ -3,10 +3,11 @@ from dataclasses import dataclass
 import numpy as np
 
 from opps.model.point import Point
+from opps.model.structure import Structure
 
 
 @dataclass
-class Flange:
+class Flange(Structure):
     position: Point
     normal: np.ndarray
     diameter: float = 0.1

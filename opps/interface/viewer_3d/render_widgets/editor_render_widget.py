@@ -49,7 +49,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.renderer.AddActor(self.pipeline_actor)
         self.renderer.AddActor(self.control_points_actor)
-        self.renderer.AddActor(self.active_point_actor)
+        # self.renderer.AddActor(self.active_point_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
@@ -172,7 +172,7 @@ class EditorRenderWidget(CommonRenderWidget):
         for structure in app().pipeline.structures:
             if structure in app().editor.staged_structures:
                 continue
-            structure.color = app().editor.default_color
+            structure.color = app().editor.default_structures_color
 
         for structure_index in app().selected_structures:
             selected_structure = app().pipeline.structures[structure_index]

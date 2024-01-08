@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from opps.model.point import Point
+from opps.model.structure import Structure
 
 
 def normalize(vector):
@@ -10,7 +11,7 @@ def normalize(vector):
 
 
 @dataclass
-class Bend:
+class Bend(Structure):
     start: Point
     end: Point
     corner: Point
