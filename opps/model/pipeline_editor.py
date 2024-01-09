@@ -46,7 +46,7 @@ class PipelineEditor:
 
     def commit(self):
         self._update_control_points()
-        for structure in self.staged_structures:
+        for structure in self.pipeline.structures:
             structure.staged = False
         self.staged_structures.clear()
 
@@ -142,7 +142,8 @@ class PipelineEditor:
                 return flange
 
         new_flange = Flange(
-            self.active_point, normal=np.array([1, 0, 0])
+            self.active_point,
+            normal=np.array([1, 0, 0])
         )
         new_flange.set_diameter(self.default_diameter)
         self.add_structure(new_flange)

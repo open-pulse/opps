@@ -190,5 +190,8 @@ class EditorRenderWidget(CommonRenderWidget):
             *_, point_index = app().selected_points_index
             self.change_index(point_index)
 
-        app().editor.dismiss()
+        # Only dismiss structure creation if something was actually selected
+        if app().selected_points_index or app().selected_structures_index:
+            app().editor.dismiss()
+
         self.update_plot(reset_camera=False)
