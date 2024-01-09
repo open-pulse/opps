@@ -45,9 +45,8 @@ class EditorRenderWidget(CommonRenderWidget):
         self.control_points_actor = PointsActor(app().editor.control_points)
         self.control_points_actor.set_color((255, 178, 51))
 
-        index = app().get_selected_point()
-        list_indexes = [] if index is None else [index]
-        self.selected_points = PointsActor(list_indexes)
+        list_points = [app().get_point(i) for i in app().selected_points_index]
+        self.selected_points = PointsActor(list_points)
         self.selected_points.GetProperty().SetColor(1, 0, 0)
         self.selected_points.GetProperty().LightingOff()
 
@@ -133,7 +132,7 @@ class EditorRenderWidget(CommonRenderWidget):
         shift_pressed = bool(modifiers & Qt.ShiftModifier)
         alt_pressed = bool(modifiers & Qt.AltModifier)
 
-        # First try points
+        # First try to select points
         point_index = self._pick_point(x, y)
         if point_index is not None:
             app().select_points(
@@ -185,8 +184,10 @@ class EditorRenderWidget(CommonRenderWidget):
             return structure_index
 
     def update_selection(self):
-        if app().selected_points:
-            *_, point_index = app().selected_points
+        if app().selected_points_index:
+            # the last point selected is the one that will 
+            # be the "anchor" to continue the pipe creation
+            *_, point_index = app().selected_points_index
             self.change_index(point_index)
 
         app().editor.dismiss()
