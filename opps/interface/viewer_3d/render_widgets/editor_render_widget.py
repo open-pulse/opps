@@ -4,6 +4,9 @@ from enum import Enum
 import numpy as np
 import vtk
 
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt
+
 from opps import app
 from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
 from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
@@ -122,21 +125,35 @@ class EditorRenderWidget(CommonRenderWidget):
         self.selected_points = None
 
     def selection_callback(self, x, y):
-        app().clear_selection()
-
         self.selection_picker = vtk.vtkCellPicker()
         self.selection_picker.SetTolerance(0.005)
+
+        modifiers = QApplication.keyboardModifiers()
+        ctrl_pressed = bool(modifiers & Qt.ControlModifier)
+        shift_pressed = bool(modifiers & Qt.ShiftModifier)
+        alt_pressed = bool(modifiers & Qt.AltModifier)
 
         # First try points
         point_index = self._pick_point(x, y)
         if point_index is not None:
-            app().select_points([point_index])
+            app().select_points(
+                [point_index],
+                join=ctrl_pressed|shift_pressed,
+                remove=alt_pressed
+            )
             return
 
         # If no points were found try structures
         structure_index = self._pick_structure(x, y)
         if structure_index is not None:
-            app().select_structures([structure_index])
+            app().select_structures(
+                [structure_index],
+                join=ctrl_pressed|shift_pressed,
+                remove=alt_pressed
+            )
+            return
+        
+        app().clear_selection()
     
     def _pick_point(self, x, y):
         # save pickability

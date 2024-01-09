@@ -18,7 +18,7 @@ class Application(QApplication):
         self.save_path = None
 
         self.selected_points = set()
-        self.selected_structures = set()
+        self.selected_structures_index = set()
 
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
@@ -75,35 +75,51 @@ class Application(QApplication):
         return self.get_point(first_index)
     
     def get_selected_structure(self):
-        if not self.selected_structures:
+        if not self.selected_structures_index:
             return
-        first_index, *_ = self.selected_structures
+        first_index, *_ = self.selected_structures_index
         return self.get_structure(first_index)
 
     def delete_selection(self):
-        structures = [self.get_structure(i) for i in self.selected_structures]
+        structures = [self.get_structure(i) for i in self.selected_structures_index]
         for structure in structures:
             self.editor.remove_structure(structure, rejoin=False)
         self.update()
 
-    def select_points(self, points):
+    def select_points(self, points, join=False, remove=False):
         self.clear_selection()
         self.selected_points |= set(points)
         self.selection_changed.emit()
 
-    def select_structures(self, structures):
-        self.clear_selection()
-        self.selected_structures |= set(structures)
-        for index in self.selected_structures:
+    def select_structures(self, structures_index, join=False, remove=False):
+        structures_index = set(structures_index)
+
+        # clear all the selected flags
+        for structure in self.pipeline.structures:
+            structure.selected = False
+
+        # handle the selection according to modifiers like ctrl, shift, etc.
+        if join and remove:
+            self.selected_structures_index ^= structures_index
+        elif join:
+            self.selected_structures_index |= structures_index
+        elif remove:
+            self.selected_structures_index -= structures_index
+        else:
+            self.selected_structures_index = structures_index
+
+        # apply the selection flag again for selected structures
+        for index in self.selected_structures_index:
             structure = self.get_structure(index)
             structure.selected = True
+
         self.selection_changed.emit()
     
     def clear_selection(self):
         for structure in self.pipeline.structures:
             structure.selected = False
         self.selected_points.clear()
-        self.selected_structures.clear()
+        self.selected_structures_index.clear()
         self.selection_changed.emit()
 
     def update(self):
