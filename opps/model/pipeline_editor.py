@@ -175,6 +175,18 @@ class PipelineEditor:
         self._update_flanges()
 
     def _update_curvatures(self):
+        # First colapse all joint that can be colapsed.
+        # This prevents cases were a normalization of a
+        # joint disturbs the normalization of others.
+        for joint in self.pipeline.structures:
+            if not isinstance(joint, Bend | Elbow):
+                continue
+
+            if not joint.auto:
+                continue
+
+            joint.colapse()
+
         for joint in self.pipeline.structures:
             if not isinstance(joint, Bend | Elbow):
                 continue
@@ -189,7 +201,6 @@ class PipelineEditor:
             )
 
             if len(connected_points) != 2:
-                joint.colapse()
                 continue
 
             oposite_a, oposite_b, *_ = connected_points
