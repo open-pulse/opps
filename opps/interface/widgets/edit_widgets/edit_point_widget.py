@@ -28,7 +28,7 @@ class EditPointWidget(QWidget):
 
     def update(self):
         super().update()
-        point = app().get_selected_point()
+        *_, point = app().get_selected_points()
         if point is None:
             return
         self.dx_box.setText(str(point.x))
@@ -61,7 +61,7 @@ class EditPointWidget(QWidget):
         return dx, dy, dz
 
     def position_edited_callback(self):
-        point: Point = app().get_selected_point()
+        *_, point = app().get_selected_points()
         if point is None:
             return
 
