@@ -44,7 +44,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.control_points_actor = PointsActor(app().editor.control_points)
         self.control_points_actor.set_color((255, 178, 51))
 
-        list_points = [app().get_point(i) for i in app().selected_points_index]
+        list_points = list(app().get_selected_points())
         self.selected_points = PointsActor(list_points)
         self.selected_points.GetProperty().SetColor(1, 0, 0)
         self.selected_points.GetProperty().LightingOff()
