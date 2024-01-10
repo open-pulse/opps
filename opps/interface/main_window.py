@@ -29,6 +29,8 @@ class MainWindow(QMainWindow):
         self.delete_action.triggered.connect(app().delete_selection)
         self.addAction(self.delete_action)
 
+        app().selection_changed.connect(self.selection_callback)
+
         self._create_menu_bar()
         self._configure_window()
         self._create_central_widget()
@@ -86,6 +88,11 @@ class MainWindow(QMainWindow):
         pass
 
     def start_creation_mode(self):
+        # If it is already in creation mode return
+        if isinstance(self.floating_widget, AddStructuresWidget):
+            if self.floating_widget.isVisible():
+                return
+
         if self.floating_widget is not None:
             self.floating_widget.close()
 
@@ -93,8 +100,22 @@ class MainWindow(QMainWindow):
         self.floating_widget.show()
 
     def start_edition_mode(self):
+        # If it is already in edition mode return
+        if isinstance(self.floating_widget, EditStructuresWidget):
+            if self.floating_widget.isVisible():
+                return
+
         if self.floating_widget is not None:
             self.floating_widget.close()
 
         self.floating_widget = EditStructuresWidget(self, self.render_widget)
         self.floating_widget.show()
+
+    def selection_callback(self):
+        if isinstance(self.floating_widget, AddStructuresWidget):
+            if self.floating_widget.isVisible():
+                return
+
+        something_selected = app().selected_points_index or app().selected_structures_index
+        if something_selected:
+            self.start_edition_mode()
