@@ -3,9 +3,8 @@ from enum import Enum
 
 import numpy as np
 import vtk
-
-from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication
 
 from opps import app
 from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
@@ -136,9 +135,7 @@ class EditorRenderWidget(CommonRenderWidget):
         point_index = self._pick_point(x, y)
         if point_index is not None:
             app().select_points(
-                [point_index],
-                join=ctrl_pressed|shift_pressed,
-                remove=alt_pressed
+                [point_index], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             return
 
@@ -146,14 +143,12 @@ class EditorRenderWidget(CommonRenderWidget):
         structure_index = self._pick_structure(x, y)
         if structure_index is not None:
             app().select_structures(
-                [structure_index],
-                join=ctrl_pressed|shift_pressed,
-                remove=alt_pressed
+                [structure_index], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             return
-        
+
         app().clear_selection()
-    
+
     def _pick_point(self, x, y):
         # save pickability
         pickable = self.pipeline_actor.GetPickable()
@@ -185,7 +180,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def update_selection(self):
         if app().selected_points_index:
-            # the last point selected is the one that will 
+            # the last point selected is the one that will
             # be the "anchor" to continue the pipe creation
             *_, point_index = app().selected_points_index
             self.change_index(point_index)

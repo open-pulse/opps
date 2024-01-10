@@ -106,9 +106,7 @@ class PipelineEditor:
             if joint.corner == start_point:
                 return self.morph(joint, Bend)
 
-        new_bend = Bend(
-            start_point, end_point, corner_point, curvature_radius
-        )
+        new_bend = Bend(start_point, end_point, corner_point, curvature_radius)
         new_bend.set_diameter(self.default_diameter)
         self.add_structure(new_bend)
         self.active_point = end_point
@@ -126,9 +124,7 @@ class PipelineEditor:
             if joint.corner == start_point:
                 return self.morph(joint, Elbow)
 
-        new_elbow = Elbow(
-            start_point, end_point, corner_point, curvature_radius
-        )
+        new_elbow = Elbow(start_point, end_point, corner_point, curvature_radius)
         new_elbow.set_diameter(self.default_diameter)
         self.add_structure(new_elbow)
         self.active_point = end_point
@@ -141,10 +137,7 @@ class PipelineEditor:
             if flange.position == self.active_point:
                 return flange
 
-        new_flange = Flange(
-            self.active_point,
-            normal=np.array([1, 0, 0])
-        )
+        new_flange = Flange(self.active_point, normal=np.array([1, 0, 0]))
         new_flange.set_diameter(self.default_diameter)
         self.add_structure(new_flange)
         return new_flange
@@ -256,8 +249,8 @@ class PipelineEditor:
         return oposite_points
 
     def _structure_params(self, structure):
-        '''
-        Get the params that can create a similar structure. 
+        """
+        Get the params that can create a similar structure.
         It only works if the structure is a dataclass.
-        '''
-        return {field.name:getattr(structure, field.name) for field in fields(structure)}
+        """
+        return {field.name: getattr(structure, field.name) for field in fields(structure)}

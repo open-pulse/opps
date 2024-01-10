@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QCheckBox,
@@ -7,12 +10,10 @@ from PyQt5.QtWidgets import (
     QLabel,
     QLineEdit,
     QPushButton,
-    QVBoxLayout,
     QStackedLayout,
+    QVBoxLayout,
     QWidget,
 )
-from PyQt5 import uic
-from pathlib import Path
 
 from opps import app
 from opps.model import Point

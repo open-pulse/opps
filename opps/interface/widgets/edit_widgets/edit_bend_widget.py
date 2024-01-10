@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QCheckBox,
@@ -6,14 +9,12 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QPushButton,
-    QVBoxLayout,
-    QStackedLayout,
-    QWidget,
     QListWidget,
+    QPushButton,
+    QStackedLayout,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5 import uic
-from pathlib import Path
 
 from opps import app
 from opps.model import Bend, Elbow
@@ -46,7 +47,7 @@ class EditBendWidget(QWidget):
         structure = app().get_selected_structure()
         if not isinstance(structure, Bend):
             return
-        
+
         try:
             curvature = float(text)
         except ValueError:
@@ -76,4 +77,3 @@ class EditBendWidget(QWidget):
         index = app().pipeline.structures.index(new_structure)
         app().select_structures([index])
         app().update()
-

@@ -1,9 +1,15 @@
 import qdarktheme
 from PyQt5.QtCore import QSize
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QWidget, QAction
+from PyQt5.QtWidgets import (
+    QAction,
+    QFileDialog,
+    QMainWindow,
+    QVBoxLayout,
+    QWidget,
+)
 
 from opps import app
-from opps.interface.menus import ProjectMenu, ModeMenu
+from opps.interface.menus import ModeMenu, ProjectMenu
 from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
     EditorRenderWidget,
 )
@@ -77,7 +83,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.render_widget)
 
     def _create_periferic_widgets(self):
-        pass 
+        pass
 
     def start_creation_mode(self):
         if self.floating_widget is not None:

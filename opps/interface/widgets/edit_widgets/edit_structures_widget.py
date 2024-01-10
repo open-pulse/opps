@@ -7,14 +7,18 @@ from PyQt5.QtWidgets import (
     QLabel,
     QLineEdit,
     QPushButton,
-    QVBoxLayout,
     QStackedLayout,
+    QVBoxLayout,
     QWidget,
 )
 
-from opps.interface.widgets.edit_widgets import EditPipeWidget, EditBendWidget, EditPointWidget
-from opps.model import Bend, Pipe
 from opps import app
+from opps.interface.widgets.edit_widgets import (
+    EditBendWidget,
+    EditPipeWidget,
+    EditPointWidget,
+)
+from opps.model import Bend, Pipe
 
 
 class EditStructuresWidget(QWidget):
@@ -72,7 +76,7 @@ class EditStructuresWidget(QWidget):
 
         index, *_ = app().selected_structures_index
         structure = app().get_structure(index)
-        
+
         if isinstance(structure, Pipe):
             layout.setCurrentWidget(self.edit_pipe_widget)
         elif isinstance(structure, Bend):

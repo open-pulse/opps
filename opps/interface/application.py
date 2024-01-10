@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import pyqtSignal
-
+from PyQt5.QtWidgets import QApplication
 
 from opps.interface.main_window import MainWindow
 from opps.model import Pipeline
@@ -67,13 +66,13 @@ class Application(QApplication):
 
     def get_structure(self, structure_index):
         return self.pipeline.structures[structure_index]
-    
+
     def get_selected_point(self):
         if not self.selected_points_index:
             return
         first_index, *_ = self.selected_points_index
         return self.get_point(first_index)
-    
+
     def get_selected_structure(self):
         if not self.selected_structures_index:
             return
@@ -125,7 +124,7 @@ class Application(QApplication):
             structure.selected = True
 
         self.selection_changed.emit()
-    
+
     def clear_selection(self):
         for structure in self.pipeline.structures:
             structure.selected = False

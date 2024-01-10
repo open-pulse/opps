@@ -1,5 +1,7 @@
-from PyQt5.QtCore import Qt, pyqtSignal
+from pathlib import Path
+
 from PyQt5 import uic
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QCheckBox,
     QFrame,
@@ -13,7 +15,6 @@ from PyQt5.QtWidgets import (
 )
 
 from .cross_section_widget import CrossSectionWidget
-from pathlib import Path
 
 
 class AddStructuresWidget(QWidget):
@@ -31,7 +32,7 @@ class AddStructuresWidget(QWidget):
         self.configure_window()
         self._define_qt_variables()
         self._create_connections()
-    
+
     def _define_qt_variables(self):
         self.dx_box: QLineEdit = self.findChild(QLineEdit, "dx_box")
         self.dy_box: QLineEdit = self.findChild(QLineEdit, "dy_box")
@@ -42,7 +43,7 @@ class AddStructuresWidget(QWidget):
         self.section_button: QPushButton = self.findChild(QPushButton, "section_button")
         self.material_button: QPushButton = self.findChild(QPushButton, "material_button")
         self.apply_button: QPushButton = self.findChild(QPushButton, "apply_button")
-    
+
     def _create_connections(self):
         self.dx_box.textEdited.connect(self.coords_modified_callback)
         self.dy_box.textEdited.connect(self.coords_modified_callback)
@@ -76,7 +77,7 @@ class AddStructuresWidget(QWidget):
         cross_section = CrossSectionWidget.get_cross_section()
         if cross_section is None:
             return
-        
+
         diameter = cross_section.diameter
         self.render_widget.update_default_diameter(diameter)
 

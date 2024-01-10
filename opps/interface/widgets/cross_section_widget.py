@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QDialog,
@@ -5,12 +6,10 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QVBoxLayout,
 )
-from PyQt5.QtCore import Qt
-
-
-from .filtrable_table import FiltrableTableWidget
 
 from opps.properties import PipeCrossSection
+
+from .filtrable_table import FiltrableTableWidget
 
 # tmp structure
 project_sections = [

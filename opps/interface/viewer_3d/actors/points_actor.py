@@ -44,7 +44,7 @@ class PointsActor(vtk.vtkActor):
         r = int(r * 255)
         g = int(g * 255)
         b = int(b * 255)
-        self.set_color((r,g,b))
+        self.set_color((r, g, b))
         self.GetMapper().ScalarVisibilityOff()
 
     def set_color(self, color):
