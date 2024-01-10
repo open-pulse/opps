@@ -129,21 +129,21 @@
         <number>10</number>
        </property>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="flange_button">
          <property name="text">
           <string>Add Flange</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="bend_button">
          <property name="text">
           <string>Add Bend</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="elbow_button">
          <property name="text">
           <string>Add Elbow</string>
          </property>

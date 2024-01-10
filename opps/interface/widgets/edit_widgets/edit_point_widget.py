@@ -35,15 +35,21 @@ class EditPointWidget(QWidget):
         self.dy_box.setText(str(point.y))
         self.dz_box.setText(str(point.z))
 
-    def _create_connections(self):
-        self.dx_box.textEdited.connect(self.position_edited_callback)
-        self.dy_box.textEdited.connect(self.position_edited_callback)
-        self.dz_box.textEdited.connect(self.position_edited_callback)
-
     def _define_qt_variables(self):
         self.dx_box: QLineEdit = self.findChild(QLineEdit, "dx_box")
         self.dy_box: QLineEdit = self.findChild(QLineEdit, "dy_box")
         self.dz_box: QLineEdit = self.findChild(QLineEdit, "dz_box")
+        self.flange_button: QPushButton = self.findChild(QPushButton, "flange_button")
+        self.bend_button: QPushButton = self.findChild(QPushButton, "bend_button")
+        self.elbow_button: QPushButton = self.findChild(QPushButton, "elbow_button")
+
+    def _create_connections(self):
+        self.dx_box.textEdited.connect(self.position_edited_callback)
+        self.dy_box.textEdited.connect(self.position_edited_callback)
+        self.dz_box.textEdited.connect(self.position_edited_callback)
+        self.flange_button.clicked.connect(self.flange_callback)
+        self.bend_button.clicked.connect(self.bend_callback)
+        self.elbow_button.clicked.connect(self.elbow_callback)
 
     def get_position(self):
         dx = self.dx_box.text()
@@ -66,3 +72,12 @@ class EditPointWidget(QWidget):
 
         point.set_coords(x, y, z)
         app().update()
+
+    def flange_callback(self):
+        print("flange")
+
+    def bend_callback(self):
+        print("bend")
+
+    def elbow_callback(self):
+        print("elbow")
