@@ -11,7 +11,7 @@ class Flange(Structure):
     position: Point
     normal: np.ndarray
     diameter: float = 0.1
-    color: tuple = (255, 255, 255)
+    color: tuple = (172, 236, 236)
     auto: bool = True
 
     def get_points(self):
