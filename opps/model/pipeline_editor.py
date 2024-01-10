@@ -5,6 +5,7 @@ from dataclasses import dataclass, fields
 import numpy as np
 
 from opps.model import Bend, Elbow, Flange, Pipe, Pipeline, Point
+from opps.model.structure import Structure
 
 
 class PipelineEditor:
@@ -28,7 +29,22 @@ class PipelineEditor:
     def move_point(self, position):
         self.active_point.set_coords(*position)
 
+    def remove_point(self, point):
+        if not isinstance(point, Point):
+            return
+
+        structures_to_remove = []
+        for structure in self.pipeline.structures:
+            if point in structure.get_points():
+                structures_to_remove.append(structure)
+
+        for structure in structures_to_remove:
+            self.remove_structure(structure)
+
     def remove_structure(self, structure, rejoin=True):
+        if not isinstance(structure, Structure):
+            return
+
         if rejoin and isinstance(structure, Bend | Elbow):
             structure.colapse()
 
