@@ -15,6 +15,7 @@ class Application(QApplication):
 
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
+        self.pipeline.load("teste.pcf")
 
         self.main_window = MainWindow()
         self.main_window.show()
@@ -23,6 +24,7 @@ class Application(QApplication):
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
         self.main_window.render_widget.update_plot()
+        print("andrezinho")
 
     def open(self, path):
         path = Path(path)
