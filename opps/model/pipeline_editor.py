@@ -244,7 +244,7 @@ class PipelineEditor:
         control_points = list()
         for structure in self.pipeline.structures:
             points.extend(structure.get_points())
-            if isinstance(structure, Bend | Elbow):
+            if not isinstance(structure, Pipe):
                 continue
             control_points.extend(structure.get_points())
 
