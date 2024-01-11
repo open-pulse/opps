@@ -63,7 +63,7 @@ def create_bend(group):
 
     color =  (255,0,0)
 
-    return Bend(start, end, center, diameter=start_radius, color=color)
+    return Bend(start, end, center, curvature=1.5*start_radius, start_diameter=start_radius, end_diameter=end_radius, color=color, auto=False)
 
 def create_flange(group):
 
@@ -94,7 +94,7 @@ def create_elbow(group):
 
     color =  (0,255,0)
 
-    return Elbow(start, end, center, curvature=1.5*start_radius, start_diameter = start_radius, end_diameter = end_radius, color=color)
+    return Elbow(start, end, center, curvature=1.5*start_radius, start_diameter = start_radius, end_diameter = end_radius, color=color, auto=False)
      
      
 
