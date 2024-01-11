@@ -34,6 +34,7 @@ class MainWindow(QMainWindow):
             return
 
         app().open(path)
+        self.render_widget.update_plot()
 
     def save_dialog(self):
         if app().save_path is None:
