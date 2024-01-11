@@ -15,7 +15,7 @@ class Application(QApplication):
 
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
-        self.pipeline.load("teste.pcf")
+       
 
         self.main_window = MainWindow()
         self.main_window.show()
@@ -49,8 +49,8 @@ class Application(QApplication):
         print("Oppening CAD")
 
     def _open_pcf(self, path):
-        print("Oppening PCF")
-
+        self.pipeline.load(path)
+         
     def _save_cad(self, path):
         print("Saving CAD")
 

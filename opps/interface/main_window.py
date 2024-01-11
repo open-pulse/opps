@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         path, check = QFileDialog.getOpenFileName(
             self,
             "Select Geometry",
-            filter="Piping Component File (*.pcf), Geometry Files (*.stp *.step *.iges)",
+            # filter="Piping Component File (*.pcf), Geometry Files (*.stp *.step *.iges)",
         )
 
         if not check:
