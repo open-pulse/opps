@@ -1,8 +1,13 @@
+from dataclasses import dataclass
+from enum import Enum
+
 import numpy as np
 import vtk
 
+from opps import app
 from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
 from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
+from opps.interface.viewer_3d.actors.points_actor import PointsActor
 from opps.interface.viewer_3d.interactor_styles.selection_interactor import (
     SelectionInteractor,
 )
@@ -16,40 +21,19 @@ from opps.model.pipeline_editor import PipelineEditor
 class EditorRenderWidget(CommonRenderWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        # self.style = SelectionInteractor()
-        # self.render_interactor.SetInteractorStyle(self.style)
+        self.left_clicked.connect(self.selection_callback)
 
         self.editor = PipelineEditor()
 
         self.pipeline = Pipeline()
         self.pipeline.load("teste.pcf")
         self.tmp_structure = None
+        self.selected_structure = None
 
         self.pipeline_actor = None
-        self.tmp_structure_actor = None
-
-        self._previous_point = np.array([0, 0, 0])
-        self._current_point = np.array([0, 0, 0])
-        # self.pipeline.add_pipe_from_deltas(
-        #     (236, 0, 0),
-        #     (118, 0, 0),
-        #     (123, 0, -123),
-        #     (0, 380, 0),
-        #     (0, 0, 307),
-        #     (0, 0, 801),
-        # )
-
-        # self.pipeline.add_flange((0,0,0), (1,1,1))
-        # self.pipeline.add_pipe_from_points(
-        #     (0,0,0),
-        #     (1,0,0),
-        #     (2,1,0),
-        #     (2,1,-1),
-        # )
-
-        # self.pipeline.add_pipe((0, 0, 0), (0, 1, 0))
-        # self.pipeline.add_pipe((1, 2, 0), (2, 2, 0))
-        # self.pipeline.add_bend((0, 1, 0), (1, 2, 0), (1, 1, 0))
+        self.control_points_actor = None
+        self.active_point_actor = None
+        self.coords = np.array([0, 0, 0])
 
         self.create_axes()
         self.update_plot()
@@ -57,56 +41,125 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        self.pipeline_actor = self.pipeline.as_vtk()
+        self.pipeline_actor = app().pipeline.as_vtk()
+
+        self.control_points_actor = PointsActor(app().editor.control_points)
+        self.control_points_actor.GetProperty().SetColor(1, 0.7, 0.2)
+        self.control_points_actor.GetProperty().LightingOff()
+
+        self.active_point_actor = PointsActor([app().editor.active_point])
+        self.active_point_actor.GetProperty().SetColor(1, 0, 0)
+        self.active_point_actor.GetProperty().LightingOff()
+
         self.renderer.AddActor(self.pipeline_actor)
-
-        # self.pipeline_actor = self.editor.pipeline.as_vtk()
-        # self.renderer.AddActor(self.pipeline_actor)
-
-        # if self.tmp_structure is not None:
-        #     self.tmp_structure_actor = self.tmp_structure.as_vtk()
-        #     self.tmp_structure_actor.GetProperty().SetOpacity(0.6)
-        #     self.tmp_structure_actor.GetProperty().SetColor(1, 1, 0.5)
-        #     self.tmp_structure_actor.GetProperty().LightingOff()
-        #     self.renderer.AddActor(self.tmp_structure_actor)
+        self.renderer.AddActor(self.control_points_actor)
+        self.renderer.AddActor(self.active_point_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
         self.update()
 
-    def stage_pipe_deltas(self, dx, dy, dz):
-        self.editor.set_deltas((dx, dy, dz))
-        self.editor.add_pipe()
+    def change_index(self, i):
+        if not app().editor.control_points:
+            return
 
-        self._current_point = self._previous_point + (dx, dy, dz)
-        pipe = Pipe(self._previous_point, self._current_point)
-        self.stage_structure(pipe)
+        app().editor.dismiss()
+        if i >= len(app().editor.control_points):
+            i = len(app().editor.control_points) - 1
+
+        self.coords = app().editor.control_points[i].coords()
+        app().editor.set_active_point(i)
+        self.update_plot(reset_camera=False)
+
+    def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
+        self.deselect()
+
+        if (dx, dy, dz) == (0, 0, 0):
+            self.unstage_structure()
+            return
+
+        if not app().editor.staged_structures:
+            self.coords = app().editor.active_point.coords()
+            if auto_bend:
+                app().editor.add_bent_pipe()
+            else:
+                app().editor.add_pipe()
+
+        app().editor.set_deltas((dx, dy, dz))
+        new_position = self.coords + (dx, dy, dz)
+        app().editor.move_point(new_position)
+        app().editor._update_joints()
+        self.update_plot()
+
+    def update_default_diameter(self, d):
+        app().editor.change_diameter(d)
+        for structure in app().editor.staged_structures:
+            structure.set_diameter(d)
+        self.update_plot()
 
     def add_flange(self):
-        self._current_point = self._previous_point
-        self.pipeline.add_oriented_flange(self._current_point)
-        self.tmp_structure = None
-        self.update_plot()
+        self.unstage_structure()
+        app().editor.add_flange()
+        app().editor.add_bent_pipe()
 
     def stage_structure(self, structure):
         self.tmp_structure = structure
         self.update_plot()
 
     def commit_structure(self):
-        self.editor.commit()
-        self.pipeline.add_structure(self.tmp_structure, auto_connect=True)
-        self.tmp_structure = None
-        self._previous_point = self._current_point
+        self.coords = app().editor.active_point.coords()
+        app().editor.commit()
         self.update_plot()
 
     def unstage_structure(self):
-        self.editor.dismiss()
-        self.tmp_structure = None
-        self._current_point = self._previous_point
-        self.update_plot(reset_camera=False)
+        app().editor.dismiss()
+        self.update_plot()
 
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
-        self.renderer.RemoveActor(self.tmp_structure_actor)
+        self.renderer.RemoveActor(self.control_points_actor)
+        self.renderer.RemoveActor(self.active_point_actor)
+
         self.pipeline_actor = None
-        self.tmp_structure_actor = None
+        self.control_points_actor = None
+        self.active_point_actor = None
+
+    def selection_callback(self, x, y):
+        self.deselect()
+
+        self.selection_picker = vtk.vtkCellPicker()
+        self.selection_picker.SetTolerance(0.005)
+
+        # Disable pipeline actor pickability to give priority to points
+        if self.pipeline_actor.GetPickable():
+            self.pipeline_actor.PickableOff()
+            self.selection_picker.Pick(x, y, 0, self.renderer)
+            self.pipeline_actor.PickableOn()
+
+            clicked_actor = self.selection_picker.GetActor()
+            clicked_cell = self.selection_picker.GetCellId()
+            if clicked_actor == self.control_points_actor:
+                self.change_index(clicked_cell)
+                return
+
+        # if no points were selected then try the pipeline
+        self.selection_picker.Pick(x, y, 0, self.renderer)
+        clicked_actor = self.selection_picker.GetActor()
+        clicked_cell = self.selection_picker.GetCellId()
+
+        if clicked_actor == self.pipeline_actor:
+            data: vtk.vtkPolyData = clicked_actor.GetMapper().GetInput()
+            cell_identifier = data.GetCellData().GetArray("cell_identifier")
+            if cell_identifier is None:
+                return
+            structure_index = cell_identifier.GetValue(clicked_cell)
+            self.selected_structure = app().pipeline.components[structure_index]
+            self.selected_structure.color = app().editor.selection_color
+            app().editor.dismiss()
+
+        self.update_plot(reset_camera=False)
+
+    def deselect(self):
+        if self.selected_structure is not None:
+            self.selected_structure.color = (255, 255, 255)
+            self.selected_structure = None

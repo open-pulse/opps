@@ -4,162 +4,246 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from opps.model import Bend, Elbow, Flange, Pipe, Pipeline
+from opps.model import Bend, Elbow, Flange, Pipe, Pipeline, Point
 
 
 class PipelineEditor:
-    def __init__(self, origin=(0, 0, 0)):
-        self.control_points_to_structure = defaultdict(list)
-        self.structure_to_control_points = defaultdict(list)
+    def __init__(self, pipeline: Pipeline, origin=(0, 0, 0)):
+        self.pipeline = pipeline
 
-        self.current_point = np.array(origin)
-        self.deltas = np.array(origin)
+        self.origin = Point(*origin)
+        self.control_points = [self.origin]
+        self.deltas = np.array([0, 0, 0])
+        self.active_point = self.control_points[0]
 
-        self.pipeline = Pipeline()
+        self.default_diameter = 0.2
+        self.selection_color = (247, 0, 20)
+
         self.staged_structures = []
-        self.backup = []
+
+    def set_active_point(self, index):
+        self.active_point = self.control_points[index]
 
     def set_deltas(self, deltas):
         self.deltas = np.array(deltas)
 
-    def add_pipe(self):    
-        self.dismiss()
+    def move_point(self, position):
+        self.active_point.set_coords(*position)
 
-        if (self.deltas == (0,0,0)).all():
-            return
-        
-        connected_pipes = self.pipeline.find_pipes_at(self.current_point)
-        self.backup.extend(connected_pipes)
-        for structure in connected_pipes:
-            self.pipeline.remove_structure(structure)
-        
-        new_pipe = Pipe(self.current_point, self.current_point + self.deltas)
-        new_pipe.color = (255, 0, 0)
-        self.staged_structures.append(new_pipe)
-        
-        connected_pipes_copy = deepcopy(connected_pipes)
-        self.staged_structures.extend(connected_pipes_copy)
-        bends = self.add_joints(self.staged_structures)
-        for bend in bends:
-            bend.color = (255, 0, 0)
+    def change_diameter(self, diameter):
+        self.default_diameter = diameter
 
-        for structure in self.staged_structures:
-            self.pipeline.add_structure(structure)
+    def get_diameters_at_point(self):
+        diameters = []
+        for structure in self.pipeline.components:
+            if self.active_point in structure.get_points():
+                diameters.extend(structure.get_diameters())
+        return diameters
+
+    def add_pipe(self, deltas=None):
+        if deltas != None:
+            self.deltas = deltas
+
+        current_point = self.active_point
+        next_point = Point(*(current_point.coords() + self.deltas))
+
+        new_pipe = Pipe(current_point, next_point, color=self.selection_color)
+        new_pipe.set_diameter(self.default_diameter)
+
+        self.add_structure(new_pipe)
+        self.active_point = next_point
+        return new_pipe
+
+    def add_bend(self, curvature_radius=0.3):
+        start_point = self.active_point
+        end_point = deepcopy(start_point)
+        corner_point = deepcopy(start_point)
+
+        # Reuse joints if it already exists
+        # Actually it should replace the existing joint
+        for joint in self.pipeline.components:
+            if not isinstance(joint, Bend | Elbow):
+                continue
+            if joint.corner == start_point:
+                return joint
+
+        new_bend = Bend(
+            start_point, end_point, corner_point, curvature_radius, color=self.selection_color
+        )
+        new_bend.set_diameter(self.default_diameter)
+        self.add_structure(new_bend)
+        self.active_point = end_point
+        return new_bend
+
+    def add_elbow(self, curvature_radius=0.3):
+        start_point = self.active_point
+        end_point = deepcopy(start_point)
+        corner_point = deepcopy(start_point)
+
+        # Reuse joints if it already exists
+        # Actually it should replace the existing joint
+        for joint in self.pipeline.components:
+            if not isinstance(joint, Bend | Elbow):
+                continue
+            if joint.corner == start_point:
+                return joint
+
+        new_elbow = Elbow(
+            start_point, end_point, corner_point, curvature_radius, color=self.selection_color
+        )
+        new_elbow.set_diameter(self.default_diameter)
+        self.add_structure(new_elbow)
+        self.active_point = end_point
+        return new_elbow
 
     def add_flange(self):
-        new_flange = Flange(self.current_point)
-        # self.control_points_to_structure[tuple(self.current_point)].append(new_flange)
-        # self.structure_to_control_points[new_flange].append(new_flange)
-    
-    def dismiss(self):
-        for structure in self.staged_structures:
-            self.pipeline.remove_structure(structure)
-        self.staged_structures.clear()
-        
-        for structure in self.backup:
-            self.pipeline.add_structure(structure)
-        self.backup.clear()
+        for flange in self.pipeline.components:
+            if not isinstance(flange, Flange):
+                continue
+            if flange.position == self.active_point:
+                return flange
+
+        new_flange = Flange(
+            self.active_point, normal=np.array([1, 0, 0]), color=self.selection_color
+        )
+        new_flange.set_diameter(self.default_diameter)
+        self.add_structure(new_flange)
+        return new_flange
+
+    def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
+        self.add_bend(curvature_radius)
+        return self.add_pipe(deltas)
+
+    def add_structure(self, structure):
+        self.pipeline.add_structure(structure)
+        self.staged_structures.append(structure)
+        self._update_joints()
+        self._update_control_points()
+        return structure
+
+    def _update_joints(self):
+        self._update_curvatures()
+        self._update_flanges()
+
+    def _update_curvatures(self):
+        for joint in self.pipeline.components:
+            if not isinstance(joint, Bend | Elbow):
+                continue
+
+            if not joint.auto:
+                continue
+
+            connected_points = (
+                self._connected_points(joint.start)
+                + self._connected_points(joint.end)
+                + self._connected_points(joint.corner)
+            )
+
+            if len(connected_points) != 2:
+                joint.colapse()
+                continue
+
+            oposite_a, oposite_b, *_ = connected_points
+            joint.normalize_values(oposite_a, oposite_b)
+
+    def _update_flanges(self):
+        for flange in self.pipeline.components:
+            if not isinstance(flange, Flange):
+                continue
+
+            if not flange.auto:
+                continue
+
+            connected_points = self._connected_points(flange.position)
+            if not connected_points:
+                continue
+
+            oposite_a, *_ = connected_points
+            flange.normal = flange.position.coords() - oposite_a.coords()
+
+    def _update_control_points(self):
+        control_points = list()
+        for structure in self.pipeline.components:
+            if isinstance(structure, Bend | Elbow):
+                continue
+            control_points.extend(structure.get_points())
+
+        point_to_index = {v: i for i, v in enumerate(control_points)}
+        indexes_to_remove = []
+
+        for structure in self.pipeline.components:
+            if not isinstance(structure, Bend | Elbow):
+                continue
+
+            if (structure.start in point_to_index) and (structure.end in point_to_index):
+                indexes_to_remove.append(point_to_index[structure.start])
+                indexes_to_remove.append(point_to_index[structure.end])
+                control_points.append(structure.corner)
+
+            elif structure.start in point_to_index:
+                indexes_to_remove.append(point_to_index[structure.start])
+                control_points.append(structure.end)
+
+            elif structure.end in point_to_index:
+                indexes_to_remove.append(point_to_index[structure.end])
+                control_points.append(structure.start)
+
+            else:
+                control_points.append(structure.end)
+                control_points.append(structure.start)
+                control_points.append(structure.corner)
+
+        for i in sorted(indexes_to_remove, reverse=True):
+            control_points.pop(i)
+
+        if not control_points:
+            control_points.append(self.origin)
+
+        self.control_points = list(control_points)
+
+    def _connected_points(self, point):
+        oposite_points = []
+        for pipe in self.pipeline.components:
+            if not isinstance(pipe, Pipe):
+                continue
+
+            if id(pipe.start) == id(point):
+                oposite_points.append(pipe.end)
+
+            elif id(pipe.end) == id(point):
+                oposite_points.append(pipe.start)
+
+        return oposite_points
+
+    def remove_structure(self, structure):
+        if isinstance(structure, Bend | Elbow):
+            structure.colapse()
+        index = self.pipeline.components.index(structure)
+        if index >= 0:
+            self.pipeline.components.pop(index)
 
     def commit(self):
-        self.current_point = self.current_point + self.deltas
+        self._update_control_points()
         for structure in self.staged_structures:
             structure.color = (255, 255, 255)
         self.staged_structures.clear()
-        self.backup.clear()
 
-    def reposition_structure(self, obj):
-        if isinstance(obj, Pipe):
-            self.reposition_pipe(obj)
-        elif isinstance(obj):
-            self.reposition_flange(obj)
+    def dismiss(self):
+        staged_points = []
+        for structure in self.staged_structures:
+            staged_points.extend(structure.get_points())
+            self.remove_structure(structure)
+        self.staged_structures.clear()
+        self._update_joints()
+        self._update_control_points()
+
+        control_hashes = set(self.control_points)
+        if self.active_point in control_hashes:
+            return
+
+        for point in staged_points:
+            if point in control_hashes:
+                self.active_point = point
+                break
         else:
-            raise ValueError("OPSI")
-
-    def reposition_pipe(self, pipe: Pipe):
-        pipe.start = self.current_point
-        pipe.end = pipe.start + self.deltas
-
-    def reposition_flange(self, flange: Flange):
-        flange.position = flange
-
-    def move_control_point(self, origin, target):
-        origin_structures = self.control_points_to_structure[origin]
-        # do stuff...
-
-    def recalculate_control_points(self):
-        self.control_points_to_structure.clear()
-        pipes = [i for i in self.pipeline.components if isinstance(i, Pipe)]
-        joints = [i for i in self.pipeline.components if isinstance(i, Bend)]
-
-        for pipe in pipes:
-            self.control_points_to_structure[tuple(pipe.start)].append(pipe)
-            self.control_points_to_structure[tuple(pipe.end)].append(pipe)
-
-        for joint in joints:
-            start_structures = self.control_points_to_structure.pop(tuple(joint.start), None)
-            end_structures = self.control_points_to_structure.pop(tuple(joint.end), None)
-            merged_structures = [joint] + start_structures + end_structures
-            self.control_points_to_structure[tuple(joint.get_corner())] = merged_structures
-        
-    def add_joints(self, structures):
-        pipe_groups = defaultdict(list)
-        pipes = [i for i in structures if isinstance(i, Pipe)]
-        bends = []
-
-        for pipe in pipes:
-            pipe_groups[tuple(pipe.start)].append(pipe)
-            pipe_groups[tuple(pipe.end)].append(pipe)
-
-        for pipe_group in pipe_groups.values():
-            if len(pipe_group) != 2:
-                continue
-            bend = self.connect_pipes_with_bend(*pipe_group)
-            if bend is not None:
-                bends.append(bend)
-
-        structures.extend(bends)
-
-        return bends
-    
-    def connect_pipes_with_bend(self, pipe_a, pipe_b):
-        # avoid configurations like ← → or → ←
-        if (pipe_a.start == pipe_b.end).all():
-            pipe_a, pipe_b = pipe_b, pipe_a
-        elif (pipe_a.end == pipe_b.end).all():
-            pipe_b.start, pipe_b.end = pipe_b.end, pipe_b.start
-        elif (pipe_a.start == pipe_b.start).all():
-            pipe_a.start, pipe_a.end = pipe_a.end, pipe_a.start
-
-        bend = Bend(start=pipe_a.start, 
-                    end=pipe_b.end, 
-                    corner=pipe_a.end,
-                    curvature=pipe_a.radius)
-
-        if np.isnan(bend.center).any():
-            return None
-
-        pipe_a.end = bend.start
-        pipe_b.start = bend.end
-        return bend
-
-    def remove_joints(self, structures):
-        joints = [i for i in structures if isinstance(i, Bend)]
-        pipes = [i for i in structures if isinstance(i, Pipe)]
-
-        indexes_to_remove = []
-        for i, s in enumerate(structures):
-            if isinstance(s, Bend):
-                indexes_to_remove.append(i)
-        indexes_to_remove.sort(reverse=True)
-
-        for i in indexes_to_remove:
-            structures.pop(i)
-
-        replace_dict = dict()
-        for joint in joints:
-            replace_dict[tuple(joint.start)] = joint.get_corner()
-            replace_dict[tuple(joint.end)] = joint.get_corner()
-
-        for pipe in pipes:
-            pipe.start = np.array(replace_dict.get(tuple(pipe.start), pipe.start))
-            pipe.end = np.array(replace_dict.get(tuple(pipe.end), pipe.end))
+            self.set_active_point(-1)

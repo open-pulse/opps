@@ -4,7 +4,7 @@ from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 from opps.model.pipe import Pipe
 from opps.model.pipeline import Pipeline
 
-from .utils import paint_data
+from .utils import fill_cell_identifier, paint_data
 
 
 class PipelineActor(vtk.vtkActor):
@@ -18,9 +18,10 @@ class PipelineActor(vtk.vtkActor):
     def create_geometry(self):
         append_filter = vtk.vtkAppendPolyData()
 
-        for shape in self.pipeline.components:
-            actor = shape.as_vtk()
-            append_filter.AddInputData(actor.GetMapper().GetInput())
+        for i, shape in enumerate(self.pipeline.components):
+            shape_data = shape.as_vtk().GetMapper().GetInput()
+            fill_cell_identifier(shape_data, i)
+            append_filter.AddInputData(shape_data)
         append_filter.Update()
 
         normals_filter = vtk.vtkPolyDataNormals()

@@ -12,14 +12,14 @@ class FlangeActor(vtk.vtkActor):
         self.create_geometry()
 
     def create_geometry(self):
-        width = 0.3 * self.flange.radius
+        width = 0.15 * self.flange.diameter
         y_vector = np.array((0, 1, 0))
 
         disk_source = vtk.vtkDiskSource()
         disk_source.SetCenter((0, 0, 0) - y_vector * width / 2)
         disk_source.SetNormal(y_vector)
-        disk_source.SetInnerRadius(self.flange.radius)
-        disk_source.SetOuterRadius(self.flange.radius + width)
+        disk_source.SetInnerRadius(self.flange.diameter / 2)
+        disk_source.SetOuterRadius(self.flange.diameter / 2 + width)
         disk_source.SetCircumferentialResolution(50)
         disk_source.Update()
 
@@ -40,21 +40,32 @@ class FlangeActor(vtk.vtkActor):
             nut.SetHeight(width * 3 / 2)
             nut.SetRadius(width / 3)
             nut.SetCenter(
-                (self.flange.radius + width / 2) * np.sin(angle),
+                (self.flange.diameter / 2 + width / 2) * np.sin(angle),
                 0,
-                (self.flange.radius + width / 2) * np.cos(angle),
+                (self.flange.diameter / 2 + width / 2) * np.cos(angle),
             )
             nut.Update()
             append_polydata.AddInputData(nut.GetOutput())
         append_polydata.Update()
 
         unit_normal = self.flange.normal / np.linalg.norm(self.flange.normal)
-        angle_x = np.arccos(np.dot(y_vector, unit_normal))
-        angle_y = np.arccos(np.dot((0, 0, 1), unit_normal))
+
+        proj_xz = self.flange.normal.copy()
+        proj_xz[1] = 0
+        if np.linalg.norm(proj_xz) == 0:
+            ry = 0
+        else:
+            proj_xz = proj_xz / np.linalg.norm(proj_xz)
+            ry = np.arccos(np.dot(proj_xz, [1, 0, 0]))
+
+        rz = -np.arccos(np.dot(unit_normal, [0, 1, 0]))
+        if unit_normal[2] > 0:
+            ry = -ry
+
         transform = vtk.vtkTransform()
-        transform.Translate(self.flange.position)
-        transform.RotateY(np.degrees(angle_y))
-        transform.RotateX(np.degrees(angle_x))
+        transform.Translate(self.flange.position.coords())
+        transform.RotateY(np.degrees(ry))
+        transform.RotateZ(np.degrees(rz))
         transform.Update()
 
         transform_filter = vtk.vtkTransformFilter()
