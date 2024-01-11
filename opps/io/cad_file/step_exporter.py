@@ -13,21 +13,22 @@ class StepExporter:
         for component in pipeline.components: 
 
             if isinstance(component, Pipe):
-                start_point = gmsh.model.occ.add_point(*component.start)
-                end_point = gmsh.model.occ.add_point(*component.end)
+                start_point = gmsh.model.occ.add_point(*component.start.coords())
+                end_point = gmsh.model.occ.add_point(*component.end.coords())
 
                 gmsh.model.occ.add_line(start_point, end_point)
 
             elif isinstance(component, Bend):
-                start_point = gmsh.model.occ.add_point(*component.start)
-                end_point = gmsh.model.occ.add_point(*component.end)
-                center_point = gmsh.model.occ.add_point(*component.center)
+                if (component.start.coords() == component.end.coords()).all():
+                    continue
+                start_point = gmsh.model.occ.add_point(*component.start.coords())
+                end_point = gmsh.model.occ.add_point(*component.end.coords())
+                center_point = gmsh.model.occ.add_point(*component.center.coords())
 
                 gmsh.model.occ.add_circle_arc(start_point, center_point, end_point)
 
         gmsh.model.occ.synchronize()
-        gmsh.write(path)
-        gmsh.fltk.run()
+        gmsh.write(str(path))
 
 
 

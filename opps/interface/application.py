@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QApplication
 from opps.interface.main_window import MainWindow
 from opps.model import Pipeline
 from opps.model.pipeline_editor import PipelineEditor
+from opps.io.cad_file.step_exporter import *
+
 
 
 class Application(QApplication):
@@ -50,6 +52,8 @@ class Application(QApplication):
         print("Oppening PCF")
 
     def _save_cad(self, path):
+        exporter = StepExporter()
+        exporter.save(path, self.pipeline)
         print("Saving CAD")
 
     def _save_pcf(self, path):
