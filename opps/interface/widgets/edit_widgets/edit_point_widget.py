@@ -74,10 +74,19 @@ class EditPointWidget(QWidget):
         app().update()
 
     def flange_callback(self):
-        print("flange")
+        app().editor.add_flange()
+        app().editor.commit()
+        app().clear_selection()
+        app().update()
 
     def bend_callback(self):
-        print("bend")
+        app().editor.add_bend()
+        app().editor.commit()
+        app().clear_selection()
+        app().update()
 
     def elbow_callback(self):
-        print("elbow")
+        app().editor.add_elbow()
+        app().editor.commit()
+        app().clear_selection()
+        app().update()
