@@ -65,7 +65,7 @@ class Application(QApplication):
         print("Saving PCF")
 
     def get_point(self, point_index) -> Point:
-        return self.editor.control_points[point_index]
+        return self.editor.points[point_index]
 
     def get_structure(self, structure_index) -> Structure:
         return self.pipeline.structures[structure_index]
@@ -141,5 +141,5 @@ class Application(QApplication):
 
     def update(self):
         self.editor._update_joints()
-        self.editor._update_control_points()
+        self.editor._update_points()
         self.main_window.render_widget.update_plot(reset_camera=False)

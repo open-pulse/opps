@@ -26,10 +26,11 @@ class EditorRenderWidget(CommonRenderWidget):
         self.left_clicked.connect(self.selection_callback)
         app().selection_changed.connect(self.update_selection)
 
+        self.show_passive_points = True
         self.selected_structure = None
-
         self.pipeline_actor = None
         self.control_points_actor = None
+        self.passive_points_actor = None
         self.selected_points = None
         self.coords = np.array([0, 0, 0])
 
@@ -42,7 +43,14 @@ class EditorRenderWidget(CommonRenderWidget):
         self.pipeline_actor = app().pipeline.as_vtk()
 
         self.control_points_actor = PointsActor(app().editor.control_points)
-        self.control_points_actor.set_color((255, 178, 51))
+        self.control_points_actor.set_color((255, 180, 50))
+        self.control_points_actor.PickableOff()
+
+        self.passive_points_actor = PointsActor(app().editor.points)
+        self.passive_points_actor.set_color((255, 200, 1101))
+        self.passive_points_actor.GetProperty().RenderPointsAsSpheresOff()
+        self.passive_points_actor.GetProperty().SetPointSize(12)
+        self.passive_points_actor.set_visibility_offset(-10000)
 
         list_points = list(app().get_selected_points())
         self.selected_points = PointsActor(list_points)
@@ -51,6 +59,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.renderer.AddActor(self.pipeline_actor)
         self.renderer.AddActor(self.control_points_actor)
+        self.renderer.AddActor(self.passive_points_actor)
         self.renderer.AddActor(self.selected_points)
 
         if reset_camera:
@@ -58,14 +67,14 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def change_index(self, i):
-        if not app().editor.control_points:
+        if not app().editor.points:
             return
 
         app().editor.dismiss()
-        if i >= len(app().editor.control_points):
-            i = len(app().editor.control_points) - 1
+        if i >= len(app().editor.points):
+            i = len(app().editor.points) - 1
 
-        self.coords = app().editor.control_points[i].coords()
+        self.coords = app().editor.points[i].coords()
         app().editor.set_active_point(i)
         self.update_plot(reset_camera=False)
 
@@ -116,10 +125,12 @@ class EditorRenderWidget(CommonRenderWidget):
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
         self.renderer.RemoveActor(self.control_points_actor)
+        self.renderer.RemoveActor(self.passive_points_actor)
         self.renderer.RemoveActor(self.selected_points)
 
         self.pipeline_actor = None
         self.control_points_actor = None
+        self.passive_points_actor = None
         self.selected_points = None
 
     def selection_callback(self, x, y):
@@ -162,7 +173,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
         clicked_actor = self.selection_picker.GetActor()
         clicked_cell = self.selection_picker.GetCellId()
-        if clicked_actor == self.control_points_actor:
+        if clicked_actor == self.passive_points_actor:
             return clicked_cell
 
     def _pick_structure(self, x, y):

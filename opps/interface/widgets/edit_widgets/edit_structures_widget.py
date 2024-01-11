@@ -25,6 +25,9 @@ class EditStructuresWidget(QWidget):
     def __init__(self, parent, render_widget):
         super().__init__(parent)
 
+        self.render_widget = render_widget
+        self.render_widget.show_passive_points = True
+
         self.edit_pipe_widget = EditPipeWidget()
         self.edit_bend_widget = EditBendWidget()
         self.edit_point_widget = EditPointWidget()

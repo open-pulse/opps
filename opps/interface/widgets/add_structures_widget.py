@@ -28,6 +28,7 @@ class AddStructuresWidget(QWidget):
         uic.loadUi(Path("data/ui_files/add_structure.ui"), self)
 
         self.render_widget = render_widget
+        self.render_widget.show_passive_points = False
 
         self.configure_window()
         self._define_qt_variables()
@@ -106,6 +107,7 @@ class AddStructuresWidget(QWidget):
         )
 
     def closeEvent(self, a0) -> None:
+        self.render_widget.show_passive_points = True
         self.render_widget.unstage_structure()
         return super().closeEvent(a0)
 

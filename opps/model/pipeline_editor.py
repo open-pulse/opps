@@ -14,19 +14,22 @@ class PipelineEditor:
 
         self.origin = Point(*origin)
         self.control_points = [self.origin]
+        self.points = [self.origin]
         self.deltas = np.array([0, 0, 0])
-        self.active_point = self.control_points[0]
+        self.active_point = self.points[0]
 
         self.default_diameter = 0.2
         self.staged_structures = []
 
     def set_active_point(self, index):
-        self.active_point = self.control_points[index]
+        self.active_point = self.points[index]
 
     def set_deltas(self, deltas):
         self.deltas = np.array(deltas)
 
     def move_point(self, position):
+        if self.active_point not in self.control_points:
+            return
         self.active_point.set_coords(*position)
 
     def remove_point(self, point):
@@ -61,7 +64,7 @@ class PipelineEditor:
         return new_structure
 
     def commit(self):
-        self._update_control_points()
+        self._update_points()
         for structure in self.pipeline.structures:
             structure.staged = False
         self.staged_structures.clear()
@@ -73,9 +76,9 @@ class PipelineEditor:
             self.remove_structure(structure)
         self.staged_structures.clear()
         self._update_joints()
-        self._update_control_points()
+        self._update_points()
 
-        control_hashes = set(self.control_points)
+        control_hashes = set(self.points)
         if self.active_point in control_hashes:
             return
 
@@ -99,6 +102,9 @@ class PipelineEditor:
     def add_pipe(self, deltas=None):
         if deltas != None:
             self.deltas = deltas
+        
+        if self.active_point not in self.control_points:
+            return
 
         current_point = self.active_point
         next_point = Point(*(current_point.coords() + self.deltas))
@@ -119,7 +125,7 @@ class PipelineEditor:
         for joint in self.pipeline.structures:
             if not isinstance(joint, Bend | Elbow):
                 continue
-            if joint.corner == start_point:
+            if start_point in joint.get_points():
                 return self.morph(joint, Bend)
 
         new_bend = Bend(start_point, end_point, corner_point, curvature_radius)
@@ -152,6 +158,15 @@ class PipelineEditor:
                 continue
             if flange.position == self.active_point:
                 return flange
+        
+        for joint in self.pipeline.structures:
+            if not isinstance(joint, Bend | Elbow):
+                continue
+            if joint.corner == self.active_point:
+                new_flange = Flange(joint.start, normal=np.array([1, 0, 0]))
+                new_flange.set_diameter(self.default_diameter)
+                self.add_structure(new_flange)
+                return new_flange
 
         new_flange = Flange(self.active_point, normal=np.array([1, 0, 0]))
         new_flange.set_diameter(self.default_diameter)
@@ -159,6 +174,9 @@ class PipelineEditor:
         return new_flange
 
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
+        if self.active_point not in self.control_points:
+            return
+
         self.add_bend(curvature_radius)
         return self.add_pipe(deltas)
 
@@ -167,7 +185,7 @@ class PipelineEditor:
         self.pipeline.add_structure(structure)
         self.staged_structures.append(structure)
         self._update_joints()
-        self._update_control_points()
+        self._update_points()
         return structure
 
     def _update_joints(self):
@@ -221,9 +239,11 @@ class PipelineEditor:
             oposite_a, *_ = connected_points
             flange.normal = flange.position.coords() - oposite_a.coords()
 
-    def _update_control_points(self):
+    def _update_points(self):
+        points = list()
         control_points = list()
         for structure in self.pipeline.structures:
+            points.extend(structure.get_points())
             if isinstance(structure, Bend | Elbow):
                 continue
             control_points.extend(structure.get_points())
@@ -258,8 +278,10 @@ class PipelineEditor:
 
         if not control_points:
             control_points.append(self.origin)
+            points.append(self.origin)
 
         self.control_points = list(control_points)
+        self.points = list(points)
 
     def _connected_points(self, point):
         oposite_points = []
