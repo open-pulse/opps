@@ -24,3 +24,6 @@ class Flange(Structure):
         from opps.interface.viewer_3d.actors.flange_actor import FlangeActor
 
         return FlangeActor(self)
+
+    def __hash__(self) -> int:
+        return id(self)

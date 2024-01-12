@@ -74,6 +74,5 @@ class EditBendWidget(QWidget):
         if not isinstance(structure, Bend):
             return
         new_structure = app().editor.morph(structure, _type)
-        index = app().pipeline.structures.index(new_structure)
-        app().select_structures([index])
+        app().select_structures([new_structure])
         app().update()

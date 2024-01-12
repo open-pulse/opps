@@ -149,10 +149,10 @@ class EditorRenderWidget(CommonRenderWidget):
             return
 
         # If no points were found try structures
-        structure_index = self._pick_structure(x, y)
-        if structure_index is not None:
+        selected_structure = self._pick_structure(x, y)
+        if selected_structure is not None:
             app().select_structures(
-                [structure_index], 
+                [selected_structure], 
                 join=ctrl_pressed | shift_pressed, 
                 remove=alt_pressed
             )
@@ -189,7 +189,7 @@ class EditorRenderWidget(CommonRenderWidget):
             if cell_identifier is None:
                 return
             structure_index = cell_identifier.GetValue(clicked_cell)
-            return structure_index
+            return app().pipeline.structures[structure_index]
 
     def update_selection(self):
         if app().selected_points:
@@ -199,7 +199,7 @@ class EditorRenderWidget(CommonRenderWidget):
             self.change_anchor(point)
 
         # Only dismiss structure creation if something was actually selected
-        something_selected = app().selected_points or app().selected_structures_index
+        something_selected = app().selected_points or app().selected_structures
         if something_selected:
             app().editor.dismiss()
 

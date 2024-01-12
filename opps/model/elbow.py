@@ -15,3 +15,6 @@ class Elbow(Bend):
         from opps.interface.viewer_3d.actors.elbow_actor import ElbowActor
 
         return ElbowActor(self)
+
+    def __hash__(self) -> int:
+        return id(self)

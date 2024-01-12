@@ -67,3 +67,6 @@ class Pipeline(Structure):
         )
 
         return PipelineActor(self)
+
+    def __hash__(self) -> int:
+        return id(self)

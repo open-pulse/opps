@@ -23,4 +23,4 @@ class Point:
         yield self.z
 
     def __hash__(self) -> int:
-        return hash(id(self))
+        return id(self)

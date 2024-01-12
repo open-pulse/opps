@@ -65,7 +65,7 @@ class EditStructuresWidget(QWidget):
     def selection_callback(self):
         layout: QStackedLayout = self.layout()
 
-        if app().selected_structures_index:
+        if app().selected_structures:
             self._structures_selection_callback()
         elif app().selected_points:
             layout.setCurrentWidget(self.edit_point_widget)
@@ -77,8 +77,7 @@ class EditStructuresWidget(QWidget):
     def _structures_selection_callback(self):
         layout: QStackedLayout = self.layout()
 
-        index, *_ = app().selected_structures_index
-        structure = app().get_structure(index)
+        structure, *_ = app().selected_structures
 
         if isinstance(structure, Pipe):
             layout.setCurrentWidget(self.edit_pipe_widget)
