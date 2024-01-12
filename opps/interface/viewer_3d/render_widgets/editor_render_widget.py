@@ -24,6 +24,7 @@ class EditorRenderWidget(CommonRenderWidget):
         super().__init__(parent)
         self.left_clicked.connect(self.selection_callback)
 
+        self.tmp_structure = None
         self.selected_structure = None
 
         self.pipeline_actor = None

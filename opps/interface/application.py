@@ -17,6 +17,7 @@ class Application(QApplication):
 
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
+       
 
         self.main_window = MainWindow()
         self.main_window.show()
@@ -25,6 +26,7 @@ class Application(QApplication):
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
         self.main_window.render_widget.update_plot()
+        print("andrezinho")
 
     def open(self, path):
         path = Path(path)
@@ -49,8 +51,8 @@ class Application(QApplication):
         print("Oppening CAD")
 
     def _open_pcf(self, path):
-        print("Oppening PCF")
-
+        self.pipeline.load(path)
+         
     def _save_cad(self, path):
         exporter = StepExporter()
         exporter.save(path, self.pipeline)

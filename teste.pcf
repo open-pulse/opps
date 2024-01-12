@@ -1,0 +1,477 @@
+ISOGEN-FILES       ISOGEN.FLS
+UNITS-BORE         MM
+UNITS-CO-ORDS      MM
+UNITS-WEIGHT       KGS
+UNITS-BOLT-DIA     MM
+UNITS-BOLT-LENGTH  MM
+PIPELINE-REFERENCE  _NO_LINE_
+PIPE
+    END-POINT            -114.00      342.00       0.00         300.00  
+    END-POINT            -116.00      342.00       0.00         300.00  
+    ITEM-CODE            $R2W_4295032832
+    R2_OUTER_DIAM        323.850
+    R2_WALL_THK          9.525
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            -573.00      -115.00      0.00         300.00  
+    END-POINT            -573.00      -4193.00     0.00         300.00  
+    ITEM-CODE            $R2W_4295032833
+    R2_OUTER_DIAM        323.850
+    R2_WALL_THK          9.525
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+ELBOW
+    END-POINT            -116.00      342.00       0.00         300.00  
+    END-POINT            -573.00      -115.00      0.00         300.00  
+    CENTRE-POINT         -573.00      342.00       0.00        
+    SKEY                 ELBW
+    ITEM-CODE            $R2W_8590000128
+    R2_OUTER_DIAM        323.850
+    R2_WALL_THK          9.525
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            -226.85      -4650.00     298.38       300.00  
+    END-POINT            4442.85      -4650.00     4323.62      300.00  
+    ITEM-CODE            $R2W_4295032834
+    R2_OUTER_DIAM        323.850
+    R2_WALL_THK          9.525
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+ELBOW
+    END-POINT            -573.00      -4193.00     0.00         300.00  
+    END-POINT            -226.85      -4650.00     298.38       300.00  
+    CENTRE-POINT         -573.00      -4650.00     0.00        
+    SKEY                 ELBW
+    ITEM-CODE            $R2W_8590000129
+    R2_OUTER_DIAM        323.850
+    R2_WALL_THK          9.525
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            4789.00      -4193.00     4622.00      300.00  
+    END-POINT            4789.00      -3223.00     4622.00      300.00  
+    ITEM-CODE            $R2W_4295032835
+    R2_OUTER_DIAM        323.850
+    R2_WALL_THK          9.525
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+ELBOW
+    END-POINT            4442.85      -4650.00     4323.62      300.00  
+    END-POINT            4789.00      -4193.00     4622.00      300.00  
+    CENTRE-POINT         4789.00      -4650.00     4622.00     
+    SKEY                 ELBW
+    ITEM-CODE            $R2W_8590000130
+    R2_OUTER_DIAM        323.850
+    R2_WALL_THK          9.525
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+FLANGE
+    END-POINT            4789.00      -3109.00     4622.00      300.00  
+    END-POINT            4789.00      -3223.00     4622.00      300.00  
+    SKEY                 FLWN
+    ITEM-CODE            $R2W_21474902016
+    WEIGHT               36.29
+    R2_OUTER_DIAM        323.850
+    R2_WALL_THK          9.525
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+FLANGE
+    END-POINT            0.00         342.00       0.00         300.00  
+    END-POINT            -114.00      342.00       0.00         300.00  
+    SKEY                 FLWN
+    ITEM-CODE            $R2W_21474902017
+    WEIGHT               36.29
+    R2_OUTER_DIAM        323.850
+    R2_WALL_THK          9.525
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            4789.00      -3109.00     4622.00      15.00   
+    END-POINT            4789.00      -2219.00     4622.00      15.00   
+    ITEM-CODE            $R2W_4295032836
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          SA312TP304L
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            4789.00      -2219.00     4622.00      15.00   
+    END-POINT            5989.00      -2219.00     4622.00      15.00   
+    ITEM-CODE            $R2W_4295032837
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          SA312TP304L
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            6149.00      -2219.00     4622.00      15.00   
+    END-POINT            6554.00      -2219.00     4622.00      15.00   
+    ITEM-CODE            $R2W_4295032838
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          SA312TP304L
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            5989.00      -2219.00     4622.00      15.00   
+    END-POINT            6149.00      -2219.00     4622.00      15.00   
+    ITEM-CODE            $R2W_4295032839
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          SA312TP304L
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            4789.00      -2219.00     4622.00      15.00   
+    END-POINT            3589.00      -2219.00     4622.00      15.00   
+    ITEM-CODE            $R2W_4295032840
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          SA312TP304L
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            3589.00      -2219.00     4622.00      15.00   
+    END-POINT            3589.00      -2803.00     4622.00      15.00   
+    ITEM-CODE            $R2W_4295032842
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          SA312TP304L
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            5989.00      -2219.00     4622.00      15.00   
+    END-POINT            5989.00      -2803.00     4622.00      15.00   
+    ITEM-CODE            $R2W_4295032844
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          SA312TP304L
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            6149.00      -2219.00     4622.00      15.00   
+    END-POINT            6149.00      -1329.00     4622.00      15.00   
+    ITEM-CODE            $R2W_4295032845
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          SA312TP304L
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            3589.00      -2219.00     4622.00      15.00   
+    END-POINT            3589.00      -1329.00     4622.00      15.00   
+    ITEM-CODE            $R2W_4295032846
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          SA312TP304L
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            3589.00      -1185.00     4622.00      500.00  
+    END-POINT            3589.00      192.00       4622.00      500.00  
+    ITEM-CODE            $R2W_4295032847
+    R2_OUTER_DIAM        508.000
+    R2_WALL_THK          6.350
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            6149.00      -1185.00     4622.00      500.00  
+    END-POINT            6149.00      192.00       4622.00      500.00  
+    ITEM-CODE            $R2W_4295032848
+    R2_OUTER_DIAM        508.000
+    R2_WALL_THK          6.350
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            3589.00      192.00       4622.00      750.00  
+    END-POINT            4869.00      192.00       4622.00      750.00  
+    ITEM-CODE            $R2W_4295032849
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            6149.00      192.00       4622.00      750.00  
+    END-POINT            6546.00      192.00       4622.00      750.00  
+    ITEM-CODE            $R2W_4295032850
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            3589.00      192.00       4622.00      750.00  
+    END-POINT            3192.00      192.00       4622.00      750.00  
+    ITEM-CODE            $R2W_4295032851
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            4869.00      192.00       4622.00      750.00  
+    END-POINT            6149.00      192.00       4622.00      750.00  
+    ITEM-CODE            $R2W_4295032852
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            4869.00      192.00       4622.00      750.00  
+    END-POINT            4869.00      192.00       3622.00      750.00  
+    ITEM-CODE            $R2W_4295032853
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            4869.00      192.00       3622.00      750.00  
+    END-POINT            4869.00      192.00       2984.00      750.00  
+    ITEM-CODE            $R2W_4295032854
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            4111.05      270.46       2222.00      750.00  
+    END-POINT            2245.95      463.54       2222.00      750.00  
+    ITEM-CODE            $R2W_4295032855
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+ELBOW
+    END-POINT            4869.00      192.00       2984.00      750.00  
+    END-POINT            4111.05      270.46       2222.00      750.00  
+    CENTRE-POINT         4869.00      192.00       2222.00     
+    SKEY                 ELBW
+    ITEM-CODE            $R2W_8590000131
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            1488.00      542.00       1460.00      750.00  
+    END-POINT            1488.00      542.00       1083.60      750.00  
+    ITEM-CODE            $R2W_4295032856
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+ELBOW
+    END-POINT            2245.95      463.54       2222.00      750.00  
+    END-POINT            1488.00      542.00       1460.00      750.00  
+    CENTRE-POINT         1488.00      542.00       2222.00     
+    SKEY                 ELBW
+    ITEM-CODE            $R2W_8590000132
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+FLANGE
+    END-POINT            3589.00      -1329.00     4622.00      500.00  
+    END-POINT            3589.00      -1185.00     4622.00      500.00  
+    SKEY                 FLWN
+    ITEM-CODE            $R2W_21474902018
+    WEIGHT               81.65
+    R2_OUTER_DIAM        508.000
+    R2_WALL_THK          6.350
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+FLANGE
+    END-POINT            6149.00      -1329.00     4622.00      500.00  
+    END-POINT            6149.00      -1185.00     4622.00      500.00  
+    SKEY                 FLWN
+    ITEM-CODE            $R2W_21474902019
+    WEIGHT               81.65
+    R2_OUTER_DIAM        508.000
+    R2_WALL_THK          6.350
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+FLANGE
+    END-POINT            1488.00      542.00       947.00       750.00  
+    END-POINT            1488.00      542.00       1083.60      750.00  
+    SKEY                 FLWN
+    ITEM-CODE            $R2W_21474902020
+    WEIGHT               199.00
+    R2_OUTER_DIAM        762.000
+    R2_WALL_THK          7.925
+    R2_INS_THK           0.000
+    R2_MATERIAL          SA312TP304
+    R2_DESIGN_TEMP       145.00
+    R2_DESIGN_PRESS      3.00
+PIPE
+    END-POINT            1488.00      542.00       947.00       15.00   
+    END-POINT            1488.00      542.00       -518.00      15.00   
+    ITEM-CODE            $R2W_4295032867
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          P235GH
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            1488.00      542.00       -518.00      15.00   
+    END-POINT            1488.00      342.00       -518.00      15.00   
+    ITEM-CODE            $R2W_4295032868
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          P235GH
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            1488.00      342.00       -518.00      15.00   
+    END-POINT            0.00         342.00       0.00         15.00   
+    ITEM-CODE            $R2W_4295032869
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          P235GH
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+PIPE
+    END-POINT            1488.00      342.00       -518.00      15.00   
+    END-POINT            1488.00      -3758.00     -518.00      15.00   
+    ITEM-CODE            $R2W_4295032870
+    R2_OUTER_DIAM        10.000
+    R2_WALL_THK          0.000
+    R2_MATERIAL          P235GH
+    R2_DESIGN_TEMP       175.00
+    R2_DESIGN_PRESS      -1000000015047466200000000000000.00
+SUPPORT
+    CO-ORDS              3589.00      -2803.00     4622.00      15.00   
+    SKEY                     
+    ITEM-CODE            $R2W_8590262273
+SUPPORT
+    CO-ORDS              5989.00      -2803.00     4622.00      15.00   
+    SKEY                     
+    ITEM-CODE            $R2W_8590262274
+SUPPORT
+    CO-ORDS              1488.00      -3758.00     -518.00      15.00   
+    SKEY                 ANCH
+    ITEM-CODE            $R2W_8590262277
+MATERIALS
+ITEM-CODE            $R2W_4295032832
+    DESCRIPTION          Pipe 323.85x9.52mm
+ITEM-CODE            $R2W_4295032833
+    DESCRIPTION          Pipe 323.85x9.52mm
+ITEM-CODE            $R2W_8590000128
+    DESCRIPTION          Bend 90° 323.85x9.52mm R=457.0 mm
+ITEM-CODE            $R2W_4295032834
+    DESCRIPTION          Pipe 323.85x9.52mm
+ITEM-CODE            $R2W_8590000129
+    DESCRIPTION          Bend 90° 323.85x9.52mm R=457.0 mm
+ITEM-CODE            $R2W_4295032835
+    DESCRIPTION          Pipe 323.85x9.52mm
+ITEM-CODE            $R2W_8590000130
+    DESCRIPTION          Bend 90° 323.85x9.52mm R=457.0 mm
+ITEM-CODE            $R2W_21474902016
+    DESCRIPTION          Flange DN300
+ITEM-CODE            $R2W_21474902017
+    DESCRIPTION          Flange DN300
+ITEM-CODE            $R2W_4295032836
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032837
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032838
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032839
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032840
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032842
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032844
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032845
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032846
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032847
+    DESCRIPTION          Pipe 508.00x6.35mm
+ITEM-CODE            $R2W_4295032848
+    DESCRIPTION          Pipe 508.00x6.35mm
+ITEM-CODE            $R2W_4295032849
+    DESCRIPTION          Pipe 762.00x7.92mm
+ITEM-CODE            $R2W_4295032850
+    DESCRIPTION          Pipe 762.00x7.92mm
+ITEM-CODE            $R2W_4295032851
+    DESCRIPTION          Pipe 762.00x7.92mm
+ITEM-CODE            $R2W_4295032852
+    DESCRIPTION          Pipe 762.00x7.92mm
+ITEM-CODE            $R2W_4295032853
+    DESCRIPTION          Pipe 762.00x7.92mm
+ITEM-CODE            $R2W_4295032854
+    DESCRIPTION          Pipe 762.00x7.92mm
+ITEM-CODE            $R2W_4295032855
+    DESCRIPTION          Pipe 762.00x7.92mm
+ITEM-CODE            $R2W_8590000131
+    DESCRIPTION          Bend 90° 762.00x7.92mm R=762.0 mm
+ITEM-CODE            $R2W_4295032856
+    DESCRIPTION          Pipe 762.00x7.92mm
+ITEM-CODE            $R2W_8590000132
+    DESCRIPTION          Bend 90° 762.00x7.92mm R=762.0 mm
+ITEM-CODE            $R2W_21474902018
+    DESCRIPTION          Flange DN500
+ITEM-CODE            $R2W_21474902019
+    DESCRIPTION          Flange DN500
+ITEM-CODE            $R2W_21474902020
+    DESCRIPTION          Flange DN750
+ITEM-CODE            $R2W_4295032867
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032868
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032869
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_4295032870
+    DESCRIPTION          Structural section _RIGID_
+ITEM-CODE            $R2W_8590262273
+    DESCRIPTION          Axial stop + guide support Za, vertical pipe _RIGID_
+ITEM-CODE            $R2W_8590262274
+    DESCRIPTION          Axial stop + guide support Za, vertical pipe _RIGID_
+ITEM-CODE            $R2W_8590262277
+    DESCRIPTION          Anchor point _RIGID_
