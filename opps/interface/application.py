@@ -116,10 +116,7 @@ class Application(QApplication):
         self.selection_changed.emit()
 
     def select_structures(self, structures, join=False, remove=False):
-        print(structures)
         structures = set(structures)
-        print(structures)
-        print()
 
         # clear all the selected flags
         for structure in self.pipeline.structures:
