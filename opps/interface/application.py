@@ -26,7 +26,6 @@ class Application(QApplication):
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
         self.main_window.render_widget.update_plot()
-        print("andrezinho")
 
     def open(self, path):
         path = Path(path)

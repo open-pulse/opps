@@ -17,7 +17,6 @@ class Pipeline:
             lines = c2.readlines()
         groups = group_structures(lines)    
         self.components = create_classes(groups)
-        print(self.components)
 
     def add_pipe(self, *args, **kwargs) -> Pipe:
         pipe = Pipe(*args, **kwargs)
