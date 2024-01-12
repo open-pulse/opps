@@ -6,7 +6,7 @@ from opps.model.bend import Bend
 from opps.model.flange import Flange
 from opps.model.pipe import Pipe
 from opps.model.structure import Structure
-from opps.io.pcf.pcf_reader import *
+from opps.io.pcf.pcf_handler import *
 
 
 class Pipeline(Structure):

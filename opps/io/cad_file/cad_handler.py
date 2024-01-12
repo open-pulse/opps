@@ -4,7 +4,7 @@ from opps.model.bend import Bend
 from opps.model.flange import Flange
 
 
-class StepExporter:
+class CADHandler:
     def __init__(self):
         pass
 

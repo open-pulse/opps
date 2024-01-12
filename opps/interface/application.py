@@ -9,7 +9,7 @@ from opps.model import Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 from opps.model.point import Point
 from opps.model.structure import Structure
-from opps.io.cad_file.step_exporter import *
+from opps.io.cad_file.cad_handler import *
 
 
 
@@ -63,7 +63,7 @@ class Application(QApplication):
         self.update()
          
     def _save_cad(self, path):
-        exporter = StepExporter()
+        exporter = CADHandler()
         exporter.save(path, self.pipeline)
         print("Saving CAD")
 
