@@ -84,10 +84,10 @@ class Application(QApplication):
 
     def delete_selection(self):
         for structure in self.get_selected_structures():
-            self.editor.remove_structure(structure, rejoin=False)
+            self.editor.remove_structure(structure, rejoin=True)
 
         for point in self.get_selected_points():
-            self.editor.remove_point(point)
+            self.editor.remove_point(point, rejoin=False)
 
         self.clear_selection()
         self.update()

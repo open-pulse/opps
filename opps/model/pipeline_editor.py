@@ -32,7 +32,7 @@ class PipelineEditor:
             return
         self.active_point.set_coords(*position)
 
-    def remove_point(self, point):
+    def remove_point(self, point, rejoin=True):
         if not isinstance(point, Point):
             return
 
@@ -42,7 +42,7 @@ class PipelineEditor:
                 structures_to_remove.append(structure)
 
         for structure in structures_to_remove:
-            self.remove_structure(structure)
+            self.remove_structure(structure, rejoin)
 
     def remove_structure(self, structure, rejoin=True):
         if not isinstance(structure, Structure):
