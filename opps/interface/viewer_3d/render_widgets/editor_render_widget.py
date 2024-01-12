@@ -47,10 +47,9 @@ class EditorRenderWidget(CommonRenderWidget):
         self.control_points_actor.PickableOff()
 
         self.passive_points_actor = PointsActor(app().editor.points)
-        self.passive_points_actor.set_color((255, 200, 1101))
+        self.passive_points_actor.set_color((255, 200, 110))
         self.passive_points_actor.GetProperty().RenderPointsAsSpheresOff()
         self.passive_points_actor.GetProperty().SetPointSize(12)
-        self.passive_points_actor.set_visibility_offset(-10000)
 
         list_points = list(app().get_selected_points())
         self.selected_points = PointsActor(list_points)
@@ -58,8 +57,8 @@ class EditorRenderWidget(CommonRenderWidget):
         self.selected_points.GetProperty().LightingOff()
 
         self.renderer.AddActor(self.pipeline_actor)
-        self.renderer.AddActor(self.control_points_actor)
         self.renderer.AddActor(self.passive_points_actor)
+        self.renderer.AddActor(self.control_points_actor)
         self.renderer.AddActor(self.selected_points)
 
         if reset_camera:
@@ -161,35 +160,42 @@ class EditorRenderWidget(CommonRenderWidget):
         app().clear_selection()
 
     def _pick_point(self, x, y):
-        # save pickability
-        pickable = self.pipeline_actor.GetPickable()
+        index = self._pick_actor(x, y, self.control_points_actor)
+        if index > 0:
+            return app().editor.control_points[index]
 
-        # Disable pipeline actor pickability to only select points
-        self.pipeline_actor.PickableOff()
-        self.selection_picker.Pick(x, y, 0, self.renderer)
-
-        # restore pickability
-        self.pipeline_actor.SetPickable(pickable)
-
-        clicked_actor = self.selection_picker.GetActor()
-        clicked_cell = self.selection_picker.GetCellId()
-        if clicked_actor == self.passive_points_actor:
-            return app().editor.points[clicked_cell]
-        elif clicked_actor == self.control_points_actor:
-            return app().editor.control_points[clicked_cell]
+        index = self._pick_actor(x, y, self.passive_points_actor)
+        if index > 0:
+            return app().editor.points[index]
 
     def _pick_structure(self, x, y):
-        self.selection_picker.Pick(x, y, 0, self.renderer)
-        clicked_actor = self.selection_picker.GetActor()
-        clicked_cell = self.selection_picker.GetCellId()
-
-        if clicked_actor == self.pipeline_actor:
-            data: vtk.vtkPolyData = clicked_actor.GetMapper().GetInput()
+        index = self._pick_actor(x, y, self.pipeline_actor)
+        if index > 0:
+            data: vtk.vtkPolyData = self.pipeline_actor.GetMapper().GetInput()
             cell_identifier = data.GetCellData().GetArray("cell_identifier")
             if cell_identifier is None:
                 return
-            structure_index = cell_identifier.GetValue(clicked_cell)
+            structure_index = cell_identifier.GetValue(index)
             return app().pipeline.structures[structure_index]
+
+    def _pick_actor(self, x, y, actor_to_select):
+        selection_picker = vtk.vtkCellPicker()
+        selection_picker.SetTolerance(0.005)
+        pickability = dict()
+
+        for actor in self.renderer.GetActors():
+            pickability[actor] = actor.GetPickable()
+            if actor == actor_to_select:
+                actor.PickableOn()
+            else:
+                actor.PickableOff()
+        
+        selection_picker.Pick(x, y, 0, self.renderer)
+        
+        for actor in self.renderer.GetActors():
+            actor.SetPickable(pickability[actor])
+        
+        return selection_picker.GetCellId()
 
     def update_selection(self):
         if app().selected_points:
