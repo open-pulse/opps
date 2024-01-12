@@ -109,10 +109,6 @@ class EditorRenderWidget(CommonRenderWidget):
         app().editor.add_flange()
         app().editor.add_bent_pipe()
 
-    def stage_structure(self, structure):
-        self.tmp_structure = structure
-        self.update_plot()
-
     def commit_structure(self):
         self.coords = app().editor.active_point.coords()
         app().editor.commit()

@@ -9,6 +9,8 @@ from opps.model import Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 from opps.model.point import Point
 from opps.model.structure import Structure
+from opps.io.cad_file.step_exporter import *
+
 
 
 class Application(QApplication):
@@ -24,6 +26,7 @@ class Application(QApplication):
 
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
+       
 
         self.main_window = MainWindow()
         self.main_window.show()
@@ -56,9 +59,12 @@ class Application(QApplication):
         print("Oppening CAD")
 
     def _open_pcf(self, path):
-        print("Oppening PCF")
-
+        self.pipeline.load(path)
+        self.update()
+         
     def _save_cad(self, path):
+        exporter = StepExporter()
+        exporter.save(path, self.pipeline)
         print("Saving CAD")
 
     def _save_pcf(self, path):

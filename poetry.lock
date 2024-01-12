@@ -236,6 +236,19 @@ unicode = ["unicodedata2 (>=15.0.0)"]
 woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 
 [[package]]
+name = "gmsh"
+version = "4.11.1"
+description = "Gmsh is a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities."
+optional = false
+python-versions = "*"
+files = [
+    {file = "gmsh-4.11.1-py2.py3-none-macosx_10_15_x86_64.whl", hash = "sha256:f07d62ec3ee0edcf1c28ed070ce9eaca86f393e15480edaf37d323f09cc341c1"},
+    {file = "gmsh-4.11.1-py2.py3-none-macosx_12_0_arm64.whl", hash = "sha256:df6e401ea3cc6822b2cbff12a3e7fe68e0a11496807bb73f5e31af4496657c0b"},
+    {file = "gmsh-4.11.1-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:69d56865d80e6e7bdb665426333487bc3679bc778b9fee500eb8cf0d2714ad99"},
+    {file = "gmsh-4.11.1-py2.py3-none-win_amd64.whl", hash = "sha256:bde90654db3b8820759d47ad3b309ec0a9ab7c062522c36b84de12bc73719d37"},
+]
+
+[[package]]
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
@@ -832,4 +845,4 @@ web = ["wslink (>=1.0.4)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "12d509e174f856a2d6d0bdfa283a3d0784f378ebb9392787479a00e66831f67c"
+content-hash = "40e376ad260227907052aa7fb3f0bb8931291a0d3fd08ffbf2ad589486be8d58"

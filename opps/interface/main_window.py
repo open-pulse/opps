@@ -40,13 +40,14 @@ class MainWindow(QMainWindow):
         path, check = QFileDialog.getOpenFileName(
             self,
             "Select Geometry",
-            filter="Piping Component File (*.pcf), Geometry Files (*.stp *.step *.iges)",
+            # filter="Piping Component File (*.pcf), Geometry Files (*.stp *.step *.iges)",
         )
 
         if not check:
             return
 
         app().open(path)
+        self.render_widget.update_plot()
 
     def save_dialog(self):
         if app().save_path is None:
