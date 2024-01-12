@@ -154,12 +154,14 @@ class PipelineEditor:
         return new_elbow
 
     def add_flange(self):
+        # If a flange already exists return it
         for flange in self.pipeline.structures:
             if not isinstance(flange, Flange):
                 continue
             if flange.position == self.anchor:
                 return flange
 
+        # It avoids the placement of a flange in the middle of a bend.
         for joint in self.pipeline.structures:
             if not isinstance(joint, Bend | Elbow):
                 continue

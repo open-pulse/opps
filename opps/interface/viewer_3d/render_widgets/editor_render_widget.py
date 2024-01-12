@@ -54,6 +54,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.selected_points.GetProperty().SetColor(1, 0, 0)
         self.selected_points.GetProperty().LightingOff()
 
+        # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
         self.renderer.AddActor(self.passive_points_actor)
         self.renderer.AddActor(self.control_points_actor)
@@ -64,15 +65,9 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def change_anchor(self, point):
-        # if not app().editor.points:
-        #     return
-
         app().editor.dismiss()
-        # if i >= len(app().editor.points):
-        #     i = len(app().editor.points) - 1
-
-        self.coords = point.coords()
         app().editor.set_anchor(point)
+        self.coords = point.coords()
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
