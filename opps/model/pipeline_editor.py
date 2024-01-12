@@ -14,6 +14,7 @@ class PipelineEditor:
 
         self.origin = Point(*origin)
         self.control_points = [self.origin]
+        self.passive_points = []
         self.points = [self.origin]
         self.deltas = np.array([0, 0, 0])
         self.anchor = self.points[0]

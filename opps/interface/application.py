@@ -21,7 +21,7 @@ class Application(QApplication):
 
         self.save_path = None
 
-        self.selected_points_index = set()
+        self.selected_points = set()
         self.selected_structures_index = set()
 
         self.pipeline = Pipeline()
@@ -77,10 +77,11 @@ class Application(QApplication):
         return self.pipeline.structures[structure_index]
 
     def get_selected_points(self) -> Generator[Point, None, None]:
-        for index in self.selected_points_index:
-            point = self.get_point(index)
-            if isinstance(point, Point):
-                yield point
+        return self.selected_points
+        # for index in self.selected_points_index:
+        #     point = self.get_point(index)
+        #     if isinstance(point, Point):
+        #         yield point
 
     def get_selected_structures(self) -> Generator[Structure, None, None]:
         for index in self.selected_structures_index:
@@ -98,18 +99,18 @@ class Application(QApplication):
         self.clear_selection()
         self.update()
 
-    def select_points(self, points_index, join=False, remove=False):
-        points_index = set(points_index)
+    def select_points(self, points, join=False, remove=False):
+        points = set(points)
 
         if join and remove:
-            self.selected_points_index ^= points_index
+            self.selected_points ^= points
         elif join:
-            self.selected_points_index |= points_index
+            self.selected_points |= points
         elif remove:
-            self.selected_points_index -= points_index
+            self.selected_points -= points
         else:
             self.clear_selection()
-            self.selected_points_index = points_index
+            self.selected_points = points
 
         self.selection_changed.emit()
 
@@ -141,7 +142,7 @@ class Application(QApplication):
     def clear_selection(self):
         for structure in self.pipeline.structures:
             structure.selected = False
-        self.selected_points_index.clear()
+        self.selected_points.clear()
         self.selected_structures_index.clear()
         self.selection_changed.emit()
 

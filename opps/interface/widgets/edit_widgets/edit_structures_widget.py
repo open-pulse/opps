@@ -67,7 +67,7 @@ class EditStructuresWidget(QWidget):
 
         if app().selected_structures_index:
             self._structures_selection_callback()
-        elif app().selected_points_index:
+        elif app().selected_points:
             layout.setCurrentWidget(self.edit_point_widget)
         else:
             layout.setCurrentWidget(self.empty_text_widget)

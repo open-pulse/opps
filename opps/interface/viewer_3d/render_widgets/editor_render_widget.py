@@ -139,10 +139,12 @@ class EditorRenderWidget(CommonRenderWidget):
         alt_pressed = bool(modifiers & Qt.AltModifier)
 
         # First try to select points
-        point_index = self._pick_point(x, y)
-        if point_index is not None:
+        selected_point = self._pick_point(x, y)
+        if selected_point is not None:
             app().select_points(
-                [point_index], join=ctrl_pressed | shift_pressed, remove=alt_pressed
+                [selected_point], 
+                join=ctrl_pressed | shift_pressed, 
+                remove=alt_pressed
             )
             return
 
@@ -150,7 +152,9 @@ class EditorRenderWidget(CommonRenderWidget):
         structure_index = self._pick_structure(x, y)
         if structure_index is not None:
             app().select_structures(
-                [structure_index], join=ctrl_pressed | shift_pressed, remove=alt_pressed
+                [structure_index], 
+                join=ctrl_pressed | shift_pressed, 
+                remove=alt_pressed
             )
             return
 
@@ -170,7 +174,9 @@ class EditorRenderWidget(CommonRenderWidget):
         clicked_actor = self.selection_picker.GetActor()
         clicked_cell = self.selection_picker.GetCellId()
         if clicked_actor == self.passive_points_actor:
-            return clicked_cell
+            return app().editor.points[clicked_cell]
+        elif clicked_actor == self.control_points_actor:
+            return app().editor.control_points[clicked_cell]
 
     def _pick_structure(self, x, y):
         self.selection_picker.Pick(x, y, 0, self.renderer)
@@ -186,15 +192,14 @@ class EditorRenderWidget(CommonRenderWidget):
             return structure_index
 
     def update_selection(self):
-        if app().selected_points_index:
+        if app().selected_points:
             # the last point selected is the one that will
             # be the "anchor" to continue the pipe creation
-            *_, point_index = app().selected_points_index
-            point = app().get_point(point_index)
+            *_, point = app().selected_points
             self.change_anchor(point)
 
         # Only dismiss structure creation if something was actually selected
-        something_selected = app().selected_points_index or app().selected_structures_index
+        something_selected = app().selected_points or app().selected_structures_index
         if something_selected:
             app().editor.dismiss()
 
