@@ -76,17 +76,9 @@ class Application(QApplication):
 
     def get_selected_points(self) -> Generator[Point, None, None]:
         return self.selected_points
-        # for index in self.selected_points_index:
-        #     point = self.get_point(index)
-        #     if isinstance(point, Point):
-        #         yield point
 
     def get_selected_structures(self) -> Generator[Structure, None, None]:
         return self.selected_structures
-        # for index in self.selected_structures_index:
-        #     structure = self.get_structure(index)
-        #     if isinstance(structure, Structure):
-        #         yield structure
 
     def delete_selection(self):
         for structure in self.get_selected_structures():
