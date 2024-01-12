@@ -16,21 +16,21 @@ class PipelineEditor:
         self.control_points = [self.origin]
         self.points = [self.origin]
         self.deltas = np.array([0, 0, 0])
-        self.active_point = self.points[0]
+        self.anchor = self.points[0]
 
         self.default_diameter = 0.2
         self.staged_structures = []
 
-    def set_active_point(self, index):
-        self.active_point = self.points[index]
+    def set_anchor(self, point):
+        self.anchor = point
 
     def set_deltas(self, deltas):
         self.deltas = np.array(deltas)
 
     def move_point(self, position):
-        if self.active_point not in self.control_points:
+        if self.anchor not in self.control_points:
             return
-        self.active_point.set_coords(*position)
+        self.anchor.set_coords(*position)
 
     def remove_point(self, point, rejoin=True):
         if not isinstance(point, Point):
@@ -79,15 +79,15 @@ class PipelineEditor:
         self._update_points()
 
         control_hashes = set(self.points)
-        if self.active_point in control_hashes:
+        if self.anchor in control_hashes:
             return
 
         for point in staged_points:
             if point in control_hashes:
-                self.active_point = point
+                self.anchor = point
                 break
         else:
-            self.set_active_point(-1)
+            self.set_anchor(-1)
 
     def change_diameter(self, diameter):
         self.default_diameter = diameter
@@ -95,7 +95,7 @@ class PipelineEditor:
     def get_diameters_at_point(self):
         diameters = []
         for structure in self.pipeline.structures:
-            if self.active_point in structure.get_points():
+            if self.anchor in structure.get_points():
                 diameters.extend(structure.get_diameters())
         return diameters
 
@@ -103,21 +103,21 @@ class PipelineEditor:
         if deltas != None:
             self.deltas = deltas
         
-        if self.active_point not in self.control_points:
+        if self.anchor not in self.control_points:
             return
 
-        current_point = self.active_point
+        current_point = self.anchor
         next_point = Point(*(current_point.coords() + self.deltas))
 
         new_pipe = Pipe(current_point, next_point)
         new_pipe.set_diameter(self.default_diameter)
 
         self.add_structure(new_pipe)
-        self.active_point = next_point
+        self.anchor = next_point
         return new_pipe
 
     def add_bend(self, curvature_radius=0.3):
-        start_point = self.active_point
+        start_point = self.anchor
         end_point = deepcopy(start_point)
         corner_point = deepcopy(start_point)
 
@@ -131,11 +131,11 @@ class PipelineEditor:
         new_bend = Bend(start_point, end_point, corner_point, curvature_radius)
         new_bend.set_diameter(self.default_diameter)
         self.add_structure(new_bend)
-        self.active_point = end_point
+        self.anchor = end_point
         return new_bend
 
     def add_elbow(self, curvature_radius=0.3):
-        start_point = self.active_point
+        start_point = self.anchor
         end_point = deepcopy(start_point)
         corner_point = deepcopy(start_point)
 
@@ -149,32 +149,32 @@ class PipelineEditor:
         new_elbow = Elbow(start_point, end_point, corner_point, curvature_radius)
         new_elbow.set_diameter(self.default_diameter)
         self.add_structure(new_elbow)
-        self.active_point = end_point
+        self.anchor = end_point
         return new_elbow
 
     def add_flange(self):
         for flange in self.pipeline.structures:
             if not isinstance(flange, Flange):
                 continue
-            if flange.position == self.active_point:
+            if flange.position == self.anchor:
                 return flange
         
         for joint in self.pipeline.structures:
             if not isinstance(joint, Bend | Elbow):
                 continue
-            if joint.corner == self.active_point:
+            if joint.corner == self.anchor:
                 new_flange = Flange(joint.start, normal=np.array([1, 0, 0]))
                 new_flange.set_diameter(self.default_diameter)
                 self.add_structure(new_flange)
                 return new_flange
 
-        new_flange = Flange(self.active_point, normal=np.array([1, 0, 0]))
+        new_flange = Flange(self.anchor, normal=np.array([1, 0, 0]))
         new_flange.set_diameter(self.default_diameter)
         self.add_structure(new_flange)
         return new_flange
 
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
-        if self.active_point not in self.control_points:
+        if self.anchor not in self.control_points:
             return
 
         self.add_bend(curvature_radius)

@@ -66,16 +66,16 @@ class EditorRenderWidget(CommonRenderWidget):
             self.renderer.ResetCamera()
         self.update()
 
-    def change_index(self, i):
-        if not app().editor.points:
-            return
+    def change_anchor(self, point):
+        # if not app().editor.points:
+        #     return
 
         app().editor.dismiss()
-        if i >= len(app().editor.points):
-            i = len(app().editor.points) - 1
+        # if i >= len(app().editor.points):
+        #     i = len(app().editor.points) - 1
 
-        self.coords = app().editor.points[i].coords()
-        app().editor.set_active_point(i)
+        self.coords = point.coords()
+        app().editor.set_anchor(point)
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
@@ -86,7 +86,7 @@ class EditorRenderWidget(CommonRenderWidget):
             return
 
         if not app().editor.staged_structures:
-            self.coords = app().editor.active_point.coords()
+            self.coords = app().editor.anchor.coords()
             if auto_bend:
                 app().editor.add_bent_pipe()
             else:
@@ -110,7 +110,7 @@ class EditorRenderWidget(CommonRenderWidget):
         app().editor.add_bent_pipe()
 
     def commit_structure(self):
-        self.coords = app().editor.active_point.coords()
+        self.coords = app().editor.anchor.coords()
         app().editor.commit()
         self.update_plot()
 
@@ -190,7 +190,8 @@ class EditorRenderWidget(CommonRenderWidget):
             # the last point selected is the one that will
             # be the "anchor" to continue the pipe creation
             *_, point_index = app().selected_points_index
-            self.change_index(point_index)
+            point = app().get_point(point_index)
+            self.change_anchor(point)
 
         # Only dismiss structure creation if something was actually selected
         something_selected = app().selected_points_index or app().selected_structures_index
