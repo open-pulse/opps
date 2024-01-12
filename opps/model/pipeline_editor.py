@@ -88,7 +88,7 @@ class PipelineEditor:
                 self.anchor = point
                 break
         else:
-            self.set_anchor(-1)
+            self.set_anchor(self.control_points[-1])
 
     def change_diameter(self, diameter):
         self.default_diameter = diameter

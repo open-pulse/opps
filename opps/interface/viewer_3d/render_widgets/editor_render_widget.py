@@ -122,9 +122,6 @@ class EditorRenderWidget(CommonRenderWidget):
         self.selected_points = None
 
     def selection_callback(self, x, y):
-        self.selection_picker = vtk.vtkCellPicker()
-        self.selection_picker.SetTolerance(0.005)
-
         modifiers = QApplication.keyboardModifiers()
         ctrl_pressed = bool(modifiers & Qt.ControlModifier)
         shift_pressed = bool(modifiers & Qt.ShiftModifier)
@@ -150,16 +147,16 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def _pick_point(self, x, y):
         index = self._pick_actor(x, y, self.control_points_actor)
-        if index > 0:
+        if index >= 0:
             return app().editor.control_points[index]
 
         index = self._pick_actor(x, y, self.passive_points_actor)
-        if index > 0:
+        if index >= 0:
             return app().editor.points[index]
 
     def _pick_structure(self, x, y):
         index = self._pick_actor(x, y, self.pipeline_actor)
-        if index > 0:
+        if index >= 0:
             data: vtk.vtkPolyData = self.pipeline_actor.GetMapper().GetInput()
             cell_identifier = data.GetCellData().GetArray("cell_identifier")
             if cell_identifier is None:
