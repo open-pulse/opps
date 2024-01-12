@@ -44,15 +44,13 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.control_points_actor = PointsActor(app().editor.control_points)
         self.control_points_actor.set_color((255, 180, 50))
-        self.control_points_actor.PickableOff()
 
         self.passive_points_actor = PointsActor(app().editor.points)
         self.passive_points_actor.set_color((255, 200, 110))
         self.passive_points_actor.GetProperty().RenderPointsAsSpheresOff()
         self.passive_points_actor.GetProperty().SetPointSize(12)
 
-        list_points = list(app().get_selected_points())
-        self.selected_points = PointsActor(list_points)
+        self.selected_points = PointsActor(app().get_selected_points())
         self.selected_points.GetProperty().SetColor(1, 0, 0)
         self.selected_points.GetProperty().LightingOff()
 
@@ -141,9 +139,7 @@ class EditorRenderWidget(CommonRenderWidget):
         selected_point = self._pick_point(x, y)
         if selected_point is not None:
             app().select_points(
-                [selected_point], 
-                join=ctrl_pressed | shift_pressed, 
-                remove=alt_pressed
+                [selected_point], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             return
 
@@ -151,9 +147,7 @@ class EditorRenderWidget(CommonRenderWidget):
         selected_structure = self._pick_structure(x, y)
         if selected_structure is not None:
             app().select_structures(
-                [selected_structure], 
-                join=ctrl_pressed | shift_pressed, 
-                remove=alt_pressed
+                [selected_structure], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             return
 
@@ -189,12 +183,12 @@ class EditorRenderWidget(CommonRenderWidget):
                 actor.PickableOn()
             else:
                 actor.PickableOff()
-        
+
         selection_picker.Pick(x, y, 0, self.renderer)
-        
+
         for actor in self.renderer.GetActors():
             actor.SetPickable(pickability[actor])
-        
+
         return selection_picker.GetCellId()
 
     def update_selection(self):

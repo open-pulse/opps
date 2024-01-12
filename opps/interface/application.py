@@ -5,12 +5,11 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication
 
 from opps.interface.main_window import MainWindow
+from opps.io.cad_file.cad_handler import *
 from opps.model import Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 from opps.model.point import Point
 from opps.model.structure import Structure
-from opps.io.cad_file.cad_handler import *
-
 
 
 class Application(QApplication):
@@ -26,7 +25,6 @@ class Application(QApplication):
 
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
-       
 
         self.main_window = MainWindow()
         self.main_window.show()
@@ -61,7 +59,7 @@ class Application(QApplication):
     def _open_pcf(self, path):
         self.pipeline.load(path)
         self.update()
-         
+
     def _save_cad(self, path):
         exporter = CADHandler()
         exporter.save(path, self.pipeline)

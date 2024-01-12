@@ -103,7 +103,7 @@ class PipelineEditor:
     def add_pipe(self, deltas=None):
         if deltas != None:
             self.deltas = deltas
-        
+
         if self.anchor not in self.control_points:
             return
 
@@ -159,7 +159,7 @@ class PipelineEditor:
                 continue
             if flange.position == self.anchor:
                 return flange
-        
+
         for joint in self.pipeline.structures:
             if not isinstance(joint, Bend | Elbow):
                 continue

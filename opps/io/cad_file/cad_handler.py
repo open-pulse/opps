@@ -1,7 +1,8 @@
 import gmsh
-from opps.model.pipe import Pipe
+
 from opps.model.bend import Bend
 from opps.model.flange import Flange
+from opps.model.pipe import Pipe
 
 
 class CADHandler:
@@ -10,8 +11,7 @@ class CADHandler:
 
     def save(self, path, pipeline):
         gmsh.initialize("", False)
-        for structure in pipeline.structures: 
-
+        for structure in pipeline.structures:
             if isinstance(structure, Pipe):
                 start_point = gmsh.model.occ.add_point(*structure.start.coords())
                 end_point = gmsh.model.occ.add_point(*structure.end.coords())
@@ -29,9 +29,3 @@ class CADHandler:
 
         gmsh.model.occ.synchronize()
         gmsh.write(str(path))
-
-
-
-
-
-
