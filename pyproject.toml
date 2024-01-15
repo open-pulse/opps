@@ -2,10 +2,11 @@
 name = "opps"
 version = "0.1.0"
 description = ""
+
 authors = [
     "André Fernandes <fpf.andre@gmail.com>",
-    "Danilo <@gmail.com>",
-    "Vitor <@gmail.com>",
+    "Danilo Espindola <daniloespindola.grad@gmail.com>",
+    "Vitor Voigt Slongo <v.v.slongo@gmail.com>",
 ]
 readme = "README.md"
 
