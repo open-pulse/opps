@@ -16,14 +16,14 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from opps import app
+from opps import app, UI_DIR
 from opps.model import Bend, Elbow
 
 
 class EditBendWidget(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        uic.loadUi(Path("data/ui_files/edit_bend.ui"), self)
+        uic.loadUi(UI_DIR / "edit_bend.ui", self)
 
         self._define_qt_variables()
         self._create_connections()
