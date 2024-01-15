@@ -2,7 +2,11 @@
 name = "opps"
 version = "0.1.0"
 description = ""
-authors = ["André Fernandes <fpf.andre@gmail.com>"]
+authors = [
+    "André Fernandes <fpf.andre@gmail.com>",
+    "Danilo <@gmail.com>",
+    "Vitor <@gmail.com>",
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]
