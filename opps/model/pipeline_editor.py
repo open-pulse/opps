@@ -127,7 +127,16 @@ class PipelineEditor:
             if not isinstance(joint, Bend | Elbow):
                 continue
             if start_point in joint.get_points():
-                return self.morph(joint, Bend)
+                new_bend = self.morph(joint, Bend)
+
+                if not self._connected_points(joint.start):
+                    self.anchor = joint.start
+                elif not self._connected_points(joint.end):
+                    self.anchor = joint.end
+                else:
+                    self.anchor = joint.corner
+
+                return new_bend
 
         new_bend = Bend(start_point, end_point, corner_point, curvature_radius)
         new_bend.set_diameter(self.default_diameter)
@@ -145,7 +154,16 @@ class PipelineEditor:
             if not isinstance(joint, Bend | Elbow):
                 continue
             if joint.corner == start_point:
-                return self.morph(joint, Elbow)
+                new_elbow = self.morph(joint, Elbow)
+            
+                if not self._connected_points(joint.start):
+                    self.anchor = joint.start
+                elif not self._connected_points(joint.end):
+                    self.anchor = joint.end
+                else:
+                    self.anchor = joint.corner
+
+                return new_elbow
 
         new_elbow = Elbow(start_point, end_point, corner_point, curvature_radius)
         new_elbow.set_diameter(self.default_diameter)
