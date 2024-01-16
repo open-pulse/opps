@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from opps import app, UI_DIR
+from opps import UI_DIR, app
 from opps.model import Bend, Elbow
 
 

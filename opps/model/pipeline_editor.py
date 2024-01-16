@@ -257,7 +257,7 @@ class PipelineEditor:
         for structure in self.pipeline.structures:
             if not isinstance(structure, Bend | Elbow):
                 continue
-            
+
             if not structure.auto:
                 control_points.append(structure.corner)
                 control_points.append(structure.end)
