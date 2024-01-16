@@ -28,12 +28,28 @@ class EditPointWidget(QWidget):
 
     def update(self):
         super().update()
-        *_, point = app().get_selected_points()
-        if point is None:
+        *_, last_point = app().get_selected_points()
+        if last_point is None:
             return
-        self.dx_box.setText(str(point.x))
-        self.dy_box.setText(str(point.y))
-        self.dz_box.setText(str(point.z))
+
+        self.dx_box.setText(str(round(last_point.x, 3)))
+        self.dy_box.setText(str(round(last_point.y, 3)))
+        self.dz_box.setText(str(round(last_point.z, 3)))
+
+        enable = last_point in app().editor.control_points
+        self.dx_box.setEnabled(enable)
+        self.dy_box.setEnabled(enable)
+        self.dz_box.setEnabled(enable)
+
+        if enable:
+            text = ""
+        else:
+            text = "Invalid point"
+
+        self.dx_box.setPlaceholderText(text)
+        self.dy_box.setPlaceholderText(text)
+        self.dz_box.setPlaceholderText(text)
+
 
     def _define_qt_variables(self):
         self.dx_box: QLineEdit = self.findChild(QLineEdit, "dx_box")
