@@ -14,7 +14,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from opps import app
+from opps import app, UI_DIR
+
 from .cross_section_widget import CrossSectionWidget
 
 
@@ -26,7 +27,7 @@ class AddStructuresWidget(QWidget):
 
     def __init__(self, parent, render_widget):
         super().__init__(parent)
-        uic.loadUi(Path("data/ui_files/add_structure.ui"), self)
+        uic.loadUi(UI_DIR / "add_structure.ui", self)
 
         self.render_widget = render_widget
         self.render_widget.show_passive_points = False

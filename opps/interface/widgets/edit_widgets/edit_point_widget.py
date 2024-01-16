@@ -15,14 +15,14 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from opps import app
+from opps import app, UI_DIR
 from opps.model import Point
 
 
 class EditPointWidget(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        uic.loadUi(Path("data/ui_files/edit_point.ui"), self)
+        uic.loadUi(UI_DIR / "edit_point.ui", self)
         self._define_qt_variables()
         self._create_connections()
 
