@@ -257,24 +257,19 @@ class PipelineEditor:
         for structure in self.pipeline.structures:
             if not isinstance(structure, Bend | Elbow):
                 continue
-
-            if (structure.start in point_to_index) and (structure.end in point_to_index):
-                indexes_to_remove.append(point_to_index[structure.start])
-                indexes_to_remove.append(point_to_index[structure.end])
+            
+            if not structure.auto:
                 control_points.append(structure.corner)
-
-            elif structure.start in point_to_index:
-                indexes_to_remove.append(point_to_index[structure.start])
-                control_points.append(structure.end)
-
-            elif structure.end in point_to_index:
-                indexes_to_remove.append(point_to_index[structure.end])
-                control_points.append(structure.start)
-
-            else:
                 control_points.append(structure.end)
                 control_points.append(structure.start)
-                control_points.append(structure.corner)
+                continue
+
+            control_points.append(structure.corner)
+            if structure.start in point_to_index:
+                indexes_to_remove.append(point_to_index[structure.start])
+
+            if structure.end in point_to_index:
+                indexes_to_remove.append(point_to_index[structure.end])
 
         for i in sorted(indexes_to_remove, reverse=True):
             control_points.pop(i)
