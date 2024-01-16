@@ -66,6 +66,16 @@ class Bend(Structure):
         angle = np.arcsin(sin_angle)
 
         corner_distance = np.cos(angle) * self.curvature / np.sin(angle)
+        
+        # if the curve is beyond its limits ignore it
+        if corner_distance >= np.linalg.norm(start.coords() - self.corner.coords()):
+            self.colapse()
+            return
+        
+        if corner_distance >= np.linalg.norm(end.coords() - self.corner.coords()):
+            self.colapse()
+            return           
+
         self.start.set_coords(*(self.corner.coords() + corner_distance * a_vector))
         self.end.set_coords(*(self.corner.coords() + corner_distance * b_vector))
 
