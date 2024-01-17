@@ -24,7 +24,7 @@ class EditorRenderWidget(CommonRenderWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.left_clicked.connect(self.selection_callback)
-        app().selection_changed.connect(self.update_selection)
+        app().geometry_toolbox.selection_changed.connect(self.update_selection)
 
         self.show_passive_points = True
         self.selected_structure = None
@@ -40,17 +40,17 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        self.pipeline_actor = app().pipeline.as_vtk()
+        self.pipeline_actor = app().geometry_toolbox.pipeline.as_vtk()
 
-        self.control_points_actor = PointsActor(app().editor.control_points)
+        self.control_points_actor = PointsActor(app().geometry_toolbox.editor.control_points)
         self.control_points_actor.set_color((255, 180, 50))
 
-        self.passive_points_actor = PointsActor(app().editor.points)
+        self.passive_points_actor = PointsActor(app().geometry_toolbox.editor.points)
         self.passive_points_actor.set_color((255, 200, 110))
         self.passive_points_actor.GetProperty().RenderPointsAsSpheresOff()
         self.passive_points_actor.GetProperty().SetPointSize(12)
 
-        self.selected_points = PointsActor(app().get_selected_points())
+        self.selected_points = PointsActor(app().geometry_toolbox.get_selected_points())
         self.selected_points.GetProperty().SetColor(1, 0, 0)
         self.selected_points.GetProperty().LightingOff()
 
@@ -65,49 +65,49 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def change_anchor(self, point):
-        app().editor.dismiss()
-        app().editor.set_anchor(point)
+        app().geometry_toolbox.editor.dismiss()
+        app().geometry_toolbox.editor.set_anchor(point)
         self.coords = point.coords()
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
-        app().clear_selection()
+        app().geometry_toolbox.clear_selection()
 
         if (dx, dy, dz) == (0, 0, 0):
             self.unstage_structure()
             return
 
-        if not app().editor.staged_structures:
-            self.coords = app().editor.anchor.coords()
+        if not app().geometry_toolbox.editor.staged_structures:
+            self.coords = app().geometry_toolbox.editor.anchor.coords()
             if auto_bend:
-                app().editor.add_bent_pipe()
+                app().geometry_toolbox.editor.add_bent_pipe()
             else:
-                app().editor.add_pipe()
+                app().geometry_toolbox.editor.add_pipe()
 
-        app().editor.set_deltas((dx, dy, dz))
+        app().geometry_toolbox.editor.set_deltas((dx, dy, dz))
         new_position = self.coords + (dx, dy, dz)
-        app().editor.move_point(new_position)
-        app().editor._update_joints()
+        app().geometry_toolbox.editor.move_point(new_position)
+        app().geometry_toolbox.editor._update_joints()
         self.update_plot()
 
     def update_default_diameter(self, d):
-        app().editor.change_diameter(d)
-        for structure in app().editor.staged_structures:
+        app().geometry_toolbox.editor.change_diameter(d)
+        for structure in app().geometry_toolbox.editor.staged_structures:
             structure.set_diameter(d)
         self.update_plot()
 
     def add_flange(self):
         self.unstage_structure()
-        app().editor.add_flange()
-        app().editor.add_bent_pipe()
+        app().geometry_toolbox.editor.add_flange()
+        app().geometry_toolbox.editor.add_bent_pipe()
 
     def commit_structure(self):
-        self.coords = app().editor.anchor.coords()
-        app().editor.commit()
+        self.coords = app().geometry_toolbox.editor.anchor.coords()
+        app().geometry_toolbox.editor.commit()
         self.update_plot()
 
     def unstage_structure(self):
-        app().editor.dismiss()
+        app().geometry_toolbox.editor.dismiss()
         self.update_plot()
 
     def remove_actors(self):
@@ -130,7 +130,7 @@ class EditorRenderWidget(CommonRenderWidget):
         # First try to select points
         selected_point = self._pick_point(x, y)
         if selected_point is not None:
-            app().select_points(
+            app().geometry_toolbox.select_points(
                 [selected_point], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             return
@@ -138,21 +138,21 @@ class EditorRenderWidget(CommonRenderWidget):
         # If no points were found try structures
         selected_structure = self._pick_structure(x, y)
         if selected_structure is not None:
-            app().select_structures(
+            app().geometry_toolbox.select_structures(
                 [selected_structure], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             return
 
-        app().clear_selection()
+        app().geometry_toolbox.clear_selection()
 
     def _pick_point(self, x, y):
         index = self._pick_actor(x, y, self.control_points_actor)
         if index >= 0:
-            return app().editor.control_points[index]
+            return app().geometry_toolbox.editor.control_points[index]
 
         index = self._pick_actor(x, y, self.passive_points_actor)
         if index >= 0:
-            return app().editor.points[index]
+            return app().geometry_toolbox.editor.points[index]
 
     def _pick_structure(self, x, y):
         index = self._pick_actor(x, y, self.pipeline_actor)
@@ -162,7 +162,7 @@ class EditorRenderWidget(CommonRenderWidget):
             if cell_identifier is None:
                 return
             structure_index = cell_identifier.GetValue(index)
-            return app().pipeline.structures[structure_index]
+            return app().geometry_toolbox.pipeline.structures[structure_index]
 
     def _pick_actor(self, x, y, actor_to_select):
         selection_picker = vtk.vtkCellPicker()
@@ -184,15 +184,15 @@ class EditorRenderWidget(CommonRenderWidget):
         return selection_picker.GetCellId()
 
     def update_selection(self):
-        if app().selected_points:
+        if app().geometry_toolbox.selected_points:
             # the last point selected is the one that will
             # be the "anchor" to continue the pipe creation
-            *_, point = app().selected_points
+            *_, point = app().geometry_toolbox.selected_points
             self.change_anchor(point)
 
         # Only dismiss structure creation if something was actually selected
-        something_selected = app().selected_points or app().selected_structures
+        something_selected = app().geometry_toolbox.selected_points or app().geometry_toolbox.selected_structures
         if something_selected:
-            app().editor.dismiss()
+            app().geometry_toolbox.editor.dismiss()
 
         self.update_plot(reset_camera=False)

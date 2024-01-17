@@ -26,10 +26,10 @@ class MainWindow(QMainWindow):
 
         self.delete_action = QAction(self)
         self.delete_action.setShortcut("del")
-        self.delete_action.triggered.connect(app().delete_selection)
+        self.delete_action.triggered.connect(app().geometry_toolbox.delete_selection)
         self.addAction(self.delete_action)
 
-        app().selection_changed.connect(self.selection_callback)
+        app().geometry_toolbox.selection_changed.connect(self.selection_callback)
 
         self._create_menu_bar()
         self._configure_window()
@@ -46,14 +46,14 @@ class MainWindow(QMainWindow):
         if not check:
             return
 
-        app().open(path)
+        app().geometry_toolbox.open(path)
         self.render_widget.update_plot()
 
     def save_dialog(self):
-        if app().save_path is None:
+        if app().geometry_toolbox.save_path is None:
             self.save_as_dialog()
         else:
-            app().save(app().save_path)
+            app().geometry_toolbox.save(app().geometry_toolbox.save_path)
 
     def save_as_dialog(self):
         path, check = QFileDialog.getSaveFileName(
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         if not check:
             return
 
-        app().save(path)
+        app().geometry_toolbox.save(path)
 
     def sizeHint(self) -> QSize:
         return QSize(800, 600)
@@ -117,6 +117,6 @@ class MainWindow(QMainWindow):
             if self.floating_widget.isVisible():
                 return
 
-        something_selected = app().selected_points or app().selected_structures
+        something_selected = app().geometry_toolbox.selected_points or app().geometry_toolbox.selected_structures
         if something_selected:
             self.start_edition_mode()

@@ -28,7 +28,7 @@ class EditPointWidget(QWidget):
 
     def update(self):
         super().update()
-        *_, last_point = app().get_selected_points()
+        *_, last_point = app().geometry_toolbox.get_selected_points()
         if last_point is None:
             return
 
@@ -36,7 +36,7 @@ class EditPointWidget(QWidget):
         self.dy_box.setText(str(round(last_point.y, 3)))
         self.dz_box.setText(str(round(last_point.z, 3)))
 
-        enable = last_point in app().editor.control_points
+        enable = last_point in app().geometry_toolbox.editor.control_points
         self.dx_box.setEnabled(enable)
         self.dy_box.setEnabled(enable)
         self.dz_box.setEnabled(enable)
@@ -77,7 +77,7 @@ class EditPointWidget(QWidget):
         return dx, dy, dz
 
     def position_edited_callback(self):
-        *_, point = app().get_selected_points()
+        *_, point = app().geometry_toolbox.get_selected_points()
         if point is None:
             return
 
@@ -90,19 +90,19 @@ class EditPointWidget(QWidget):
         app().update()
 
     def flange_callback(self):
-        app().editor.add_flange()
-        app().editor.commit()
-        app().clear_selection()
+        app().geometry_toolbox.editor.add_flange()
+        app().geometry_toolbox.editor.commit()
+        app().geometry_toolbox.clear_selection()
         app().update()
 
     def bend_callback(self):
-        app().editor.add_bend()
-        app().editor.commit()
-        app().clear_selection()
+        app().geometry_toolbox.editor.add_bend()
+        app().geometry_toolbox.editor.commit()
+        app().geometry_toolbox.clear_selection()
         app().update()
 
     def elbow_callback(self):
-        app().editor.add_elbow()
-        app().editor.commit()
-        app().clear_selection()
+        app().geometry_toolbox.editor.add_elbow()
+        app().geometry_toolbox.editor.commit()
+        app().geometry_toolbox.clear_selection()
         app().update()

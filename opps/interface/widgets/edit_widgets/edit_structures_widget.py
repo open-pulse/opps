@@ -45,7 +45,7 @@ class EditStructuresWidget(QWidget):
 
         self.configure_window()
 
-        app().selection_changed.connect(self.selection_callback)
+        app().geometry_toolbox.selection_changed.connect(self.selection_callback)
         self.selection_callback()
 
     def configure_window(self):
@@ -65,9 +65,9 @@ class EditStructuresWidget(QWidget):
     def selection_callback(self):
         layout: QStackedLayout = self.layout()
 
-        if app().selected_structures:
+        if app().geometry_toolbox.selected_structures:
             self._structures_selection_callback()
-        elif app().selected_points:
+        elif app().geometry_toolbox.selected_points:
             layout.setCurrentWidget(self.edit_point_widget)
         else:
             layout.setCurrentWidget(self.empty_text_widget)
@@ -77,7 +77,7 @@ class EditStructuresWidget(QWidget):
     def _structures_selection_callback(self):
         layout: QStackedLayout = self.layout()
 
-        structure, *_ = app().selected_structures
+        structure, *_ = app().geometry_toolbox.selected_structures
 
         if isinstance(structure, Pipe):
             layout.setCurrentWidget(self.edit_pipe_widget)

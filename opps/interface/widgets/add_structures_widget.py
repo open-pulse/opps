@@ -54,7 +54,7 @@ class AddStructuresWidget(QWidget):
         self.section_button.clicked.connect(self.section_callback)
         self.bend_checkbox.stateChanged.connect(self.auto_bend_callback)
         self.apply_button.clicked.connect(self.apply_callback)
-        app().selection_changed.connect(self.selection_callback)
+        app().geometry_toolbox.selection_changed.connect(self.selection_callback)
 
     def get_displacement(self):
         dx = self.dx_box.text() or 0
@@ -121,12 +121,12 @@ class AddStructuresWidget(QWidget):
         return s
 
     def selection_callback(self):
-        points = list(app().get_selected_points())
+        points = list(app().geometry_toolbox.get_selected_points())
         if not points:
             return
 
         *_, last_point = points
-        enable = last_point in app().editor.control_points
+        enable = last_point in app().geometry_toolbox.editor.control_points
         self.dx_box.setEnabled(enable)
         self.dy_box.setEnabled(enable)
         self.dz_box.setEnabled(enable)
