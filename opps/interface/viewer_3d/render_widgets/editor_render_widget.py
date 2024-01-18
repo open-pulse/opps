@@ -7,17 +7,11 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 
 from opps import app
-from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
-from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
-from opps.interface.viewer_3d.actors.points_actor import PointsActor
-from opps.interface.viewer_3d.interactor_styles.selection_interactor import (
-    SelectionInteractor,
-)
-from opps.interface.viewer_3d.render_widgets.common_render_widget import (
-    CommonRenderWidget,
-)
+from opps.interface.viewer_3d.actors import ControlPointsActor, PassivePointsActor, SelectedPointsActor
 from opps.model import Flange, Pipe, Pipeline
 from opps.model.pipeline_editor import PipelineEditor
+
+from vtkat.render_widgets import CommonRenderWidget
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -42,17 +36,9 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.pipeline_actor = app().geometry_toolbox.pipeline.as_vtk()
 
-        self.control_points_actor = PointsActor(app().geometry_toolbox.editor.control_points)
-        self.control_points_actor.set_color((255, 180, 50))
-
-        self.passive_points_actor = PointsActor(app().geometry_toolbox.editor.points)
-        self.passive_points_actor.set_color((255, 200, 110))
-        self.passive_points_actor.GetProperty().RenderPointsAsSpheresOff()
-        self.passive_points_actor.GetProperty().SetPointSize(12)
-
-        self.selected_points = PointsActor(app().geometry_toolbox.get_selected_points())
-        self.selected_points.GetProperty().SetColor(1, 0, 0)
-        self.selected_points.GetProperty().LightingOff()
+        self.control_points_actor = ControlPointsActor(app().geometry_toolbox.editor.control_points)
+        self.passive_points_actor = PassivePointsActor(app().geometry_toolbox.editor.points)
+        self.selected_points = SelectedPointsActor(app().geometry_toolbox.get_selected_points())
 
         # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
