@@ -35,7 +35,6 @@ class EditorRenderWidget(CommonRenderWidget):
         self.remove_actors()
 
         self.pipeline_actor = app().geometry_toolbox.pipeline.as_vtk()
-
         self.control_points_actor = ControlPointsActor(app().geometry_toolbox.editor.control_points)
         self.passive_points_actor = PassivePointsActor(app().geometry_toolbox.editor.points)
         self.selected_points = SelectedPointsActor(app().geometry_toolbox.get_selected_points())
@@ -57,22 +56,13 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
-        app().geometry_toolbox.clear_selection()
-
-        if (dx, dy, dz) == (0, 0, 0):
-            self.unstage_structure()
-            return
-
-        if not app().geometry_toolbox.editor.staged_structures:
-            self.coords = app().geometry_toolbox.editor.anchor.coords()
-            if auto_bend:
-                app().geometry_toolbox.editor.add_bent_pipe()
-            else:
-                app().geometry_toolbox.editor.add_pipe()
-
+        app().geometry_toolbox.editor.dismiss()
         app().geometry_toolbox.editor.set_deltas((dx, dy, dz))
-        new_position = self.coords + (dx, dy, dz)
-        app().geometry_toolbox.editor.move_point(new_position)
+
+        if auto_bend:
+            app().geometry_toolbox.editor.add_bend()
+        app().geometry_toolbox.editor.add_pipe()
+
         app().geometry_toolbox.editor._update_joints()
         self.update_plot()
 
