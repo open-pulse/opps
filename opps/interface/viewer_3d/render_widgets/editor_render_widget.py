@@ -50,36 +50,42 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def change_anchor(self, point):
-        app().geometry_toolbox.editor.dismiss()
-        app().geometry_toolbox.editor.set_anchor(point)
+        editor = app().geometry_toolbox.editor
+        editor.dismiss()
+        editor.set_anchor(point)
         self.coords = point.coords()
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
-        app().geometry_toolbox.editor.dismiss()
-        app().geometry_toolbox.editor.set_deltas((dx, dy, dz))
+        editor = app().geometry_toolbox.editor
+        editor.dismiss()
+        editor.set_deltas((dx, dy, dz))
 
         if auto_bend:
-            app().geometry_toolbox.editor.add_bend()
-        app().geometry_toolbox.editor.add_pipe()
+            editor.add_bend()
+        editor.add_pipe()
 
-        app().geometry_toolbox.editor._update_joints()
+        editor._update_joints()
         self.update_plot()
 
     def update_default_diameter(self, d):
-        app().geometry_toolbox.editor.change_diameter(d)
-        for structure in app().geometry_toolbox.editor.staged_structures:
+        editor = app().geometry_toolbox.editor
+        editor.change_diameter(d)
+        for structure in editor.staged_structures:
             structure.set_diameter(d)
         self.update_plot()
 
     def add_flange(self):
-        self.unstage_structure()
-        app().geometry_toolbox.editor.add_flange()
-        app().geometry_toolbox.editor.add_bent_pipe()
+        editor = app().geometry_toolbox.editor
+        editor.dismiss()
+        editor.add_flange()
+        editor.add_bent_pipe()
+        self.update()
 
     def commit_structure(self):
-        self.coords = app().geometry_toolbox.editor.anchor.coords()
-        app().geometry_toolbox.editor.commit()
+        editor = app().geometry_toolbox.editor
+        self.coords = editor.anchor.coords()
+        editor.commit()
         self.update_plot()
 
     def unstage_structure(self):
