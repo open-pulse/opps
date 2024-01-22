@@ -19,17 +19,20 @@ class ProjectMenu(QMenu):
         self.open_project_action = QAction("Open Project")
         self.save_project_action = QAction("Save")
         self.save_project_as_action = QAction("Save as")
+        self.import_geometry_action = QAction("Import Geometry")
 
         self.new_project_action.triggered.connect(self.new_project_callback)
         self.open_project_action.triggered.connect(self.open_project_callback)
         self.save_project_action.triggered.connect(self.save_project_callback)
         self.save_project_as_action.triggered.connect(self.save_project_as_callback)
+        self.import_geometry_action.triggered.connect(self.import_geometry_callback)
 
     def create_layout(self):
         self.addAction(self.new_project_action)
         self.addAction(self.open_project_action)
         self.addAction(self.save_project_action)
         self.addAction(self.save_project_as_action)
+        self.addAction(self.import_geometry_action)
 
     def new_project_callback(self):
         app().new()
@@ -42,3 +45,8 @@ class ProjectMenu(QMenu):
 
     def save_project_as_callback(self):
         app().main_window.save_as_dialog()
+
+    def import_geometry_callback(self):
+        app().main_window.import_geometry_dialog()
+        
+

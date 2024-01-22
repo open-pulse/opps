@@ -53,6 +53,16 @@ class MainWindow(QMainWindow):
 
         app().save(path)
 
+    def import_geometry_dialog(self):
+        path, check = QFileDialog.getOpenFileName(
+            self,
+            "Select Geometry",
+            filter="Geometry File (*.step)",
+        )
+
+        if not check:
+            return
+    
     def sizeHint(self) -> QSize:
         return QSize(800, 600)
 
