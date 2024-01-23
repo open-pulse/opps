@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from opps import app, UI_DIR
+from opps import UI_DIR, app
 
 from .cross_section_widget import CrossSectionWidget
 
@@ -124,7 +124,7 @@ class AddStructuresWidget(QWidget):
         points = list(app().get_selected_points())
         if not points:
             return
-        
+
         *_, last_point = points
         enable = last_point in app().editor.control_points
         self.dx_box.setEnabled(enable)
@@ -136,6 +136,6 @@ class AddStructuresWidget(QWidget):
         else:
             text = "Invalid point"
 
-        self.dx_box.setPlaceholderText(text) 
-        self.dy_box.setPlaceholderText(text) 
+        self.dx_box.setPlaceholderText(text)
+        self.dy_box.setPlaceholderText(text)
         self.dz_box.setPlaceholderText(text)

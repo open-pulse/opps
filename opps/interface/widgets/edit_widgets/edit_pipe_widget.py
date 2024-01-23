@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from opps import UI_DIR
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -15,6 +14,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from opps import UI_DIR
 
 
 class EditPipeWidget(QWidget):

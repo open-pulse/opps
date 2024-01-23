@@ -117,6 +117,6 @@ class MainWindow(QMainWindow):
             if self.floating_widget.isVisible():
                 return
 
-        something_selected = app().selected_points_index or app().selected_structures_index
+        something_selected = app().selected_points or app().selected_structures
         if something_selected:
             self.start_edition_mode()

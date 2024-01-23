@@ -44,38 +44,30 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.control_points_actor = PointsActor(app().editor.control_points)
         self.control_points_actor.set_color((255, 180, 50))
-        self.control_points_actor.PickableOff()
 
         self.passive_points_actor = PointsActor(app().editor.points)
-        self.passive_points_actor.set_color((255, 200, 1101))
+        self.passive_points_actor.set_color((255, 200, 110))
         self.passive_points_actor.GetProperty().RenderPointsAsSpheresOff()
         self.passive_points_actor.GetProperty().SetPointSize(12)
-        self.passive_points_actor.set_visibility_offset(-10000)
 
-        list_points = list(app().get_selected_points())
-        self.selected_points = PointsActor(list_points)
+        self.selected_points = PointsActor(app().get_selected_points())
         self.selected_points.GetProperty().SetColor(1, 0, 0)
         self.selected_points.GetProperty().LightingOff()
 
+        # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
-        self.renderer.AddActor(self.control_points_actor)
         self.renderer.AddActor(self.passive_points_actor)
+        self.renderer.AddActor(self.control_points_actor)
         self.renderer.AddActor(self.selected_points)
 
         if reset_camera:
             self.renderer.ResetCamera()
         self.update()
 
-    def change_index(self, i):
-        if not app().editor.points:
-            return
-
+    def change_anchor(self, point):
         app().editor.dismiss()
-        if i >= len(app().editor.points):
-            i = len(app().editor.points) - 1
-
-        self.coords = app().editor.points[i].coords()
-        app().editor.set_active_point(i)
+        app().editor.set_anchor(point)
+        self.coords = point.coords()
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
@@ -86,7 +78,7 @@ class EditorRenderWidget(CommonRenderWidget):
             return
 
         if not app().editor.staged_structures:
-            self.coords = app().editor.active_point.coords()
+            self.coords = app().editor.anchor.coords()
             if auto_bend:
                 app().editor.add_bent_pipe()
             else:
@@ -110,7 +102,7 @@ class EditorRenderWidget(CommonRenderWidget):
         app().editor.add_bent_pipe()
 
     def commit_structure(self):
-        self.coords = app().editor.active_point.coords()
+        self.coords = app().editor.anchor.coords()
         app().editor.commit()
         self.update_plot()
 
@@ -130,70 +122,76 @@ class EditorRenderWidget(CommonRenderWidget):
         self.selected_points = None
 
     def selection_callback(self, x, y):
-        self.selection_picker = vtk.vtkCellPicker()
-        self.selection_picker.SetTolerance(0.005)
-
         modifiers = QApplication.keyboardModifiers()
         ctrl_pressed = bool(modifiers & Qt.ControlModifier)
         shift_pressed = bool(modifiers & Qt.ShiftModifier)
         alt_pressed = bool(modifiers & Qt.AltModifier)
 
         # First try to select points
-        point_index = self._pick_point(x, y)
-        if point_index is not None:
+        selected_point = self._pick_point(x, y)
+        if selected_point is not None:
             app().select_points(
-                [point_index], join=ctrl_pressed | shift_pressed, remove=alt_pressed
+                [selected_point], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             return
 
         # If no points were found try structures
-        structure_index = self._pick_structure(x, y)
-        if structure_index is not None:
+        selected_structure = self._pick_structure(x, y)
+        if selected_structure is not None:
             app().select_structures(
-                [structure_index], join=ctrl_pressed | shift_pressed, remove=alt_pressed
+                [selected_structure], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             return
 
         app().clear_selection()
 
     def _pick_point(self, x, y):
-        # save pickability
-        pickable = self.pipeline_actor.GetPickable()
+        index = self._pick_actor(x, y, self.control_points_actor)
+        if index >= 0:
+            return app().editor.control_points[index]
 
-        # Disable pipeline actor pickability to only select points
-        self.pipeline_actor.PickableOff()
-        self.selection_picker.Pick(x, y, 0, self.renderer)
-
-        # restore pickability
-        self.pipeline_actor.SetPickable(pickable)
-
-        clicked_actor = self.selection_picker.GetActor()
-        clicked_cell = self.selection_picker.GetCellId()
-        if clicked_actor == self.passive_points_actor:
-            return clicked_cell
+        index = self._pick_actor(x, y, self.passive_points_actor)
+        if index >= 0:
+            return app().editor.points[index]
 
     def _pick_structure(self, x, y):
-        self.selection_picker.Pick(x, y, 0, self.renderer)
-        clicked_actor = self.selection_picker.GetActor()
-        clicked_cell = self.selection_picker.GetCellId()
-
-        if clicked_actor == self.pipeline_actor:
-            data: vtk.vtkPolyData = clicked_actor.GetMapper().GetInput()
+        index = self._pick_actor(x, y, self.pipeline_actor)
+        if index >= 0:
+            data: vtk.vtkPolyData = self.pipeline_actor.GetMapper().GetInput()
             cell_identifier = data.GetCellData().GetArray("cell_identifier")
             if cell_identifier is None:
                 return
-            structure_index = cell_identifier.GetValue(clicked_cell)
-            return structure_index
+            structure_index = cell_identifier.GetValue(index)
+            return app().pipeline.structures[structure_index]
+
+    def _pick_actor(self, x, y, actor_to_select):
+        selection_picker = vtk.vtkCellPicker()
+        selection_picker.SetTolerance(0.005)
+        pickability = dict()
+
+        for actor in self.renderer.GetActors():
+            pickability[actor] = actor.GetPickable()
+            if actor == actor_to_select:
+                actor.PickableOn()
+            else:
+                actor.PickableOff()
+
+        selection_picker.Pick(x, y, 0, self.renderer)
+
+        for actor in self.renderer.GetActors():
+            actor.SetPickable(pickability[actor])
+
+        return selection_picker.GetCellId()
 
     def update_selection(self):
-        if app().selected_points_index:
+        if app().selected_points:
             # the last point selected is the one that will
             # be the "anchor" to continue the pipe creation
-            *_, point_index = app().selected_points_index
-            self.change_index(point_index)
+            *_, point = app().selected_points
+            self.change_anchor(point)
 
         # Only dismiss structure creation if something was actually selected
-        something_selected = app().selected_points_index or app().selected_structures_index
+        something_selected = app().selected_points or app().selected_structures
         if something_selected:
             app().editor.dismiss()
 

@@ -39,3 +39,6 @@ class Pipe(Structure):
         from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 
         return PipeActor(self)
+
+    def __hash__(self) -> int:
+        return id(self)

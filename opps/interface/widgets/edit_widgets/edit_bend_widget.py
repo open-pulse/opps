@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from opps import app, UI_DIR
+from opps import UI_DIR, app
 from opps.model import Bend, Elbow
 
 
@@ -74,6 +74,5 @@ class EditBendWidget(QWidget):
         if not isinstance(structure, Bend):
             return
         new_structure = app().editor.morph(structure, _type)
-        index = app().pipeline.structures.index(new_structure)
-        app().select_structures([index])
+        app().select_structures([new_structure])
         app().update()

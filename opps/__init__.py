@@ -1,17 +1,20 @@
-from PyQt5.QtWidgets import QApplication
-from pathlib import Path
-
 import os
 import sys
+from pathlib import Path
 
 import vtk
-
+from PyQt5.QtWidgets import QApplication
 
 ROOT_DIR = Path(__file__).parent
 UI_DIR = ROOT_DIR / "interface/ui_files"
 
+ROOT_DIR = Path(__file__).parent
+UI_DIR = ROOT_DIR / "interface/ui_files"
+
+
 def app() -> "Application":
     return QApplication.instance()
+
 
 def run():
     # disables the terrible vtk error handler and its logs

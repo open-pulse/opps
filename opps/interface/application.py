@@ -5,12 +5,11 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication
 
 from opps.interface.main_window import MainWindow
+from opps.io.cad_file.cad_handler import *
 from opps.model import Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 from opps.model.point import Point
 from opps.model.structure import Structure
-from opps.io.cad_file.cad_handler import *
-
 
 
 class Application(QApplication):
@@ -21,12 +20,11 @@ class Application(QApplication):
 
         self.save_path = None
 
-        self.selected_points_index = set()
-        self.selected_structures_index = set()
+        self.selected_points = set()
+        self.selected_structures = set()
 
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
-       
 
         self.main_window = MainWindow()
         self.main_window.show()
@@ -61,7 +59,7 @@ class Application(QApplication):
     def _open_pcf(self, path):
         self.pipeline.load(path)
         self.update()
-         
+
     def _save_cad(self, path):
         exporter = CADHandler()
         exporter.save(path, self.pipeline)
@@ -77,16 +75,10 @@ class Application(QApplication):
         return self.pipeline.structures[structure_index]
 
     def get_selected_points(self) -> Generator[Point, None, None]:
-        for index in self.selected_points_index:
-            point = self.get_point(index)
-            if isinstance(point, Point):
-                yield point
+        return self.selected_points
 
     def get_selected_structures(self) -> Generator[Structure, None, None]:
-        for index in self.selected_structures_index:
-            structure = self.get_structure(index)
-            if isinstance(structure, Structure):
-                yield structure
+        return self.selected_structures
 
     def delete_selection(self):
         for structure in self.get_selected_structures():
@@ -98,23 +90,23 @@ class Application(QApplication):
         self.clear_selection()
         self.update()
 
-    def select_points(self, points_index, join=False, remove=False):
-        points_index = set(points_index)
+    def select_points(self, points, join=False, remove=False):
+        points = set(points)
 
         if join and remove:
-            self.selected_points_index ^= points_index
+            self.selected_points ^= points
         elif join:
-            self.selected_points_index |= points_index
+            self.selected_points |= points
         elif remove:
-            self.selected_points_index -= points_index
+            self.selected_points -= points
         else:
             self.clear_selection()
-            self.selected_points_index = points_index
+            self.selected_points = points
 
         self.selection_changed.emit()
 
-    def select_structures(self, structures_index, join=False, remove=False):
-        structures_index = set(structures_index)
+    def select_structures(self, structures, join=False, remove=False):
+        structures = set(structures)
 
         # clear all the selected flags
         for structure in self.pipeline.structures:
@@ -122,18 +114,17 @@ class Application(QApplication):
 
         # handle the selection according to modifiers like ctrl, shift, etc.
         if join and remove:
-            self.selected_structures_index ^= structures_index
+            self.selected_structures ^= structures
         elif join:
-            self.selected_structures_index |= structures_index
+            self.selected_structures |= structures
         elif remove:
-            self.selected_structures_index -= structures_index
+            self.selected_structures -= structures
         else:
             self.clear_selection()
-            self.selected_structures_index = structures_index
+            self.selected_structures = structures
 
         # apply the selection flag again for selected structures
-        for index in self.selected_structures_index:
-            structure = self.get_structure(index)
+        for structure in self.selected_structures:
             structure.selected = True
 
         self.selection_changed.emit()
@@ -141,8 +132,8 @@ class Application(QApplication):
     def clear_selection(self):
         for structure in self.pipeline.structures:
             structure.selected = False
-        self.selected_points_index.clear()
-        self.selected_structures_index.clear()
+        self.selected_points.clear()
+        self.selected_structures.clear()
         self.selection_changed.emit()
 
     def update(self):
