@@ -15,6 +15,8 @@ from vtkat.render_widgets import CommonRenderWidget
 
 
 class EditorRenderWidget(CommonRenderWidget):
+    selection_changed = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.left_clicked.connect(self.selection_callback)
@@ -180,4 +182,5 @@ class EditorRenderWidget(CommonRenderWidget):
         if something_selected:
             editor.dismiss()
 
+        self.selection_changed.emit()
         self.update_plot(reset_camera=False)
