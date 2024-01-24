@@ -136,5 +136,4 @@ class GeometryToolbox(QObject):
         self.selection_changed.emit()
 
     def update(self):
-        self.editor._update_joints()
-        self.editor._update_points()
+        self.editor.update()

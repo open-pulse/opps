@@ -65,7 +65,7 @@ class PipelineEditor:
         return new_structure
 
     def commit(self):
-        self._update_points()
+        self.update()
         for structure in self.pipeline.structures:
             structure.staged = False
         self.staged_structures.clear()
@@ -76,8 +76,7 @@ class PipelineEditor:
             staged_points.extend(structure.get_points())
             self.remove_structure(structure)
         self.staged_structures.clear()
-        self._update_joints()
-        self._update_points()
+        self.update()
 
         control_hashes = set(self.points)
         if self.anchor in control_hashes:
@@ -129,9 +128,9 @@ class PipelineEditor:
             if start_point in joint.get_points():
                 new_bend = self.morph(joint, Bend)
 
-                if not self._connected_points(joint.start):
+                if not self.pipeline._connected_points(joint.start):
                     self.anchor = joint.start
-                elif not self._connected_points(joint.end):
+                elif not self.pipeline._connected_points(joint.end):
                     self.anchor = joint.end
                 else:
                     self.anchor = joint.corner
@@ -156,9 +155,9 @@ class PipelineEditor:
             if joint.corner == start_point:
                 new_elbow = self.morph(joint, Elbow)
             
-                if not self._connected_points(joint.start):
+                if not self.pipeline._connected_points(joint.start):
                     self.anchor = joint.start
-                elif not self._connected_points(joint.end):
+                elif not self.pipeline._connected_points(joint.end):
                     self.anchor = joint.end
                 else:
                     self.anchor = joint.corner
@@ -194,6 +193,19 @@ class PipelineEditor:
         self.add_structure(new_flange)
         return new_flange
 
+    def add_delta_pipe(self, deltas=None, curvature_radius=0.3):
+        self.dismiss()
+
+        if deltas != None:
+            self.deltas = deltas
+
+        if self.anchor not in self.control_points:
+            return
+
+        if curvature_radius:
+            self.add_bend(curvature_radius)
+        self.add_pipe()
+
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
         if self.anchor not in self.control_points:
             return
@@ -205,60 +217,13 @@ class PipelineEditor:
         structure.staged = True
         self.pipeline.add_structure(structure)
         self.staged_structures.append(structure)
-        self._update_joints()
-        self._update_points()
+        self.update()
         return structure
 
-    def _update_joints(self):
-        self._update_curvatures()
-        self._update_flanges()
-
-    def _update_curvatures(self):
-        # First colapse all joint that can be colapsed.
-        # This prevents cases were a normalization of a
-        # joint disturbs the normalization of others.
-        for joint in self.pipeline.structures:
-            if not isinstance(joint, Bend | Elbow):
-                continue
-
-            if not joint.auto:
-                continue
-
-            joint.colapse()
-
-        for joint in self.pipeline.structures:
-            if not isinstance(joint, Bend | Elbow):
-                continue
-
-            if not joint.auto:
-                continue
-
-            connected_points = (
-                self._connected_points(joint.start)
-                + self._connected_points(joint.end)
-                + self._connected_points(joint.corner)
-            )
-
-            if len(connected_points) != 2:
-                continue
-
-            oposite_a, oposite_b, *_ = connected_points
-            joint.normalize_values(oposite_a, oposite_b)
-
-    def _update_flanges(self):
-        for flange in self.pipeline.structures:
-            if not isinstance(flange, Flange):
-                continue
-
-            if not flange.auto:
-                continue
-
-            connected_points = self._connected_points(flange.position)
-            if not connected_points:
-                continue
-
-            oposite_a, *_ = connected_points
-            flange.normal = flange.position.coords() - oposite_a.coords()
+    def update(self):
+        self.pipeline._update_curvatures()
+        self.pipeline._update_flanges()
+        self._update_points()
 
     def _update_points(self):
         points = list()
@@ -298,20 +263,6 @@ class PipelineEditor:
 
         self.control_points = list(control_points)
         self.points = list(points)
-
-    def _connected_points(self, point):
-        oposite_points = []
-        for pipe in self.pipeline.structures:
-            if not isinstance(pipe, Pipe):
-                continue
-
-            if id(pipe.start) == id(point):
-                oposite_points.append(pipe.end)
-
-            elif id(pipe.end) == id(point):
-                oposite_points.append(pipe.start)
-
-        return oposite_points
 
     def _structure_params(self, structure):
         """

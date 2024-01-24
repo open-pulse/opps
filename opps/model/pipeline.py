@@ -19,45 +19,6 @@ class Pipeline(Structure):
         groups = group_structures(lines)
         self.structures = create_classes(groups)
 
-    def add_pipe(self, *args, **kwargs) -> Pipe:
-        pipe = Pipe(*args, **kwargs)
-        self.add_structure(pipe)
-        return pipe
-
-    def add_bend(self, *args, **kwargs) -> Bend:
-        bend = Bend(*args, **kwargs)
-        self.add_structure(bend)
-        return bend
-
-    def add_flange(self, *args, **kwargs) -> Flange:
-        flange = Flange(*args, **kwargs)
-        self.add_structure(flange)
-        return flange
-
-    def add_oriented_flange(self, position, *args, **kwargs):
-        pipes_connected = self.find_pipes_at(position)
-        if pipes_connected:
-            pipe = pipes_connected[0]
-            normal = pipe.end - pipe.start
-        else:
-            normal = (0, 1, 0)
-
-        flange = Flange(position, normal, *args, **kwargs)
-        self.add_structure(flange)
-
-    def add_connected_pipe(self, *args, **kwargs):
-        pipe = Pipe(*args, **kwargs)
-        pipes = self.find_pipes_at(pipe.start)
-        pipes.extend(self.find_pipes_at(pipe.end))
-        existing_pipe, *_ = pipes
-
-        bend = self.connect_pipes_with_bend(pipe, existing_pipe)
-        if bend is not None:
-            self.add_structure(pipe)
-            self.add_structure(bend)
-
-        return pipe, bend
-
     def add_structure(self, structure, *, auto_connect=False):
         self.structures.append(structure)
 
@@ -67,6 +28,67 @@ class Pipeline(Structure):
         )
 
         return PipelineActor(self)
+
+    def _update_flanges(self):
+        for flange in self.structures:
+            if not isinstance(flange, Flange):
+                continue
+
+            if not flange.auto:
+                continue
+
+            connected_points = self._connected_points(flange.position)
+            if not connected_points:
+                continue
+
+            oposite_a, *_ = connected_points
+            flange.normal = flange.position.coords() - oposite_a.coords()
+
+    def _update_curvatures(self):
+        # First colapse all joint that can be colapsed.
+        # This prevents cases were a normalization of a
+        # joint disturbs the normalization of others.
+        for joint in self.structures:
+            if not isinstance(joint, Bend | Elbow):
+                continue
+
+            if not joint.auto:
+                continue
+
+            joint.colapse()
+
+        for joint in self.structures:
+            if not isinstance(joint, Bend | Elbow):
+                continue
+
+            if not joint.auto:
+                continue
+
+            connected_points = (
+                self._connected_points(joint.start)
+                + self._connected_points(joint.end)
+                + self._connected_points(joint.corner)
+            )
+
+            if len(connected_points) != 2:
+                continue
+
+            oposite_a, oposite_b, *_ = connected_points
+            joint.normalize_values(oposite_a, oposite_b)
+
+    def _connected_points(self, point):
+        oposite_points = []
+        for pipe in self.structures:
+            if not isinstance(pipe, Pipe):
+                continue
+
+            if id(pipe.start) == id(point):
+                oposite_points.append(pipe.end)
+
+            elif id(pipe.end) == id(point):
+                oposite_points.append(pipe.start)
+
+        return oposite_points
 
     def __hash__(self) -> int:
         return id(self)
