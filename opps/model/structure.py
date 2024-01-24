@@ -1,6 +1,8 @@
 class Structure:
     selected: bool = False
     staged: bool = False
+    tag: int = -1
+    extra_info: dict = None
 
     def get_points(self):
         raise NotImplementedError()
