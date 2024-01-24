@@ -3,7 +3,7 @@ from enum import Enum
 
 import numpy as np
 import vtk
-from opps.io.cad_file.step_exporter import StepExporter
+from opps.io.cad_file.step_handler import StepHandler
 
 from opps import app
 from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor

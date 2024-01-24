@@ -4,7 +4,7 @@ from opps.model.bend import Bend
 from opps.model.flange import Flange
 
 
-class StepExporter:
+class StepHandler:
     def __init__(self):
         pass
 
@@ -29,7 +29,20 @@ class StepExporter:
 
         gmsh.model.occ.synchronize()
         gmsh.write(str(path))
+    
+    def open(self, path):
+        gmsh.initialize("", False)
+        gmsh.option.setNumber("General.Verbosity", 0)
+        gmsh.open(str(path))
+        
+        points = gmsh.model.get_entities(0)
+        lines = gmsh.model.get_entities(1)
 
+        print(gmsh.model.getType(1,1))
+        print(gmsh.model.getType(1,2))
+        
+        
+        gmsh.fltk.run()
 
 
 
