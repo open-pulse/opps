@@ -3,7 +3,7 @@ from enum import Enum
 
 import numpy as np
 import vtk
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication
 
 from opps import app
@@ -20,14 +20,12 @@ class EditorRenderWidget(CommonRenderWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.left_clicked.connect(self.selection_callback)
-        app().geometry_toolbox.selection_changed.connect(self.update_selection)
 
-        self.show_passive_points = True
         self.selected_structure = None
         self.pipeline_actor = None
         self.control_points_actor = None
         self.passive_points_actor = None
-        self.selected_points = None
+        self.selected_points_actor = None
         self.coords = np.array([0, 0, 0])
 
         self.create_axes()
@@ -39,16 +37,16 @@ class EditorRenderWidget(CommonRenderWidget):
         pipeline = app().geometry_toolbox.pipeline
         editor = app().geometry_toolbox.editor
 
-        self.pipeline_actor = app().geometry_toolbox.pipeline.as_vtk()
+        self.pipeline_actor = pipeline.pipeline.as_vtk()
         self.control_points_actor = ControlPointsActor(pipeline.control_points)
         self.passive_points_actor = PassivePointsActor(pipeline.points)
-        self.selected_points = SelectedPointsActor(editor.selected_points)
+        self.selected_points_actor = SelectedPointsActor(editor.selected_points)
 
         # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
         self.renderer.AddActor(self.passive_points_actor)
         self.renderer.AddActor(self.control_points_actor)
-        self.renderer.AddActor(self.selected_points)
+        self.renderer.AddActor(self.selected_points_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
@@ -94,12 +92,12 @@ class EditorRenderWidget(CommonRenderWidget):
         self.renderer.RemoveActor(self.pipeline_actor)
         self.renderer.RemoveActor(self.control_points_actor)
         self.renderer.RemoveActor(self.passive_points_actor)
-        self.renderer.RemoveActor(self.selected_points)
+        self.renderer.RemoveActor(self.selected_points_actor)
 
         self.pipeline_actor = None
         self.control_points_actor = None
         self.passive_points_actor = None
-        self.selected_points = None
+        self.selected_points_actor = None
 
     def selection_callback(self, x, y):
         editor = app().geometry_toolbox.editor
