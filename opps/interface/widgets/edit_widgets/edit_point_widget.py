@@ -36,7 +36,7 @@ class EditPointWidget(QWidget):
         self.dy_box.setText(str(round(last_point.y, 3)))
         self.dz_box.setText(str(round(last_point.z, 3)))
 
-        enable = last_point in app().geometry_toolbox.editor.control_points
+        enable = last_point in app().geometry_toolbox.pipeline.control_points
         self.dx_box.setEnabled(enable)
         self.dy_box.setEnabled(enable)
         self.dz_box.setEnabled(enable)

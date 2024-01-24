@@ -35,8 +35,8 @@ class EditorRenderWidget(CommonRenderWidget):
         self.remove_actors()
 
         self.pipeline_actor = app().geometry_toolbox.pipeline.as_vtk()
-        self.control_points_actor = ControlPointsActor(app().geometry_toolbox.editor.control_points)
-        self.passive_points_actor = PassivePointsActor(app().geometry_toolbox.editor.points)
+        self.control_points_actor = ControlPointsActor(app().geometry_toolbox.pipeline.control_points)
+        self.passive_points_actor = PassivePointsActor(app().geometry_toolbox.pipeline.points)
         self.selected_points = SelectedPointsActor(app().geometry_toolbox.get_selected_points())
 
         # The order matters. It defines wich points will appear first.
@@ -123,11 +123,11 @@ class EditorRenderWidget(CommonRenderWidget):
     def _pick_point(self, x, y):
         index = self._pick_actor(x, y, self.control_points_actor)
         if index >= 0:
-            return app().geometry_toolbox.editor.control_points[index]
+            return app().geometry_toolbox.pipeline.control_points[index]
 
         index = self._pick_actor(x, y, self.passive_points_actor)
         if index >= 0:
-            return app().geometry_toolbox.editor.points[index]
+            return app().geometry_toolbox.pipeline.points[index]
 
     def _pick_structure(self, x, y):
         index = self._pick_actor(x, y, self.pipeline_actor)

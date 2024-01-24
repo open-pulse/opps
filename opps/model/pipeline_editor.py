@@ -11,15 +11,14 @@ from opps.model.structure import Structure
 class PipelineEditor:
     def __init__(self, pipeline: Pipeline, origin=(0.0, 0.0, 0.0)):
         self.pipeline = pipeline
+        self.pipeline._update_points()
 
-        self.origin = Point(*origin)
-        self.control_points = [self.origin]
-        self.passive_points = []
-        self.points = [self.origin]
         self.deltas = np.array([0, 0, 0])
-        self.anchor = self.points[0]
+        self.anchor = self.pipeline.points[0]
 
         self.default_diameter = 0.2
+        self.selected_points = []
+        self.selected_structures = []
         self.staged_structures = []
 
     def set_anchor(self, point):
@@ -29,7 +28,7 @@ class PipelineEditor:
         self.deltas = np.array(deltas)
 
     def move_point(self, position):
-        if self.anchor not in self.control_points:
+        if self.anchor not in self.pipeline.control_points:
             return
         self.anchor.set_coords(*position)
 
@@ -78,7 +77,7 @@ class PipelineEditor:
         self.staged_structures.clear()
         self.update()
 
-        control_hashes = set(self.points)
+        control_hashes = set(self.pipeline.control_points)
         if self.anchor in control_hashes:
             return
 
@@ -87,7 +86,7 @@ class PipelineEditor:
                 self.anchor = point
                 break
         else:
-            self.set_anchor(self.control_points[-1])
+            self.set_anchor(self.pipeline.control_points[-1])
 
     def change_diameter(self, diameter):
         self.default_diameter = diameter
@@ -103,7 +102,7 @@ class PipelineEditor:
         if deltas != None:
             self.deltas = deltas
 
-        if self.anchor not in self.control_points:
+        if self.anchor not in self.pipeline.control_points:
             return
 
         current_point = self.anchor
@@ -199,7 +198,7 @@ class PipelineEditor:
         if deltas != None:
             self.deltas = deltas
 
-        if self.anchor not in self.control_points:
+        if self.anchor not in self.pipeline.control_points:
             return
 
         if curvature_radius:
@@ -207,7 +206,7 @@ class PipelineEditor:
         self.add_pipe()
 
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
-        if self.anchor not in self.control_points:
+        if self.anchor not in self.pipeline.control_points:
             return
 
         self.add_bend(curvature_radius)
@@ -223,46 +222,7 @@ class PipelineEditor:
     def update(self):
         self.pipeline._update_curvatures()
         self.pipeline._update_flanges()
-        self._update_points()
-
-    def _update_points(self):
-        points = list()
-        control_points = list()
-        for structure in self.pipeline.structures:
-            points.extend(structure.get_points())
-            if not isinstance(structure, Pipe):
-                continue
-            control_points.extend(structure.get_points())
-
-        point_to_index = {v: i for i, v in enumerate(control_points)}
-        indexes_to_remove = []
-
-        for structure in self.pipeline.structures:
-            if not isinstance(structure, Bend | Elbow):
-                continue
-
-            if not structure.auto:
-                control_points.append(structure.corner)
-                control_points.append(structure.end)
-                control_points.append(structure.start)
-                continue
-
-            control_points.append(structure.corner)
-            if structure.start in point_to_index:
-                indexes_to_remove.append(point_to_index[structure.start])
-
-            if structure.end in point_to_index:
-                indexes_to_remove.append(point_to_index[structure.end])
-
-        for i in sorted(indexes_to_remove, reverse=True):
-            control_points.pop(i)
-
-        if not control_points:
-            control_points.append(self.origin)
-            points.append(self.origin)
-
-        self.control_points = list(control_points)
-        self.points = list(points)
+        self.pipeline._update_points()
 
     def _structure_params(self, structure):
         """

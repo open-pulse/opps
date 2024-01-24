@@ -68,7 +68,7 @@ class GeometryToolbox(QObject):
         print("Saving PCF")
 
     def get_point(self, point_index) -> Point:
-        return self.editor.points[point_index]
+        return self.pipeline.points[point_index]
 
     def get_structure(self, structure_index) -> Structure:
         return self.pipeline.structures[structure_index]

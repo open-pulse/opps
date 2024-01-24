@@ -12,6 +12,8 @@ from opps.model.structure import Structure
 class Pipeline(Structure):
     def __init__(self):
         self.structures = []
+        self.points = []
+        self.control_points = []
 
     def load(self, path):
         with open(path, "r", encoding="iso_8859_1") as c2:
@@ -75,6 +77,46 @@ class Pipeline(Structure):
 
             oposite_a, oposite_b, *_ = connected_points
             joint.normalize_values(oposite_a, oposite_b)
+
+    def _update_points(self):
+        points = list()
+        control_points = list()
+        for structure in self.structures:
+            points.extend(structure.get_points())
+            if not isinstance(structure, Pipe):
+                continue
+            control_points.extend(structure.get_points())
+
+        point_to_index = {v: i for i, v in enumerate(control_points)}
+        indexes_to_remove = []
+
+        for structure in self.structures:
+            if not isinstance(structure, Bend | Elbow):
+                continue
+
+            if not structure.auto:
+                control_points.append(structure.corner)
+                control_points.append(structure.end)
+                control_points.append(structure.start)
+                continue
+
+            control_points.append(structure.corner)
+            if structure.start in point_to_index:
+                indexes_to_remove.append(point_to_index[structure.start])
+
+            if structure.end in point_to_index:
+                indexes_to_remove.append(point_to_index[structure.end])
+
+        for i in sorted(indexes_to_remove, reverse=True):
+            control_points.pop(i)
+
+        if not control_points:
+            origin = Point(0,0,0)
+            control_points.append(origin)
+            points.append(origin)
+
+        self.control_points = list(control_points)
+        self.points = list(points)
 
     def _connected_points(self, point):
         oposite_points = []
