@@ -89,51 +89,51 @@ class GeometryToolbox(QObject):
         self.clear_selection()
         self.update()
 
-    def select_points(self, points, join=False, remove=False):
-        points = set(points)
+    # def select_points(self, points, join=False, remove=False):
+    #     points = set(points)
 
-        if join and remove:
-            self.selected_points ^= points
-        elif join:
-            self.selected_points |= points
-        elif remove:
-            self.selected_points -= points
-        else:
-            self.clear_selection()
-            self.selected_points = points
+    #     if join and remove:
+    #         self.selected_points ^= points
+    #     elif join:
+    #         self.selected_points |= points
+    #     elif remove:
+    #         self.selected_points -= points
+    #     else:
+    #         self.clear_selection()
+    #         self.selected_points = points
 
-        self.selection_changed.emit()
+    #     self.selection_changed.emit()
 
-    def select_structures(self, structures, join=False, remove=False):
-        structures = set(structures)
+    # def select_structures(self, structures, join=False, remove=False):
+    #     structures = set(structures)
 
-        # clear all the selected flags
-        for structure in self.pipeline.structures:
-            structure.selected = False
+    #     # clear all the selected flags
+    #     for structure in self.pipeline.structures:
+    #         structure.selected = False
 
-        # handle the selection according to modifiers like ctrl, shift, etc.
-        if join and remove:
-            self.selected_structures ^= structures
-        elif join:
-            self.selected_structures |= structures
-        elif remove:
-            self.selected_structures -= structures
-        else:
-            self.clear_selection()
-            self.selected_structures = structures
+    #     # handle the selection according to modifiers like ctrl, shift, etc.
+    #     if join and remove:
+    #         self.selected_structures ^= structures
+    #     elif join:
+    #         self.selected_structures |= structures
+    #     elif remove:
+    #         self.selected_structures -= structures
+    #     else:
+    #         self.clear_selection()
+    #         self.selected_structures = structures
 
-        # apply the selection flag again for selected structures
-        for structure in self.selected_structures:
-            structure.selected = True
+    #     # apply the selection flag again for selected structures
+    #     for structure in self.selected_structures:
+    #         structure.selected = True
 
-        self.selection_changed.emit()
+    #     self.selection_changed.emit()
 
-    def clear_selection(self):
-        for structure in self.pipeline.structures:
-            structure.selected = False
-        self.selected_points.clear()
-        self.selected_structures.clear()
-        self.selection_changed.emit()
+    # def clear_selection(self):
+    #     for structure in self.pipeline.structures:
+    #         structure.selected = False
+    #     self.selected_points.clear()
+    #     self.selected_structures.clear()
+    #     self.selection_changed.emit()
 
     def update(self):
         self.editor.update()

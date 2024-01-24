@@ -11,9 +11,9 @@ from opps.model.structure import Structure
 
 class Pipeline(Structure):
     def __init__(self):
-        self.structures = []
-        self.points = []
-        self.control_points = []
+        self.structures: list[Structure] = []
+        self.points: list[Point] = []
+        self.control_points: list[Point] = []
 
     def load(self, path):
         with open(path, "r", encoding="iso_8859_1") as c2:

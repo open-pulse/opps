@@ -15,8 +15,8 @@ class PipelineEditor:
 
         self.deltas = np.array([0, 0, 0])
         self.anchor = self.pipeline.points[0]
-
         self.default_diameter = 0.2
+
         self.selected_points = []
         self.selected_structures = []
         self.staged_structures = []
@@ -27,10 +27,23 @@ class PipelineEditor:
     def set_deltas(self, deltas):
         self.deltas = np.array(deltas)
 
-    def move_point(self, position):
-        if self.anchor not in self.pipeline.control_points:
+    def add_structure(self, structure):
+        structure.staged = True
+        self.pipeline.add_structure(structure)
+        self.staged_structures.append(structure)
+        self.update()
+        return structure
+
+    def remove_structure(self, structure, rejoin=True):
+        if not isinstance(structure, Structure):
             return
-        self.anchor.set_coords(*position)
+
+        if rejoin and isinstance(structure, Bend | Elbow):
+            structure.colapse()
+
+        index = self.pipeline.structures.index(structure)
+        if index >= 0:
+            self.pipeline.structures.pop(index)
 
     def remove_point(self, point, rejoin=True):
         if not isinstance(point, Point):
@@ -44,16 +57,10 @@ class PipelineEditor:
         for structure in structures_to_remove:
             self.remove_structure(structure, rejoin)
 
-    def remove_structure(self, structure, rejoin=True):
-        if not isinstance(structure, Structure):
+    def move_point(self, position):
+        if self.anchor not in self.pipeline.control_points:
             return
-
-        if rejoin and isinstance(structure, Bend | Elbow):
-            structure.colapse()
-
-        index = self.pipeline.structures.index(structure)
-        if index >= 0:
-            self.pipeline.structures.pop(index)
+        self.anchor.set_coords(*position)
 
     def morph(self, structure, new_type):
         params = self._structure_params(structure)
@@ -98,6 +105,7 @@ class PipelineEditor:
                 diameters.extend(structure.get_diameters())
         return diameters
 
+    # STRUCTURES
     def add_pipe(self, deltas=None):
         if deltas != None:
             self.deltas = deltas
@@ -212,12 +220,47 @@ class PipelineEditor:
         self.add_bend(curvature_radius)
         return self.add_pipe(deltas)
 
-    def add_structure(self, structure):
-        structure.staged = True
-        self.pipeline.add_structure(structure)
-        self.staged_structures.append(structure)
-        self.update()
-        return structure
+    # SELECTION
+    def select_points(self, points, join=False, remove=False):
+        points = set(points)
+
+        if join and remove:
+            self.selected_points ^= points
+        elif join:
+            self.selected_points |= points
+        elif remove:
+            self.selected_points -= points
+        else:
+            self.clear_selection()
+            self.selected_points = points
+
+    def select_structures(self, structures, join=False, remove=False):
+        structures = set(structures)
+
+        # clear all the selected flags
+        for structure in self.pipeline.structures:
+            structure.selected = False
+
+        # handle the selection according to modifiers like ctrl, shift, etc.
+        if join and remove:
+            self.selected_structures ^= structures
+        elif join:
+            self.selected_structures |= structures
+        elif remove:
+            self.selected_structures -= structures
+        else:
+            self.clear_selection()
+            self.selected_structures = structures
+
+        # apply the selection flag again for selected structures
+        for structure in self.selected_structures:
+            structure.selected = True
+
+    def clear_selection(self):
+        for structure in self.pipeline.structures:
+            structure.selected = False
+        self.selected_points.clear()
+        self.selected_structures.clear()
 
     def update(self):
         self.pipeline._update_curvatures()

@@ -34,10 +34,13 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
+        pipeline = app().geometry_toolbox.pipeline
+        editor = app().geometry_toolbox.editor
+
         self.pipeline_actor = app().geometry_toolbox.pipeline.as_vtk()
-        self.control_points_actor = ControlPointsActor(app().geometry_toolbox.pipeline.control_points)
-        self.passive_points_actor = PassivePointsActor(app().geometry_toolbox.pipeline.points)
-        self.selected_points = SelectedPointsActor(app().geometry_toolbox.get_selected_points())
+        self.control_points_actor = ControlPointsActor(pipeline.control_points)
+        self.passive_points_actor = PassivePointsActor(pipeline.points)
+        self.selected_points = SelectedPointsActor(editor.selected_points)
 
         # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
@@ -97,6 +100,8 @@ class EditorRenderWidget(CommonRenderWidget):
         self.selected_points = None
 
     def selection_callback(self, x, y):
+        editor = app().geometry_toolbox.editor
+
         modifiers = QApplication.keyboardModifiers()
         ctrl_pressed = bool(modifiers & Qt.ControlModifier)
         shift_pressed = bool(modifiers & Qt.ShiftModifier)
@@ -105,20 +110,23 @@ class EditorRenderWidget(CommonRenderWidget):
         # First try to select points
         selected_point = self._pick_point(x, y)
         if selected_point is not None:
-            app().geometry_toolbox.select_points(
+            editor.select_points(
                 [selected_point], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
+            self.update_selection()
             return
 
         # If no points were found try structures
         selected_structure = self._pick_structure(x, y)
         if selected_structure is not None:
-            app().geometry_toolbox.select_structures(
+            editor.select_structures(
                 [selected_structure], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
+            self.update_selection()
             return
 
-        app().geometry_toolbox.clear_selection()
+        editor.clear_selection()
+        self.update_selection()
 
     def _pick_point(self, x, y):
         index = self._pick_actor(x, y, self.control_points_actor)
@@ -159,15 +167,17 @@ class EditorRenderWidget(CommonRenderWidget):
         return selection_picker.GetCellId()
 
     def update_selection(self):
-        if app().geometry_toolbox.selected_points:
+        editor = app().geometry_toolbox.editor
+
+        if editor.selected_points:
             # the last point selected is the one that will
             # be the "anchor" to continue the pipe creation
-            *_, point = app().geometry_toolbox.selected_points
+            *_, point = editor.selected_points
             self.change_anchor(point)
 
         # Only dismiss structure creation if something was actually selected
-        something_selected = app().geometry_toolbox.selected_points or app().geometry_toolbox.selected_structures
+        something_selected = editor.selected_points or editor.selected_structures
         if something_selected:
-            app().geometry_toolbox.editor.dismiss()
+            editor.dismiss()
 
         self.update_plot(reset_camera=False)
