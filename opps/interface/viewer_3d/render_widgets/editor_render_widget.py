@@ -19,7 +19,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.left_clicked.connect(self.selection_callback)
+        self.left_released.connect(self.selection_callback)
 
         self.selected_structure = None
         self.pipeline_actor = None
@@ -37,7 +37,7 @@ class EditorRenderWidget(CommonRenderWidget):
         pipeline = app().geometry_toolbox.pipeline
         editor = app().geometry_toolbox.editor
 
-        self.pipeline_actor = pipeline.pipeline.as_vtk()
+        self.pipeline_actor = pipeline.as_vtk()
         self.control_points_actor = ControlPointsActor(pipeline.control_points)
         self.passive_points_actor = PassivePointsActor(pipeline.points)
         self.selected_points_actor = SelectedPointsActor(editor.selected_points)
