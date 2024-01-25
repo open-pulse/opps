@@ -24,16 +24,16 @@ class MainWindow(QMainWindow):
 
         self.floating_widget = None
 
+        self.delete_action = QAction(self)
+        self.delete_action.setShortcut("del")
+        self.delete_action.triggered.connect(self.delete_selection_callback)
+        self.addAction(self.delete_action)
+
 
         self._create_menu_bar()
         self._configure_window()
         self._create_central_widget()
         self.start_creation_mode()
-
-        self.delete_action = QAction(self)
-        self.delete_action.setShortcut("del")
-        # self.delete_action.triggered.connect(self.render_widget.editor.delete_selection)
-        self.addAction(self.delete_action)
 
         self.render_widget.selection_changed.connect(self.selection_callback)
 
@@ -114,11 +114,26 @@ class MainWindow(QMainWindow):
         self.floating_widget = EditStructuresWidget(self.render_widget, self)
         self.floating_widget.show()
 
+    def delete_selection_callback(self):
+        editor = self.render_widget.editor
+        selected_structures = editor.selected_structures
+        selected_points = editor.selected_points
+
+        for structure in selected_structures:
+            editor.remove_structure(structure, rejoin=True)
+
+        for point in selected_points:
+            editor.remove_point(point, rejoin=False)
+
+        editor.clear_selection()
+        app().update()
+
     def selection_callback(self):
         if isinstance(self.floating_widget, AddStructuresWidget):
             if self.floating_widget.isVisible():
                 return
 
-        something_selected = app().geometry_toolbox.selected_points or app().geometry_toolbox.selected_structures
+        editor = self.render_widget.editor
+        something_selected = editor.selected_points or editor.selected_structures
         if something_selected:
             self.start_edition_mode()

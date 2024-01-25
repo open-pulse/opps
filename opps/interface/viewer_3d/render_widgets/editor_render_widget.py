@@ -59,6 +59,7 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
         self.editor.dismiss()
+        self.editor.clear_selection()
         radius = 0.3 if auto_bend else 0
         self.editor.add_bent_pipe((dx,dy,dz), radius)
         self.update_plot()

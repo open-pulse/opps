@@ -110,8 +110,7 @@ class AddStructuresWidget(QWidget):
         )
 
     def closeEvent(self, a0) -> None:
-        self.render_widget.show_passive_points = True
-        self.render_widget.unstage_structure()
+        self.render_widget.editor.dismiss()
         return super().closeEvent(a0)
 
     def separator(self):
