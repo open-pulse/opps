@@ -48,13 +48,14 @@ class AddStructuresWidget(QWidget):
         self.apply_button: QPushButton = self.findChild(QPushButton, "apply_button")
 
     def _create_connections(self):
+        editor = self.render_widget.editor
         self.dx_box.textEdited.connect(self.coords_modified_callback)
         self.dy_box.textEdited.connect(self.coords_modified_callback)
         self.dz_box.textEdited.connect(self.coords_modified_callback)
         self.section_button.clicked.connect(self.section_callback)
         self.bend_checkbox.stateChanged.connect(self.auto_bend_callback)
         self.apply_button.clicked.connect(self.apply_callback)
-        app().geometry_toolbox.selection_changed.connect(self.selection_callback)
+        editor.selection_changed.connect(self.selection_callback)
 
     def get_displacement(self):
         dx = self.dx_box.text() or 0
