@@ -6,7 +6,6 @@ import vtk
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication
 
-from opps import app
 from opps.interface.viewer_3d.actors import ControlPointsActor, PassivePointsActor, SelectedPointsActor
 from opps.model import Flange, Pipe, Pipeline
 from opps.model.pipeline_editor import PipelineEditor
@@ -17,9 +16,10 @@ from vtkat.render_widgets import CommonRenderWidget
 class EditorRenderWidget(CommonRenderWidget):
     selection_changed = pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, editor, parent=None):
         super().__init__(parent)
         self.left_released.connect(self.selection_callback)
+        self.editor = editor
 
         self.selected_structure = None
         self.pipeline_actor = None
@@ -34,13 +34,12 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        pipeline = app().geometry_toolbox.pipeline
-        editor = app().geometry_toolbox.editor
+        pipeline = self.editor.pipeline
 
         self.pipeline_actor = pipeline.as_vtk()
         self.control_points_actor = ControlPointsActor(pipeline.control_points)
         self.passive_points_actor = PassivePointsActor(pipeline.points)
-        self.selected_points_actor = SelectedPointsActor(editor.selected_points)
+        self.selected_points_actor = SelectedPointsActor(self.editor.selected_points)
 
         # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
@@ -53,41 +52,35 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def change_anchor(self, point):
-        editor = app().geometry_toolbox.editor
-        editor.dismiss()
-        editor.set_anchor(point)
+        self.editor.dismiss()
+        self.editor.set_anchor(point)
         self.coords = point.coords()
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
-        editor = app().geometry_toolbox.editor
-        editor.dismiss()
+        self.editor.dismiss()
         radius = 0.3 if auto_bend else 0
-        editor.add_bent_pipe((dx,dy,dz), radius)
+        self.editor.add_bent_pipe((dx,dy,dz), radius)
         self.update_plot()
 
     def update_default_diameter(self, d):
-        editor = app().geometry_toolbox.editor
-        editor.change_diameter(d)
-        for structure in editor.staged_structures:
+        self.editor.change_diameter(d)
+        for structure in self.editor.staged_structures:
             structure.set_diameter(d)
         self.update_plot()
 
     def add_flange(self):
-        editor = app().geometry_toolbox.editor
-        editor.dismiss()
-        editor.add_flange()
-        editor.add_bent_pipe()
+        self.editor.dismiss()
+        self.editor.add_flange()
+        self.editor.add_bent_pipe()
         self.update()
 
     def commit_structure(self):
-        editor = app().geometry_toolbox.editor
-        self.coords = editor.anchor.coords()
-        editor.commit()
+        self.coords = self.editor.anchor.coords()
+        self.editor.commit()
         self.update_plot()
 
     def unstage_structure(self):
-        app().geometry_toolbox.editor.dismiss()
         self.update_plot()
 
     def remove_actors(self):
@@ -102,8 +95,6 @@ class EditorRenderWidget(CommonRenderWidget):
         self.selected_points_actor = None
 
     def selection_callback(self, x, y):
-        editor = app().geometry_toolbox.editor
-
         modifiers = QApplication.keyboardModifiers()
         ctrl_pressed = bool(modifiers & Qt.ControlModifier)
         shift_pressed = bool(modifiers & Qt.ShiftModifier)
@@ -112,7 +103,7 @@ class EditorRenderWidget(CommonRenderWidget):
         # First try to select points
         selected_point = self._pick_point(x, y)
         if selected_point is not None:
-            editor.select_points(
+            self.editor.select_points(
                 [selected_point], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             self.update_selection()
@@ -121,25 +112,27 @@ class EditorRenderWidget(CommonRenderWidget):
         # If no points were found try structures
         selected_structure = self._pick_structure(x, y)
         if selected_structure is not None:
-            editor.select_structures(
+            self.editor.select_structures(
                 [selected_structure], join=ctrl_pressed | shift_pressed, remove=alt_pressed
             )
             self.update_selection()
             return
 
-        editor.clear_selection()
+        self.editor.clear_selection()
         self.update_selection()
 
     def _pick_point(self, x, y):
         index = self._pick_actor(x, y, self.control_points_actor)
+        pipeline = self.editor.pipeline
         if index >= 0:
-            return app().geometry_toolbox.pipeline.control_points[index]
+            return pipeline.control_points[index]
 
         index = self._pick_actor(x, y, self.passive_points_actor)
         if index >= 0:
-            return app().geometry_toolbox.pipeline.points[index]
+            return pipeline.points[index]
 
     def _pick_structure(self, x, y):
+        pipeline = self.editor.pipeline
         index = self._pick_actor(x, y, self.pipeline_actor)
         if index >= 0:
             data: vtk.vtkPolyData = self.pipeline_actor.GetMapper().GetInput()
@@ -147,7 +140,7 @@ class EditorRenderWidget(CommonRenderWidget):
             if cell_identifier is None:
                 return
             structure_index = cell_identifier.GetValue(index)
-            return app().geometry_toolbox.pipeline.structures[structure_index]
+            return pipeline.structures[structure_index]
 
     def _pick_actor(self, x, y, actor_to_select):
         selection_picker = vtk.vtkCellPicker()
@@ -169,18 +162,16 @@ class EditorRenderWidget(CommonRenderWidget):
         return selection_picker.GetCellId()
 
     def update_selection(self):
-        editor = app().geometry_toolbox.editor
-
-        if editor.selected_points:
+        if self.editor.selected_points:
             # the last point selected is the one that will
             # be the "anchor" to continue the pipe creation
-            *_, point = editor.selected_points
+            *_, point = self.editor.selected_points
             self.change_anchor(point)
 
         # Only dismiss structure creation if something was actually selected
-        something_selected = editor.selected_points or editor.selected_structures
+        something_selected = self.editor.selected_points or self.editor.selected_structures
         if something_selected:
-            editor.dismiss()
+            self.editor.dismiss()
 
         self.selection_changed.emit()
         self.update_plot(reset_camera=False)
