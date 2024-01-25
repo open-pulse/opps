@@ -21,8 +21,21 @@ class Pipeline(Structure):
         groups = group_structures(lines)
         self.structures = create_classes(groups)
 
-    def add_structure(self, structure, *, auto_connect=False):
+    def add_structure(self, structure):
         self.structures.append(structure)
+    
+    def remove_structure(self, structure):
+        index = self.get_index(structure)
+        if index >= 0:
+            return self.structures.pop(index)
+
+    def get_index(self, structure):
+        index = -1
+        for i, s in enumerate(self.structures):
+            if id(s) == id(structure):
+                index = i
+                break
+        return index
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipeline_actor import (

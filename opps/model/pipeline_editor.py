@@ -41,9 +41,7 @@ class PipelineEditor:
         if rejoin and isinstance(structure, Bend | Elbow):
             structure.colapse()
 
-        index = self.pipeline.structures.index(structure)
-        if index >= 0:
-            self.pipeline.structures.pop(index)
+        self.pipeline.remove_structure(structure)
 
     def remove_point(self, point, rejoin=True):
         if not isinstance(point, Point):
