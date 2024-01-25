@@ -24,17 +24,18 @@ class MainWindow(QMainWindow):
 
         self.floating_widget = None
 
-        self.delete_action = QAction(self)
-        self.delete_action.setShortcut("del")
-        self.delete_action.triggered.connect(app().geometry_toolbox.delete_selection)
-        self.addAction(self.delete_action)
-
-        app().geometry_toolbox.selection_changed.connect(self.selection_callback)
 
         self._create_menu_bar()
         self._configure_window()
         self._create_central_widget()
         self.start_creation_mode()
+
+        self.delete_action = QAction(self)
+        self.delete_action.setShortcut("del")
+        # self.delete_action.triggered.connect(self.render_widget.editor.delete_selection)
+        self.addAction(self.delete_action)
+
+        self.render_widget.selection_changed.connect(self.selection_callback)
 
     def open_dialog(self):
         path, check = QFileDialog.getOpenFileName(
@@ -98,7 +99,7 @@ class MainWindow(QMainWindow):
         if self.floating_widget is not None:
             self.floating_widget.close()
 
-        self.floating_widget = AddStructuresWidget(self, self.render_widget)
+        self.floating_widget = AddStructuresWidget(self.render_widget, self)
         self.floating_widget.show()
 
     def start_edition_mode(self):
@@ -110,7 +111,7 @@ class MainWindow(QMainWindow):
         if self.floating_widget is not None:
             self.floating_widget.close()
 
-        self.floating_widget = EditStructuresWidget(self, self.render_widget)
+        self.floating_widget = EditStructuresWidget(self.render_widget, self)
         self.floating_widget.show()
 
     def selection_callback(self):

@@ -22,30 +22,30 @@ from opps.model import Bend, Pipe
 
 
 class EditStructuresWidget(QWidget):
-    def __init__(self, parent, render_widget):
+    def __init__(self, render_widget, parent):
         super().__init__(parent)
 
         self.render_widget = render_widget
         self.render_widget.show_passive_points = True
 
-        self.edit_pipe_widget = EditPipeWidget()
-        self.edit_bend_widget = EditBendWidget()
-        self.edit_point_widget = EditPointWidget()
+        self.edit_pipe_widget = EditPipeWidget(self.render_widget, self)
+        self.edit_bend_widget = EditBendWidget(self.render_widget, self)
+        self.edit_point_widget = EditPointWidget(self.render_widget, self)
 
         self.empty_text_widget = QLabel("Select an object.")
         self.empty_text_widget.setAlignment(Qt.AlignCenter)
         self.empty_text_widget.setStyleSheet("QLabel { color: grey; }")
 
-        layout = QStackedLayout()
-        layout.addWidget(self.empty_text_widget)
-        layout.addWidget(self.edit_bend_widget)
-        layout.addWidget(self.edit_pipe_widget)
-        layout.addWidget(self.edit_point_widget)
-        self.setLayout(layout)
+        self.stacked_layout = QStackedLayout()
+        self.stacked_layout.addWidget(self.empty_text_widget)
+        self.stacked_layout.addWidget(self.edit_bend_widget)
+        self.stacked_layout.addWidget(self.edit_pipe_widget)
+        self.stacked_layout.addWidget(self.edit_point_widget)
+        self.setLayout(self.stacked_layout)
 
         self.configure_window()
 
-        app().geometry_toolbox.selection_changed.connect(self.selection_callback)
+        self.render_widget.selection_changed.connect(self.selection_callback)
         self.selection_callback()
 
     def configure_window(self):
@@ -63,25 +63,25 @@ class EditStructuresWidget(QWidget):
         )
 
     def selection_callback(self):
-        layout: QStackedLayout = self.layout()
+        editor = self.render_widget.editor
 
-        if app().geometry_toolbox.selected_structures:
+        if editor.selected_structures:
             self._structures_selection_callback()
-        elif app().geometry_toolbox.selected_points:
-            layout.setCurrentWidget(self.edit_point_widget)
+        elif editor.selected_points:
+            self.stacked_layout.setCurrentWidget(self.edit_point_widget)
         else:
-            layout.setCurrentWidget(self.empty_text_widget)
+            self.stacked_layout.setCurrentWidget(self.empty_text_widget)
 
-        layout.currentWidget().update()
+        self.stacked_layout.currentWidget().update()
 
     def _structures_selection_callback(self):
-        layout: QStackedLayout = self.layout()
+        editor = self.render_widget.editor
 
-        structure, *_ = app().geometry_toolbox.selected_structures
+        structure, *_ = editor.selected_structures
 
         if isinstance(structure, Pipe):
-            layout.setCurrentWidget(self.edit_pipe_widget)
+            self.stacked_layout.setCurrentWidget(self.edit_pipe_widget)
         elif isinstance(structure, Bend):
-            layout.setCurrentWidget(self.edit_bend_widget)
+            self.stacked_layout.setCurrentWidget(self.edit_bend_widget)
         else:
-            layout.setCurrentWidget(self.empty_text_widget)
+            self.stacked_layout.setCurrentWidget(self.empty_text_widget)

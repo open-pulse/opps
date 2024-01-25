@@ -25,7 +25,7 @@ class AddStructuresWidget(QWidget):
     # applied = pyqtSignal(float, float, float)
     on_close = pyqtSignal()
 
-    def __init__(self, parent, render_widget):
+    def __init__(self, render_widget, parent):
         super().__init__(parent)
         uic.loadUi(UI_DIR / "add_structure.ui", self)
 

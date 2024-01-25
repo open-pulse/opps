@@ -19,6 +19,6 @@ from opps import UI_DIR
 
 
 class EditPipeWidget(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, render_widget, parent):
+        super().__init__(parent)
         uic.loadUi(UI_DIR / "edit_pipe.ui", self)
