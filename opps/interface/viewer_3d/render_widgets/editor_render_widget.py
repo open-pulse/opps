@@ -61,7 +61,9 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
         editor = app().geometry_toolbox.editor
-        editor.add_delta_pipe((dx,dy,dz), 0.3)
+        editor.dismiss()
+        radius = 0.3 if auto_bend else 0
+        editor.add_bent_pipe((dx,dy,dz), radius)
         self.update_plot()
 
     def update_default_diameter(self, d):

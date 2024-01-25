@@ -198,20 +198,13 @@ class PipelineEditor:
         self.add_structure(new_flange)
         return new_flange
 
-    def add_delta_pipe(self, deltas=None, curvature_radius=0.3):
-        self.dismiss()
-
+    def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
         if deltas != None:
-            self.deltas = deltas
-
-        if self.anchor not in self.pipeline.control_points:
+            self.set_deltas(deltas)
+        
+        if all(self.deltas == (0,0,0)):
             return
 
-        if curvature_radius:
-            self.add_bend(curvature_radius)
-        self.add_pipe()
-
-    def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
         if self.anchor not in self.pipeline.control_points:
             return
 
