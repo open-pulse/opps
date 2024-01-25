@@ -58,12 +58,14 @@ def create_bend(group):
     _, x0, y0, z0, r0 = group[1].split()
     _, x1, y1, z1, r1 = group[2].split()
     _, x2, y2, z2 = group[3].split()
+    _, curvature = group[6].split()
 
     start = Point(float(x0), float(y0), float(z0))
     end = Point(float(x1), float(y1), float(z1))
     center = Point(float(x2), float(y2), float(z2))
     start_radius = float(r0) / 2
     end_radius = float(r1) / 2
+    curvature = float(curvature)
 
     color = (255, 0, 0)
 
@@ -71,7 +73,7 @@ def create_bend(group):
         start,
         end,
         center,
-        curvature=1.5 * start_radius,
+        curvature=curvature,
         start_diameter=start_radius,
         end_diameter=end_radius,
         color=color,
