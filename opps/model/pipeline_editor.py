@@ -82,12 +82,12 @@ class PipelineEditor:
         self.staged_structures.clear()
         self.update()
 
-        control_hashes = set(self.pipeline.control_points)
-        if self.anchor in control_hashes:
+        point_hashes = set(self.pipeline.points)
+        if self.anchor in point_hashes:
             return
 
         for point in staged_points:
-            if point in control_hashes:
+            if point in point_hashes:
                 self.anchor = point
                 break
         else:
