@@ -26,14 +26,14 @@ class Application(QApplication):
         self.editor = PipelineEditor(self.pipeline)
         self.main_window.render_widget.update_plot()
 
-    def open(self, path):
+    def open(self, path, pipeline):
         path = Path(path)
         file_format = path.suffix.lower().strip()
 
         if file_format == ".pcf":
             self._open_pcf(path)
         else:
-            self._open_cad(path)
+            self._open_cad(self, path, pipeline)
 
     def save(self, path):
         path = Path(path)
@@ -45,15 +45,17 @@ class Application(QApplication):
         else:
             self._save_cad(path)
 
-    def _open_cad(self, path):
-        print("Oppening CAD")
-        StepHandler.open(self, path)
+    def _open_cad(self, path, pipeline):
+        print("Opening CAD")
+        StepHandler.open(self, path, pipeline)
+        self.main_window.render_widget.update_plot()
+
 
     def _open_pcf(self, path):
         print("Oppening PCF")
 
     def _save_cad(self, path):
-        StepHandler.save(path, self.pipeline)
+        StepHandler.save(self, path, self.pipeline)
         print("Saving CAD")
 
     def _save_pcf(self, path):
