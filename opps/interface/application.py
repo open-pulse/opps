@@ -10,6 +10,7 @@ from opps.model import Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 from opps.model.point import Point
 from opps.model.structure import Structure
+from opps.io.pcf.pcf_handler import PCFHandler
 
 
 class Application(QApplication):
@@ -25,6 +26,7 @@ class Application(QApplication):
 
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
+
 
         self.main_window = MainWindow()
         self.main_window.show()
@@ -57,7 +59,8 @@ class Application(QApplication):
         print("Oppening CAD")
 
     def _open_pcf(self, path):
-        self.pipeline.load(path)
+        self.pcf_handler = PCFHandler()
+        self.pcf_handler.load(path,self.pipeline)
         self.update()
 
     def _save_cad(self, path):

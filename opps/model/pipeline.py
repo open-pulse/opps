@@ -13,12 +13,6 @@ class Pipeline(Structure):
     def __init__(self):
         self.structures = []
 
-    def load(self, path):
-        with open(path, "r", encoding="iso_8859_1") as c2:
-            lines = c2.readlines()
-        groups = group_structures(lines)
-        self.structures = create_classes(groups)
-
     def add_pipe(self, *args, **kwargs) -> Pipe:
         pipe = Pipe(*args, **kwargs)
         self.add_structure(pipe)
