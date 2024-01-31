@@ -11,6 +11,7 @@ from opps.model.pipeline_editor import PipelineEditor
 from opps.model.point import Point
 from opps.model.structure import Structure
 from opps.io.pcf.pcf_handler import PCFHandler
+from opps.io.pcf.pcf_exporter import PCFExporter
 
 
 class Application(QApplication):
@@ -25,6 +26,7 @@ class Application(QApplication):
         self.selected_structures = set()
 
         self.pipeline = Pipeline()
+    
         self.editor = PipelineEditor(self.pipeline)
 
 
@@ -49,11 +51,12 @@ class Application(QApplication):
         path = Path(path)
         self.save_path = path
         file_format = path.suffix.lower().strip()
+        self._save_pcf(path)
 
-        if file_format == ".pcf":
-            self._save_pcf(path)
-        else:
-            self._save_cad(path)
+        # if file_format == ".pcf":
+        #     self._save_pcf(path)
+        # else:
+        #     self._save_cad(path)
 
     def _open_cad(self, path):
         print("Oppening CAD")
@@ -69,6 +72,8 @@ class Application(QApplication):
         print("Saving CAD")
 
     def _save_pcf(self, path):
+        self.pcf_exporter = PCFExporter()
+        self.pcf_exporter.save(path,self.pipeline)
         print("Saving PCF")
 
     def get_point(self, point_index) -> Point:

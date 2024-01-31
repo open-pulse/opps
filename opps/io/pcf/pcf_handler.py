@@ -15,7 +15,6 @@ class PCFHandler:
     def load(self, path, pipeline):
 
         with open(path, "r", encoding="iso_8859_1") as c2:
-            print("andrezinho")
             lines = c2.readlines()
             groups = self.group_structures(lines)
             pipeline.structures = self.create_classes(groups)
