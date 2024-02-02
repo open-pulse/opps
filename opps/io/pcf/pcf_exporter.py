@@ -13,24 +13,51 @@ class PCFExporter:
         pass
 
     def save(self, path, pipeline):
-        var = self.stringer(pipeline)
+        var = self.encoder(pipeline)
          
         with open(path, "w", encoding="iso_8859_1") as file:
              file.write(var)
     
-    def stringer(self, pipeline):
+    def encoder(self, pipeline):
         string = ""
         for structure in pipeline.structures:
             if isinstance(structure, Pipe):
-                stringer = self.stringer_pipe(structure)
+                stringer = self.encoder_pipe(structure)
+                string = string + "\n" + stringer
+            
+            elif isinstance(structure, Bend):
+                stringer = self.encoder_bend(structure)
                 string = string + "\n" + stringer
 
+            elif isinstance(structure, Flange):
+                stringer = self.encoder_flange(structure)
+                string = string + "\n" + stringer
+                
         return string
 
-    def stringer_pipe(self, pipe):
+    def encoder_pipe(self, pipe):
        string = f""" PIPE
-    END-POINT            {pipe.start.x}      342.00       0.00         300.00  
-    END-POINT            -116.00      342.00       0.00         300.00  """
+    END-POINT            {pipe.start.x}      {pipe.start.y}       {pipe.start.z}         300.00  
+    END-POINT            {pipe.end.x}      {pipe.end.y}        {pipe.end.z}            300.00   """
+       
+       return string
+    
+    def encoder_bend(self, bend):
+       string = f""" BEND
+    END-POINT        {bend.start.x}   {bend.start.y}    {bend.start.z}       203.2000   
+    END-POINT        {bend.end.x}   {bend.end.y}   {bend.end.z}       203.2000   
+    CENTRE-POINT     {bend.corner.x}   {bend.corner.y}    {bend.corner.z}   
+    SKEY BEBW
+    ANGLE            9000
+    BEND-RADIUS         304.8000"""
+       
        return string
 
+    def encoder_flange(self, flange):
+       string = f""" FLANGE
+    END-POINT    {flange.position.x}   {flange.position.y}       0.1990       203.2000   
+    END-POINT    {flange.position.x}   {flange.position.y}       0.1990       203.2000   
+    SKEY FLBL"""
+       
+       return string
     
