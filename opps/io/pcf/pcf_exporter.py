@@ -32,6 +32,10 @@ class PCFExporter:
             elif isinstance(structure, Flange):
                 stringer = self.encoder_flange(structure)
                 string = string + "\n" + stringer
+
+            elif isinstance(structure, Elbow):
+                stringer = self.encoder_elbow(structure)
+                string = string + "\n" + stringer
                 
         return string
 
@@ -60,4 +64,15 @@ class PCFExporter:
     SKEY FLBL"""
        
        return string
+    
+    def encoder_elbow(self, bend):
+       string = f""" ELBOW
+    END-POINT            {bend.start.x}     {bend.start.y}       {bend.start.z}        300.00  
+    END-POINT            {bend.end.x}     {bend.end.y}      {bend.end.z}         300.00  
+    CENTRE-POINT         {bend.corner.x}   {bend.corner.y}    {bend.corner.z}        
+    SKEY                 ELBW
+    """
+       
+       return string
+    
     
