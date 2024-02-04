@@ -10,7 +10,6 @@ from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
 from opps.interface.widgets import AddStructuresWidget, EditStructuresWidget
 from opps.interface.widgets.cross_section_widget import CrossSectionWidget
 from opps.model import Pipe
-from opps.model.pipeline_editor import PipelineEditor
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -33,7 +32,7 @@ class MainWindow(QMainWindow):
         if not check:
             return
         
-        app().open(path, PipelineEditor.pipeline)
+        app()._open_cad(path)
 
     def save_dialog(self):
         if app().save_path is None:

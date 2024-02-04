@@ -78,10 +78,9 @@ class StepHandler:
                     if start_radius - end_radius <= 1e-14:
                         center_point = point
                 center_coords = np.array(points_coords[center_point - 1][1])
-
                 start_coords = np.array(start_coords)
                 end_coords = np.array(end_coords)
-                center_coords = np.array(center_coords)
+                # vectorial sum
                 v = start_coords - center_coords + end_coords - center_coords
                 corner_coords = center_coords + 2*v
 
@@ -92,7 +91,7 @@ class StepHandler:
 
         pipeline.components = structures
         
-        # gmsh.fltk.run()
+        gmsh.fltk.run()
 
 
 

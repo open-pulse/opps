@@ -45,14 +45,14 @@ class Application(QApplication):
         else:
             self._save_cad(path)
 
-    def _open_cad(self, path, pipeline):
+    def _open_cad(self, path):
         print("Opening CAD")
-        StepHandler.open(self, path, pipeline)
+        StepHandler.open(self, path, self.pipeline)
         self.main_window.render_widget.update_plot()
 
 
     def _open_pcf(self, path):
-        print("Oppening PCF")
+        print("Opening PCF")
 
     def _save_cad(self, path):
         StepHandler.save(self, path, self.pipeline)
