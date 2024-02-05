@@ -39,19 +39,22 @@ class Application(QApplication):
         self.main_window.render_widget.update_plot()
 
     def open(self, path):
+
         path = Path(path)
         file_format = path.suffix.lower().strip()
+        self._open_pcf(path)
 
-        if file_format == ".pcf":
-            self._open_pcf(path)
-        else:
-            self._open_cad(path)
+        # if file_format == ".pcf":
+        #     self._open_pcf(path)
+        # else:
+        #     self._open_cad(path)
 
     def save(self, path):
         path = Path(path)
         self.save_path = path
         file_format = path.suffix.lower().strip()
         self._save_pcf(path)
+
 
         # if file_format == ".pcf":
         #     self._save_pcf(path)
