@@ -22,6 +22,8 @@ class PCFHandler:
     def group_structures(self,lines_list):
         structures_list = []
         index_list = []
+        lines_list.append("")
+
         for i, line in enumerate(lines_list):
             if line[0:4] != "    ":
                 index_list.append(i)

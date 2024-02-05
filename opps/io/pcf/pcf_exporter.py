@@ -26,7 +26,7 @@ class PCFExporter:
             if isinstance(structure, Pipe):
                 stringer = self.encoder_pipe(structure)
                 string = string + "\n" + stringer
-                
+
             elif isinstance(structure, Elbow):
                 stringer = self.encoder_elbow(structure)
                 string = string + "\n" + stringer
@@ -61,41 +61,47 @@ PIPELINE-REFERENCE      CFG1
 
     PIPING-SPEC         CS150
 
-    START-CO-ORDS       0.0000       0.0000       0.0000 """
+    START-CO-ORDS       0.0000       0.0000      0.0000 """
     
         return string
 
 
     def encoder_pipe(self, pipe):
        string = f""" PIPE
-    END-POINT            {pipe.start.x}      {pipe.start.y}       {pipe.start.z}         {pipe.start_diameter}  
-    END-POINT            {pipe.end.x}      {pipe.end.y}        {pipe.end.z}            {pipe.end_diameter}   """
+    END-POINT            {round(pipe.start.x, 2)}      {round(pipe.start.y, 2)}       {round(pipe.start.z, 2)}         {round(pipe.start_diameter, 2)}  
+    END-POINT            {round(pipe.end.x, 2)}      {round(pipe.end.y, 2)}        {round(pipe.end.z, 2)}            {round(pipe.end_diameter, 2)}   """
        
        return string
     
     def encoder_bend(self, bend):
        string = f""" BEND
-    END-POINT        {bend.start.x}   {bend.start.y}    {bend.start.z}       {bend.start_diameter}  
-    END-POINT        {bend.end.x}   {bend.end.y}   {bend.end.z}       {bend.end_diameter}   
-    CENTRE-POINT     {bend.corner.x}   {bend.corner.y}    {bend.corner.z}   
+    END-POINT        {round(bend.start.x, 2)}   {round(bend.start.y, 2)}    {round(bend.start.z, 2)}       {round(bend.start_diameter,2)}  
+    END-POINT        {round(bend.end.x, 2)}   {round(bend.end.y, 2)}   {round(bend.end.z, 2)}       {round(bend.end_diameter, 2)}   
+    CENTRE-POINT     {round(bend.corner.x, 2)}   {round(bend.corner.y, 2)}    {round(bend.corner.z, 2)}   
     SKEY BEBW
     """
        
        return string
 
     def encoder_flange(self, flange):
+       end_x = round(flange.position.x + flange.normal[0], 2)
+       end_y = round(flange.position.y + flange.normal[1], 2)
+       end_z = round(flange.position.z + flange.normal[2], 2)
+
        string = f""" FLANGE
-    END-POINT    {flange.position.x}   {flange.position.y}       {flange.position.z}       {flange.diameter}   
-    END-POINT    {flange.position.x + flange.normal[0]}   {flange.position.y + flange.normal[1]}       {flange.position.z + flange.normal[2]}       {flange.diameter}   
-    SKEY FLBL"""
+    END-POINT    {round(flange.position.x, 2)}   {round(flange.position.y, 2)}       {round(flange.position.z, 2)}       {round(flange.diameter, 2)}   
+    END-POINT    {end_x}   {end_y}       {end_z}       {round(flange.diameter, 2)}   
+    SKEY FLBL
+    """
        
        return string
     
     def encoder_elbow(self, bend):
+       
        string = f""" ELBOW
-    END-POINT            {bend.start.x}     {bend.start.y}       {bend.start.z}        {bend.start_diameter}   
-    END-POINT            {bend.end.x}     {bend.end.y}      {bend.end.z}         {bend.end_diameter}   
-    CENTRE-POINT         {bend.corner.x}   {bend.corner.y}    {bend.corner.z}        
+    END-POINT            {round(bend.start.x,2)}     {round(bend.start.y,2)}       {round(bend.start.z,2)}        {round(bend.start_diameter,2)}   
+    END-POINT            {round(bend.end.x ,2)}  {round(bend.end.y,2)}     {round(bend.end.z ,2)}        {round(bend.end_diameter,2)}   
+    CENTRE-POINT         {round(bend.corner.x,2)}   {round(bend.corner.y,2)}    {round(bend.corner.z,2)}        
     SKEY                 ELBW
     """
        
