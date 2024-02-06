@@ -2,7 +2,14 @@ class Structure:
     selected: bool = False
     staged: bool = False
     tag: int = -1
-    extra_info: dict = None
+
+    __extra_info: dict = None
+
+    @property
+    def extra_info(self):
+        if self.__extra_info is None:
+            self.__extra_info = dict()
+        return self.__extra_info
 
     def get_points(self):
         raise NotImplementedError()
