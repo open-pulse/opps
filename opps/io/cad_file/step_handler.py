@@ -60,7 +60,7 @@ class StepHandler:
         for line in lines: 
             start_point = gmsh.model.get_adjacencies(*line)[1][0]
             end_point = gmsh.model.get_adjacencies(*line)[1][1]
-            type = gmsh.model.get_type(*line)
+            line_type = gmsh.model.get_type(*line)
 
             start_coords = (points_coords[start_point -1][1])
             end_coords = (points_coords[end_point -1][1])
@@ -68,14 +68,16 @@ class StepHandler:
             start = Point(*start_coords)
             end = Point(*end_coords)
 
-            if type == 'Line':
+            if line_type == 'Line':
                 pipe = Pipe(start, end)
 
-            elif type == 'Circle':
+            elif line_type == 'Circle':
                 for point in center_points:
-                    start_radius = math.dist(start_coords, points_coords[point-1][1])
+                    start_radius = math.dist(start_coords, points_coords[point-1][1]) # the second argument is the coords of the tested center point
                     end_radius = math.dist(end_coords, points_coords[point-1][1])
-                    if start_radius - end_radius <= 1e-14:
+                    if abs(start_radius - end_radius) <= 1e-10:
+                        start_radius_center = start_radius
+                        end_radius_center = end_radius
                         center_point = point
                 center_coords = np.array(points_coords[center_point - 1][1])
                 start_coords = np.array(start_coords)
@@ -85,13 +87,14 @@ class StepHandler:
                 corner_coords = center_coords + 2*v
 
                 corner = Point(*corner_coords)
-                pipe = Bend(start, end, corner, start_radius)
+                pipe = Bend(start, end, corner, (start_radius_center + end_radius_center)/2)
 
             structures.append(pipe)
 
         pipeline.components = structures
         
         gmsh.fltk.run()
+
 
 
 
