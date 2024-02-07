@@ -4,7 +4,6 @@ import numpy as np
 from opps.model.pipe import Pipe
 from opps.model.bend import Bend
 from opps.model import Point
-from opps.model.pipeline_editor import PipelineEditor
 
 
 class StepHandler:
@@ -79,10 +78,12 @@ class StepHandler:
                         start_radius_center = start_radius
                         end_radius_center = end_radius
                         center_point = point
+
                 center_coords = np.array(points_coords[center_point - 1][1])
                 start_coords = np.array(start_coords)
                 end_coords = np.array(end_coords)
-                # vectorial sum
+
+                # vectorial sum (paralelogram) to find the corner 
                 v = start_coords - center_coords + end_coords - center_coords
                 corner_coords = center_coords + 2*v
 
@@ -93,7 +94,7 @@ class StepHandler:
 
         pipeline.components = structures
         
-        gmsh.fltk.run()
+        # gmsh.fltk.run()
 
 
 
