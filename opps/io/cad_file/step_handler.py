@@ -31,6 +31,10 @@ class StepHandler:
 
         gmsh.model.occ.synchronize()
         gmsh.write(str(path))
+
+    def normalize(vector):
+        return vector / np.linalg.norm(vector)
+
     
     def open(self, path, pipeline):
         gmsh.initialize("", False)
@@ -74,6 +78,7 @@ class StepHandler:
                 for point in center_points:
                     start_radius = math.dist(start_coords, points_coords[point-1][1]) # the second argument is the coords of the tested center point
                     end_radius = math.dist(end_coords, points_coords[point-1][1])
+                    
                     if abs(start_radius - end_radius) <= 1e-10:
                         start_radius_center = start_radius
                         end_radius_center = end_radius
@@ -83,16 +88,23 @@ class StepHandler:
                 start_coords = np.array(start_coords)
                 end_coords = np.array(end_coords)
 
-                # vectorial sum (paralelogram) to find the corner 
-                v = start_coords - center_coords + end_coords - center_coords
-                corner_coords = center_coords + 2*v
+                a_vector = start_coords - center_coords
+                b_vector = end_coords - center_coords
+                a_vector_normalized = a_vector / np.linalg.norm(a_vector)
+                b_vector_normalized = b_vector / np.linalg.norm(b_vector)
+                c_vector = a_vector_normalized + b_vector_normalized
+                c_vector_normalized = c_vector / np.linalg.norm(c_vector)
+
+                radius = (start_radius_center + end_radius_center) / 2
+                corner_distance = (radius**2)*np.sqrt(2 / (np.dot(a_vector, b_vector) + radius**2))
+                corner_coords = center_coords + c_vector_normalized * corner_distance
 
                 corner = Point(*corner_coords)
-                pipe = Bend(start, end, corner, (start_radius_center + end_radius_center)/2)
+                pipe = Bend(start, end, corner, radius, auto=False)
 
             structures.append(pipe)
-
         pipeline.components = structures
+
         
         # gmsh.fltk.run()
 
