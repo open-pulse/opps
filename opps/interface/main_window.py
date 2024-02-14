@@ -17,7 +17,6 @@ from opps.interface.widgets import AddStructuresWidget, EditStructuresWidget
 from opps.interface.widgets.cross_section_widget import CrossSectionWidget
 from opps.model import Pipe
 
-
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)

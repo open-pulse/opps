@@ -12,6 +12,7 @@ from opps.model import Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 from opps.model.point import Point
 from opps.model.structure import Structure
+from opps.io.cad_file.step_handler import StepHandler
 
 
 class GeometryToolbox(QObject):
@@ -53,16 +54,17 @@ class GeometryToolbox(QObject):
             self._save_cad(path)
 
     def _open_cad(self, path):
-        print("Oppening CAD")
+        StepHandler.open(self, path, self.pipeline)
+        self.update()
+
+        # self.main_window.render_widget.update_plot()
 
     def _open_pcf(self, path):
         self.pipeline.load(path)
         self.update()
 
     def _save_cad(self, path):
-        exporter = CADHandler()
-        exporter.save(path, self.pipeline)
-        print("Saving CAD")
+        StepHandler.save(self, path, self.pipeline)
 
     def _save_pcf(self, path):
         print("Saving PCF")
