@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from opps.model.point import Point
+from opps.model.structure import Structure
 
 
 def normalize(vector):
@@ -10,14 +11,14 @@ def normalize(vector):
 
 
 @dataclass
-class Bend:
+class Bend(Structure):
     start: Point
     end: Point
     corner: Point
     curvature: float
     start_diameter: float = 0.1
     end_diameter: float = 0.1
-    color: tuple = (255, 255, 255)
+    color: tuple = (167, 223, 124)
     auto: bool = True
 
     @property
@@ -65,6 +66,16 @@ class Bend:
         angle = np.arcsin(sin_angle)
 
         corner_distance = np.cos(angle) * self.curvature / np.sin(angle)
+        
+        # if the curve is beyond its limits ignore it
+        if corner_distance >= np.linalg.norm(start.coords() - self.corner.coords()):
+            self.colapse()
+            return
+        
+        if corner_distance >= np.linalg.norm(end.coords() - self.corner.coords()):
+            self.colapse()
+            return           
+
         self.start.set_coords(*(self.corner.coords() + corner_distance * a_vector))
         self.end.set_coords(*(self.corner.coords() + corner_distance * b_vector))
 
@@ -105,3 +116,6 @@ class Bend:
         from opps.interface.viewer_3d.actors.bend_actor import BendActor
 
         return BendActor(self)
+
+    def __hash__(self) -> int:
+        return id(self)

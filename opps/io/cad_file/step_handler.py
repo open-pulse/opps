@@ -12,20 +12,20 @@ class StepHandler:
 
     def save(self, path, pipeline):
         gmsh.initialize("", False)
-        for component in pipeline.components: 
+        for structure in pipeline.structures: 
 
-            if isinstance(component, Pipe):
-                start_point = gmsh.model.occ.add_point(*component.start.coords())
-                end_point = gmsh.model.occ.add_point(*component.end.coords())
+            if isinstance(structure, Pipe):
+                start_point = gmsh.model.occ.add_point(*structure.start.coords())
+                end_point = gmsh.model.occ.add_point(*structure.end.coords())
 
                 gmsh.model.occ.add_line(start_point, end_point)
 
-            elif isinstance(component, Bend):
-                if (component.start.coords() == component.end.coords()).all():
+            elif isinstance(structure, Bend):
+                if (structure.start.coords() == structure.end.coords()).all():
                     continue
-                start_point = gmsh.model.occ.add_point(*component.start.coords())
-                end_point = gmsh.model.occ.add_point(*component.end.coords())
-                center_point = gmsh.model.occ.add_point(*component.center.coords())
+                start_point = gmsh.model.occ.add_point(*structure.start.coords())
+                end_point = gmsh.model.occ.add_point(*structure.end.coords())
+                center_point = gmsh.model.occ.add_point(*structure.center.coords())
 
                 gmsh.model.occ.add_circle_arc(start_point, center_point, end_point)
 
@@ -103,7 +103,7 @@ class StepHandler:
                 pipe = Bend(start, end, corner, radius, auto=False)
 
             structures.append(pipe)
-        pipeline.components = structures
+        pipeline.structures = structures
 
         
         # gmsh.fltk.run()

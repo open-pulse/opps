@@ -3,32 +3,29 @@ from enum import Enum
 
 import numpy as np
 import vtk
-from opps.io.cad_file.step_handler import StepHandler
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QApplication
 
-from opps import app
-from opps.interface.viewer_3d.actors.fixed_point_actor import FixedPointActor
-from opps.interface.viewer_3d.actors.pipeline_actor import PipelineActor
-from opps.interface.viewer_3d.actors.points_actor import PointsActor
-from opps.interface.viewer_3d.interactor_styles.selection_interactor import (
-    SelectionInteractor,
-)
-from opps.interface.viewer_3d.render_widgets.common_render_widget import (
-    CommonRenderWidget,
-)
+from opps.interface.viewer_3d.actors import ControlPointsActor, PassivePointsActor, SelectedPointsActor
 from opps.model import Flange, Pipe, Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 
+from vtkat.render_widgets import CommonRenderWidget
+
 
 class EditorRenderWidget(CommonRenderWidget):
-    def __init__(self, parent=None):
+    selection_changed = pyqtSignal()
+
+    def __init__(self, editor, parent=None):
         super().__init__(parent)
-        self.left_clicked.connect(self.selection_callback)
+        self.left_released.connect(self.selection_callback)
+        self.editor = editor
 
         self.selected_structure = None
-
         self.pipeline_actor = None
         self.control_points_actor = None
-        self.active_point_actor = None
+        self.passive_points_actor = None
+        self.selected_points_actor = None
         self.coords = np.array([0, 0, 0])
 
         self.create_axes()
@@ -37,126 +34,145 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        self.pipeline_actor = app().pipeline.as_vtk()
+        pipeline = self.editor.pipeline
 
-        self.control_points_actor = PointsActor(app().editor.control_points)
-        self.control_points_actor.GetProperty().SetColor(1, 0.7, 0.2)
-        self.control_points_actor.GetProperty().LightingOff()
+        self.pipeline_actor = pipeline.as_vtk()
+        self.control_points_actor = ControlPointsActor(pipeline.control_points)
+        self.passive_points_actor = PassivePointsActor(pipeline.points)
+        self.selected_points_actor = SelectedPointsActor(self.editor.selected_points)
 
-        self.active_point_actor = PointsActor([app().editor.active_point])
-        self.active_point_actor.GetProperty().SetColor(1, 0, 0)
-        self.active_point_actor.GetProperty().LightingOff()
-
+        # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
+        self.renderer.AddActor(self.passive_points_actor)
         self.renderer.AddActor(self.control_points_actor)
-        self.renderer.AddActor(self.active_point_actor)
+        self.renderer.AddActor(self.selected_points_actor)
 
         if reset_camera:
             self.renderer.ResetCamera()
         self.update()
 
-    def change_index(self, i):
-        if not app().editor.control_points:
-            return
-
-        app().editor.dismiss()
-        if i >= len(app().editor.control_points):
-            i = len(app().editor.control_points) - 1
-
-        self.coords = app().editor.control_points[i].coords()
-        app().editor.set_active_point(i)
+    def change_anchor(self, point):
+        self.editor.dismiss()
+        self.editor.set_anchor(point)
+        self.coords = point.coords()
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, auto_bend=True):
-        self.deselect()
-
-        if (dx, dy, dz) == (0, 0, 0):
-            self.unstage_structure()
-            return
-
-        if not app().editor.staged_structures:
-            self.coords = app().editor.active_point.coords()
-            if auto_bend:
-                app().editor.add_bent_pipe()
-            else:
-                app().editor.add_pipe()
-
-        app().editor.set_deltas((dx, dy, dz))
-        new_position = self.coords + (dx, dy, dz)
-        app().editor.move_point(new_position)
-        app().editor._update_joints()
+        self.editor.dismiss()
+        self.editor.clear_selection()
+        radius = 0.3 if auto_bend else 0
+        self.editor.add_bent_pipe((dx,dy,dz), radius)
         self.update_plot()
 
     def update_default_diameter(self, d):
-        app().editor.change_diameter(d)
-        for structure in app().editor.staged_structures:
+        self.editor.change_diameter(d)
+        for structure in self.editor.staged_structures:
             structure.set_diameter(d)
         self.update_plot()
 
     def add_flange(self):
-        self.unstage_structure()
-        app().editor.add_flange()
-        app().editor.add_bent_pipe()
-
-    def stage_structure(self, structure):
-        self.tmp_structure = structure
-        self.update_plot()
+        self.editor.dismiss()
+        self.editor.add_flange()
+        self.editor.add_bent_pipe()
+        self.update()
 
     def commit_structure(self):
-        self.coords = app().editor.active_point.coords()
-        app().editor.commit()
+        self.coords = self.editor.anchor.coords()
+        self.editor.commit()
         self.update_plot()
 
     def unstage_structure(self):
-        
-        app().editor.dismiss()
         self.update_plot()
 
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
         self.renderer.RemoveActor(self.control_points_actor)
-        self.renderer.RemoveActor(self.active_point_actor)
+        self.renderer.RemoveActor(self.passive_points_actor)
+        self.renderer.RemoveActor(self.selected_points_actor)
 
         self.pipeline_actor = None
         self.control_points_actor = None
-        self.active_point_actor = None
+        self.passive_points_actor = None
+        self.selected_points_actor = None
 
     def selection_callback(self, x, y):
-        self.deselect()
+        modifiers = QApplication.keyboardModifiers()
+        ctrl_pressed = bool(modifiers & Qt.ControlModifier)
+        shift_pressed = bool(modifiers & Qt.ShiftModifier)
+        alt_pressed = bool(modifiers & Qt.AltModifier)
 
-        self.selection_picker = vtk.vtkCellPicker()
-        self.selection_picker.SetTolerance(0.005)
+        # First try to select points
+        selected_point = self._pick_point(x, y)
+        if selected_point is not None:
+            self.editor.select_points(
+                [selected_point], join=ctrl_pressed | shift_pressed, remove=alt_pressed
+            )
+            self.update_selection()
+            return
 
-        # Disable pipeline actor pickability to give priority to points
-        if self.pipeline_actor.GetPickable():
-            self.pipeline_actor.PickableOff()
-            self.selection_picker.Pick(x, y, 0, self.renderer)
-            self.pipeline_actor.PickableOn()
+        # If no points were found try structures
+        selected_structure = self._pick_structure(x, y)
+        if selected_structure is not None:
+            self.editor.select_structures(
+                [selected_structure], join=ctrl_pressed | shift_pressed, remove=alt_pressed
+            )
+            self.update_selection()
+            return
 
-            clicked_actor = self.selection_picker.GetActor()
-            clicked_cell = self.selection_picker.GetCellId()
-            if clicked_actor == self.control_points_actor:
-                self.change_index(clicked_cell)
-                return
+        self.editor.clear_selection()
+        self.update_selection()
 
-        # if no points were selected then try the pipeline
-        self.selection_picker.Pick(x, y, 0, self.renderer)
-        clicked_actor = self.selection_picker.GetActor()
-        clicked_cell = self.selection_picker.GetCellId()
+    def _pick_point(self, x, y):
+        index = self._pick_actor(x, y, self.control_points_actor)
+        pipeline = self.editor.pipeline
+        if index >= 0:
+            return pipeline.control_points[index]
 
-        if clicked_actor == self.pipeline_actor:
-            data: vtk.vtkPolyData = clicked_actor.GetMapper().GetInput()
+        index = self._pick_actor(x, y, self.passive_points_actor)
+        if index >= 0:
+            return pipeline.points[index]
+
+    def _pick_structure(self, x, y):
+        pipeline = self.editor.pipeline
+        index = self._pick_actor(x, y, self.pipeline_actor)
+        if index >= 0:
+            data: vtk.vtkPolyData = self.pipeline_actor.GetMapper().GetInput()
             cell_identifier = data.GetCellData().GetArray("cell_identifier")
             if cell_identifier is None:
                 return
-            structure_index = cell_identifier.GetValue(clicked_cell)
-            self.selected_structure = app().pipeline.components[structure_index]
-            self.selected_structure.color = app().editor.selection_color
-            app().editor.dismiss()
+            structure_index = cell_identifier.GetValue(index)
+            return pipeline.structures[structure_index]
 
+    def _pick_actor(self, x, y, actor_to_select):
+        selection_picker = vtk.vtkCellPicker()
+        selection_picker.SetTolerance(0.005)
+        pickability = dict()
+
+        for actor in self.renderer.GetActors():
+            pickability[actor] = actor.GetPickable()
+            if actor == actor_to_select:
+                actor.PickableOn()
+            else:
+                actor.PickableOff()
+
+        selection_picker.Pick(x, y, 0, self.renderer)
+
+        for actor in self.renderer.GetActors():
+            actor.SetPickable(pickability[actor])
+
+        return selection_picker.GetCellId()
+
+    def update_selection(self):
+        if self.editor.selected_points:
+            # the last point selected is the one that will
+            # be the "anchor" to continue the pipe creation
+            *_, point = self.editor.selected_points
+            self.change_anchor(point)
+
+        # Only dismiss structure creation if something was actually selected
+        something_selected = self.editor.selected_points or self.editor.selected_structures
+        if something_selected:
+            self.editor.dismiss()
+
+        self.selection_changed.emit()
         self.update_plot(reset_camera=False)
-
-    def deselect(self):
-        if self.selected_structure is not None:
-            self.selected_structure.color = (255, 255, 255)
-            self.selected_structure = None

@@ -3,10 +3,11 @@ from dataclasses import dataclass
 import numpy as np
 
 from opps.model.point import Point
+from opps.model.structure import Structure
 
 
 @dataclass
-class Pipe:
+class Pipe(Structure):
     start: Point
     end: Point
     start_diameter: float = 0.1
@@ -38,3 +39,6 @@ class Pipe:
         from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 
         return PipeActor(self)
+
+    def __hash__(self) -> int:
+        return id(self)
