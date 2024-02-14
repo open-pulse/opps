@@ -43,6 +43,28 @@ class PipelineEditor:
 
         self.pipeline.remove_structure(structure)
 
+    def merge_coincident_points(self):
+        found_points = dict()
+        for structure in self.pipeline.structures:
+            for point in structure.get_points():
+                x, y, z = np.round(point.coords(), 6)
+
+                if (x, y, z) in found_points:
+                    new = found_points[x, y, z]
+                    structure.replace_point(point, new)
+                else:
+                    found_points[x, y, z] = point
+
+
+        print("merge_coincident_points called")
+
+        # para resolver o problema das curvas sumirem:
+        # o problema é que ta atualizando a curva (depois de eu editar) antes de mergear os pontos, entao
+        # tem que mudar essa ordem
+
+        # para resolver o problema de crashar uando quand clico em new:
+        # nao sei :(
+
     def remove_point(self, point, rejoin=True):
         if not isinstance(point, Point):
             return

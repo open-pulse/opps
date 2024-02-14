@@ -42,6 +42,8 @@ class GeometryToolbox(QObject):
             self._open_pcf(path)
         else:
             self._open_cad(path)
+        
+        self.editor.merge_coincident_points()
 
     def save(self, path):
         path = Path(path)
@@ -54,17 +56,15 @@ class GeometryToolbox(QObject):
             self._save_cad(path)
 
     def _open_cad(self, path):
-        StepHandler.open(self, path, self.pipeline)
+        StepHandler().open(path, self.pipeline)
         self.update()
-
-        # self.main_window.render_widget.update_plot()
 
     def _open_pcf(self, path):
         self.pipeline.load(path)
         self.update()
 
     def _save_cad(self, path):
-        StepHandler.save(self, path, self.pipeline)
+        StepHandler().save(path, self.pipeline)
 
     def _save_pcf(self, path):
         print("Saving PCF")

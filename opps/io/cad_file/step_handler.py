@@ -100,7 +100,7 @@ class StepHandler:
                 corner_coords = center_coords + c_vector_normalized * corner_distance
 
                 corner = Point(*corner_coords)
-                pipe = Bend(start, end, corner, radius, auto=False)
+                pipe = Bend(start, end, corner, radius)
 
             structures.append(pipe)
         pipeline.structures = structures
