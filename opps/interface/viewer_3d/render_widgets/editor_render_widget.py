@@ -7,8 +7,6 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication
 
 from opps.interface.viewer_3d.actors import ControlPointsActor, PassivePointsActor, SelectedPointsActor
-from opps.model import Flange, Pipe, Pipeline
-from opps.model.pipeline_editor import PipelineEditor
 
 from vtkat.render_widgets import CommonRenderWidget
 

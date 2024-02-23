@@ -62,9 +62,6 @@ class PipelineEditor:
         # o problema é que ta atualizando a curva (depois de eu editar) antes de mergear os pontos, entao
         # tem que mudar essa ordem
 
-        # para resolver o problema de crashar uando quand clico em new:
-        # nao sei :(
-
     def remove_point(self, point, rejoin=True):
         if not isinstance(point, Point):
             return

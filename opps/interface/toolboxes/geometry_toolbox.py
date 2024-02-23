@@ -13,7 +13,7 @@ from opps.model.pipeline_editor import PipelineEditor
 from opps.model.point import Point
 from opps.model.structure import Structure
 from opps.io.cad_file.step_handler import StepHandler
-
+from opps.interface import main_window
 
 class GeometryToolbox(QObject):
     selection_changed = pyqtSignal()
@@ -32,8 +32,9 @@ class GeometryToolbox(QObject):
     def new(self):
         self.pipeline = Pipeline()
         self.editor = PipelineEditor(self.pipeline)
-        self.main_window.render_widget.update_plot()
-
+        self.pipeline.structures.clear()
+        self.update()
+        
     def open(self, path):
         path = Path(path)
         file_format = path.suffix.lower().strip()
@@ -43,7 +44,7 @@ class GeometryToolbox(QObject):
         else:
             self._open_cad(path)
         
-        self.editor.merge_coincident_points()
+        # self.editor.merge_coincident_points()
 
     def save(self, path):
         path = Path(path)

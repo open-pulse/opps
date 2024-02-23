@@ -4,7 +4,7 @@ import numpy as np
 from opps.model.pipe import Pipe
 from opps.model.bend import Bend
 from opps.model import Point
-
+from opps.model.pipeline_editor import PipelineEditor
 
 class StepHandler:
     def __init__(self):
@@ -104,6 +104,8 @@ class StepHandler:
 
             structures.append(pipe)
         pipeline.structures = structures
+        # PipelineEditor(pipeline).merge_coincident_points()
+        
 
         
         # gmsh.fltk.run()
