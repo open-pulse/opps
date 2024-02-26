@@ -55,7 +55,7 @@ class GeometryToolbox(QObject):
             self._save_cad(path)
 
     def _open_cad(self, path):
-        StepHandler().open(path, self.pipeline)
+        StepHandler().open(path, self.editor)
         self.update()
 
     def _open_pcf(self, path):
@@ -63,7 +63,7 @@ class GeometryToolbox(QObject):
         self.update()
 
     def _save_cad(self, path):
-        StepHandler().save(path, self.pipeline)
+        StepHandler().save(path, self.editor)
 
     def _save_pcf(self, path):
         print("Saving PCF")

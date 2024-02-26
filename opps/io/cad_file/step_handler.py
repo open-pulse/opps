@@ -6,13 +6,14 @@ from opps.model.bend import Bend
 from opps.model import Point
 from opps.model.pipeline_editor import PipelineEditor
 
+
 class StepHandler:
     def __init__(self):
         pass
 
-    def save(self, path, pipeline):
+    def save(self, path, editor):
         gmsh.initialize("", False)
-        for structure in pipeline.structures: 
+        for structure in editor.pipeline.structures: 
 
             if isinstance(structure, Pipe):
                 start_point = gmsh.model.occ.add_point(*structure.start.coords())
@@ -36,7 +37,7 @@ class StepHandler:
         return vector / np.linalg.norm(vector)
 
     
-    def open(self, path, pipeline):
+    def open(self, path, editor):
         gmsh.initialize("", False)
         gmsh.option.setNumber("General.Verbosity", 0)
         gmsh.open(str(path))
@@ -103,15 +104,6 @@ class StepHandler:
                 pipe = Bend(start, end, corner, radius)
 
             structures.append(pipe)
-        pipeline.structures = structures
-        # PipelineEditor(pipeline).merge_coincident_points()
-        
 
-        
-        # gmsh.fltk.run()
-
-
-
-
-
-
+        editor.pipeline.structures = structures
+        editor.merge_coincident_points()
