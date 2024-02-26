@@ -55,13 +55,6 @@ class PipelineEditor:
                 else:
                     found_points[x, y, z] = point
 
-
-        print("merge_coincident_points called")
-
-        # para resolver o problema das curvas sumirem:
-        # o problema é que ta atualizando a curva (depois de eu editar) antes de mergear os pontos, entao
-        # tem que mudar essa ordem
-
     def remove_point(self, point, rejoin=True):
         if not isinstance(point, Point):
             return
