@@ -30,11 +30,9 @@ class GeometryToolbox(QObject):
         self.editor = PipelineEditor(self.pipeline)
 
     def new(self):
-        self.pipeline = Pipeline()
-        self.editor = PipelineEditor(self.pipeline)
         self.pipeline.structures.clear()
         self.update()
-        
+
     def open(self, path):
         path = Path(path)
         file_format = path.suffix.lower().strip()
