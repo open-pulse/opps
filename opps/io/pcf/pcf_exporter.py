@@ -28,10 +28,14 @@ class PCFExporter:
                 string = string + "\n" + stringer
 
             elif isinstance(structure, Elbow):
+                if structure.is_colapsed():
+                    continue
                 stringer = self.encoder_elbow(structure)
                 string = string + "\n" + stringer
             
             elif isinstance(structure, Bend):
+                if structure.is_colapsed():
+                    continue
                 stringer = self.encoder_bend(structure)
                 string = string + "\n" + stringer
 
@@ -46,40 +50,31 @@ class PCFExporter:
     def encoder_header(self, pipeline):
     
         string = """ISOGEN-FILES            ISOGEN.FLS
-UNITS-BORE              INCH
-   
-
+UNITS-BORE              MM 
 UNITS-CO-ORDS           MM
-
 UNITS-BOLT-LENGTH       MM
-
 UNITS-BOLT-DIA          MM
-
 UNITS-WEIGHT            KGS
-
 PIPELINE-REFERENCE      CFG1
-
-    PIPING-SPEC         CS150
-
-    START-CO-ORDS       0.0000       0.0000      0.0000 """
+PIPING-SPEC         CS150
+START-CO-ORDS       0.0000       0.0000      0.0000 """
     
         return string
 
 
     def encoder_pipe(self, pipe):
-       string = f""" PIPE
-    END-POINT            {round(pipe.start.x, 2)}      {round(pipe.start.y, 2)}       {round(pipe.start.z, 2)}         {round(pipe.start_diameter, 2)}  
-    END-POINT            {round(pipe.end.x, 2)}      {round(pipe.end.y, 2)}        {round(pipe.end.z, 2)}            {round(pipe.end_diameter, 2)}   """
+       string = f"""PIPE
+    END-POINT{round(1000*pipe.start.x):>14.4f}{round(1000*pipe.start.y):>13.4f}{round(1000*pipe.start.z):>13.4f}{round(1000*pipe.start_diameter):>15.4f}  
+    END-POINT{round(1000*pipe.end.x):>14.4f}{round(1000*pipe.end.y):>13.4f}{round(1000*pipe.end.z):>13.4f}{round(1000*pipe.end_diameter):>15.4f}"""
        
        return string
     
     def encoder_bend(self, bend):
-       string = f""" BEND
-    END-POINT        {round(bend.start.x, 2)}   {round(bend.start.y, 2)}    {round(bend.start.z, 2)}       {round(bend.start_diameter,2)}  
-    END-POINT        {round(bend.end.x, 2)}   {round(bend.end.y, 2)}   {round(bend.end.z, 2)}       {round(bend.end_diameter, 2)}   
-    CENTRE-POINT     {round(bend.corner.x, 2)}   {round(bend.corner.y, 2)}    {round(bend.corner.z, 2)}   
-    SKEY BEBW
-    """
+       string = f"""BEND
+    END-POINT{round(1000*bend.start.x):>17.4f}{round(1000*bend.start.y):>13.4f}{round(1000*bend.start.z):>13.4f}{round(1000*bend.start_diameter):>15.4f}  
+    END-POINT{round(1000*bend.end.x):>17.4f}{round(1000*bend.end.y):>13.4f}{round(1000*bend.end.z):>13.4f}{round(1000*bend.end_diameter):>15.4f}   
+    CENTRE-POINT{round(1000*bend.corner.x):>14.4f}{round(1000*bend.corner.y):>13.4f}{round(1000*bend.corner.z):>13.4f}   
+    SKEY BEBW"""
        
        return string
 
@@ -88,22 +83,20 @@ PIPELINE-REFERENCE      CFG1
        end_y = round(flange.position.y + flange.normal[1], 2)
        end_z = round(flange.position.z + flange.normal[2], 2)
 
-       string = f""" FLANGE
-    END-POINT    {round(flange.position.x, 2)}   {round(flange.position.y, 2)}       {round(flange.position.z, 2)}       {round(flange.diameter, 2)}   
-    END-POINT    {end_x}   {end_y}       {end_z}       {round(flange.diameter, 2)}   
-    SKEY FLBL
-    """
+       string = f"""FLANGE
+    END-POINT{round(1000*flange.position.x):>14.4f}{round(1000*flange.position.y):>13.4f}{round(1000*flange.position.z):>13.4f}{round(1000*flange.diameter):>15.4f}   
+    END-POINT{1000*end_x:>14.4f}{1000*end_y:>13.4f}{1000*end_z:>13.4f}{round(1000*flange.diameter):>15.4f}   
+    SKEY FLBL"""
        
        return string
     
     def encoder_elbow(self, bend):
        
-       string = f""" ELBOW
-    END-POINT            {round(bend.start.x,2)}     {round(bend.start.y,2)}       {round(bend.start.z,2)}        {round(bend.start_diameter,2)}   
-    END-POINT            {round(bend.end.x ,2)}  {round(bend.end.y,2)}     {round(bend.end.z ,2)}        {round(bend.end_diameter,2)}   
-    CENTRE-POINT         {round(bend.corner.x,2)}   {round(bend.corner.y,2)}    {round(bend.corner.z,2)}        
-    SKEY                 ELBW
-    """
+       string = f"""ELBOW
+    END-POINT{round(1000*bend.start.x):>14.4f}{round(1000*bend.start.y):>11.4f}{round(1000*bend.start.z):>13.4f}{round(1000*bend.start_diameter):>13.4f}   
+    END-POINT{round(1000*bend.end.x):>14.4f}{round(1000*bend.end.y):>11.4f}{round(1000*bend.end.z):>13.4f}{round(1000*bend.end_diameter):>13.4f}   
+    CENTRE-POINT{round(1000*bend.corner.x):>14.4f}{round(1000*bend.corner.y):>11.4f}{round(1000*bend.corner.z):>13.4f}        
+    SKEY                 ELBW"""
        
        return string
     

@@ -1,12 +1,14 @@
 from itertools import pairwise
 
 import numpy as np
+import math
 
 from opps.model.bend import Bend
 from opps.model.elbow import Elbow
 from opps.model.flange import Flange
 from opps.model.pipe import Pipe
 from opps.model.point import Point
+
 
 class PCFHandler:
     def __init__(self):
@@ -67,27 +69,47 @@ class PCFHandler:
 
 
     def create_bend(self,group):
-        _, x0, y0, z0, r0 = group[1].split()
-        _, x1, y1, z1, r1 = group[2].split()
+        _, x0, y0, z0, d0 = group[1].split()
+        _, x1, y1, z1, d1 = group[2].split()
         _, x2, y2, z2 = group[3].split()
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
-        center = Point(float(x2), float(y2), float(z2))
-        start_radius = float(r0) / 2
-        end_radius = float(r1) / 2
+        corner = Point(float(x2), float(y2), float(z2))
+        start_radius = float(d0) / 2
+        end_radius = float(d1) / 2
 
+        start_coords = np.array([float(x0), float(y0), float(z0)])
+        end_coords = np.array([float(x1), float(y1), float(z1)])
+        corner_coords = np.array([float(x2), float(y2), float(z2)])
+
+        a_vector = start_coords - corner_coords
+        b_vector = end_coords - corner_coords
+        c_vector = a_vector + b_vector
+        c_vector_normalized = c_vector / np.linalg.norm(c_vector)
+
+        norm_a_vector = np.linalg.norm(a_vector)
+        norm_b_vector = np.linalg.norm(b_vector)
+
+        corner_distance = norm_a_vector / np.sqrt(0.5 * ((np.dot(a_vector, b_vector) / (norm_a_vector * norm_b_vector)) + 1))
+
+        center_coords = corner_coords + c_vector_normalized * corner_distance
+
+        start_curve_radius = math.dist(center_coords, start_coords)
+        end_curve_radius = math.dist(center_coords, end_coords)
+        radius = 0.5 * (start_curve_radius + end_curve_radius)
+        
         color = (255, 0, 0)
 
         return Bend(
             start,
             end,
-            center,
-            curvature=1.5 * start_radius,
-            start_diameter=start_radius,
-            end_diameter=end_radius,
-            color=color,
-            auto=False,
+            corner,  
+            curvature = radius,
+            start_diameter = start_radius,
+            end_diameter = end_radius,
+            color = color,
+            auto = False,
         )
 
 
@@ -113,17 +135,37 @@ class PCFHandler:
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
-        center = Point(float(x2), float(y2), float(z2))
+        corner = Point(float(x2), float(y2), float(z2))
         start_radius = float(r0) / 2
         end_radius = float(r1) / 2
+
+        start_coords = np.array([float(x0), float(y0), float(z0)])
+        end_coords = np.array([float(x1), float(y1), float(z1)])
+        corner_coords = np.array([float(x2), float(y2), float(z2)])
+
+        a_vector = start_coords - corner_coords
+        b_vector = end_coords - corner_coords
+        c_vector = a_vector + b_vector
+        c_vector_normalized = c_vector / np.linalg.norm(c_vector)
+
+        norm_a_vector = np.linalg.norm(a_vector)
+        norm_b_vector = np.linalg.norm(b_vector)
+
+        corner_distance = norm_a_vector / np.sqrt(0.5 * ((np.dot(a_vector, b_vector) / (norm_a_vector * norm_b_vector)) + 1))
+
+        center_coords = corner_coords + c_vector_normalized * corner_distance
+
+        start_curve_radius = math.dist(center_coords, start_coords)
+        end_curve_radius = math.dist(center_coords, end_coords)
+        radius = 0.5 * (start_curve_radius + end_curve_radius)
 
         color = (0, 255, 0)
 
         return Elbow(
             start,
             end,
-            center,
-            curvature=1.5 * start_radius,
+            corner,
+            curvature=radius,
             start_diameter=start_radius,
             end_diameter=end_radius,
             color=color,
