@@ -1,4 +1,5 @@
 class Structure:
+    color: tuple[int, int, int] = (255, 255, 255)
     selected: bool = False
     staged: bool = False
     tag: int = -1

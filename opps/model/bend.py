@@ -18,7 +18,6 @@ class Bend(Structure):
     curvature: float
     start_diameter: float = 0.1
     end_diameter: float = 0.1
-    color: tuple = (167, 223, 124)
     auto: bool = True
 
     @property

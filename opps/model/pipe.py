@@ -12,7 +12,6 @@ class Pipe(Structure):
     end: Point
     start_diameter: float = 0.1
     end_diameter: float = 0.1
-    color: tuple = (255, 255, 255)
 
     def set_diameter(self, diameter, point=None):
         if point is None:
