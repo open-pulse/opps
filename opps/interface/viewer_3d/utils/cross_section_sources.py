@@ -195,3 +195,27 @@ def t_beam_data(length, h, w1, t1, tw):
     append_polydata.Update()
 
     return append_polydata.GetOutput()
+
+def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offset_z):
+    radius_array = vtk.vtkDoubleArray()
+    radius_array.SetName("TubeRadius")
+    radius_array.SetNumberOfTuples(2)
+    radius_array.SetTuple1(0, start_diameter / 2)
+    radius_array.SetTuple1(1, end_diameter / 2)
+
+    line_source = vtk.vtkLineSource()
+    line_source.SetPoint1(0, -length/2, 0)
+    line_source.SetPoint2((offset_y, length/2, offset_z))
+    line_source.Update()
+
+    polydata = line_source.GetOutput()
+    polydata.GetPointData().AddArray(radius_array)
+    polydata.GetPointData().SetActiveScalars(radius_array.GetName())
+
+    tube_filter = vtk.vtkTubeFilter()
+    tube_filter.SetInputData(polydata)
+    tube_filter.SetNumberOfSides(30)
+    tube_filter.SetVaryRadiusToVaryRadiusByAbsoluteScalar()
+    tube_filter.Update()
+
+    return tube_filter.GetOutput()

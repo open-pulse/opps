@@ -5,4 +5,5 @@ from .flange import Flange
 from .pipe import Pipe
 from .pipeline import Pipeline
 from .point import Point
+from .reducer_eccentric import ReducerEccentric
 from .beam import *
