@@ -8,7 +8,7 @@ class CircularBeam(Beam):
     start: Point
     end: Point
     diameter: float = 0.1
-    thickness: float = 0
+    thickness: float = 0.01
 
     def get_points(self):
         return [self.start, self.end]
