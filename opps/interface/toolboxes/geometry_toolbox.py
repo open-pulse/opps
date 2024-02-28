@@ -13,6 +13,7 @@ from opps.model.editors.main_editor import MainEditor
 from opps.model import Structure, Point
 from opps.io.cad_file.step_handler import StepHandler
 from opps.interface import main_window
+from opps.model import RectangularBeam
 
 class GeometryToolbox(QObject):
     selection_changed = pyqtSignal()
@@ -27,6 +28,33 @@ class GeometryToolbox(QObject):
 
         self.pipeline = Pipeline()
         self.editor = MainEditor(self.pipeline)
+
+
+        # self.editor.add_structure(
+        #     RectangularBeam(
+        #         Point(0,0,0),
+        #         Point(1,0,0),
+        #     )
+        # )
+        # self.editor.commit()
+
+        # self.editor.add_structure(
+        #     RectangularBeam(
+        #         Point(0,0,0),
+        #         Point(0,1,0),
+        #     )
+        # )
+        # self.editor.commit()
+
+        self.editor.add_structure(
+            RectangularBeam(
+                Point(0,0,0),
+                Point(0,0,1),
+            )
+        )
+        self.editor.commit()
+
+
 
     def new(self):
         self.pipeline.structures.clear()

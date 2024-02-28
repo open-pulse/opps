@@ -2,8 +2,7 @@ import vtk
 
 from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 from opps.model import Pipe, Pipeline
-
-from .utils import fill_cell_identifier, paint_data
+from opps.interface.viewer_3d.utils.cell_utils import fill_cell_identifier, paint_data
 
 
 class PipelineActor(vtk.vtkActor):

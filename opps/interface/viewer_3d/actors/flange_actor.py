@@ -2,8 +2,7 @@ import numpy as np
 import vtk
 
 from opps.model import Flange
-
-from .utils import paint_data
+from opps.interface.viewer_3d.utils.cell_utils import paint_data
 
 
 class FlangeActor(vtk.vtkActor):

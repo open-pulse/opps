@@ -3,8 +3,7 @@ import vtk
 
 from opps.interface.viewer_3d.actors.flange_actor import FlangeActor
 from opps.model import Elbow, Flange
-
-from .utils import paint_data
+from opps.interface.viewer_3d.utils.cell_utils import paint_data
 
 
 class ElbowActor(vtk.vtkActor):

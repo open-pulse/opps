@@ -4,7 +4,7 @@ from opps.model import Pipe
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
 
 
-class PipeActor(vtk.vtkActor):
+class ReducerEccentricActor(vtk.vtkActor):
     def __init__(self, pipe: Pipe):
         self.pipe = pipe
         self.create_geometry()
