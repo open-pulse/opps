@@ -1,7 +1,7 @@
 import numpy as np
 import vtk
 
-from opps.model.flange import Flange
+from opps.model import Flange
 
 from .utils import paint_data
 

@@ -2,11 +2,7 @@ from itertools import pairwise
 
 import numpy as np
 
-from opps.model.bend import Bend
-from opps.model.elbow import Elbow
-from opps.model.flange import Flange
-from opps.model.pipe import Pipe
-from opps.model.point import Point
+from opps.model import Bend, Elbow, Flange, Pipe, Point
 
 
 def group_structures(lines_list):

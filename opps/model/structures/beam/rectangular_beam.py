@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from opps.model.point import Point
-from opps.model.beam.beam import Beam
+from opps.model.structures.point import Point
+from .beam import Beam
 
 
 @dataclass

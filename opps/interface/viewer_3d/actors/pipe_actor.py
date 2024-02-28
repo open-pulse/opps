@@ -1,6 +1,6 @@
 import vtk
 
-from opps.model.pipe import Pipe
+from opps.model import Pipe
 
 from .utils import paint_data
 

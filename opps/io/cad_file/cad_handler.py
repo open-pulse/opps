@@ -1,8 +1,6 @@
 import gmsh
 
-from opps.model.bend import Bend
-from opps.model.flange import Flange
-from opps.model.pipe import Pipe
+from opps.model import Bend, Flange, Pipe
 
 
 class CADHandler:

@@ -1,6 +1,7 @@
 from dataclasses import dataclass, KW_ONLY
-from opps.model.point import Point
-from opps.model.beam.beam import Beam
+
+from .beam import Beam
+from opps.model.structures.point import Point
 
 
 @dataclass

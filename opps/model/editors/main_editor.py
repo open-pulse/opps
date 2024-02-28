@@ -4,8 +4,7 @@ from dataclasses import dataclass, fields
 
 import numpy as np
 
-from opps.model import Bend, Elbow, Flange, Pipe, Pipeline, Point
-from opps.model.structure import Structure
+from opps.model import Structure, Bend, Elbow, Flange, Pipe, Pipeline, Point
 
 
 class MainEditor:

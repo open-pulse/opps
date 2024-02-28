@@ -10,8 +10,7 @@ from PyQt5.QtCore import pyqtSignal
 from opps.io.cad_file.cad_handler import *
 from opps.model import Pipeline
 from opps.model.editors.main_editor import MainEditor
-from opps.model.point import Point
-from opps.model.structure import Structure
+from opps.model import Structure, Point
 from opps.io.cad_file.step_handler import StepHandler
 from opps.interface import main_window
 

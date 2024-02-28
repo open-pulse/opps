@@ -2,11 +2,12 @@ from itertools import pairwise
 
 import numpy as np
 
-from opps.io.pcf.pcf_handler import *
-from opps.model.bend import Bend
-from opps.model.flange import Flange
-from opps.model.pipe import Pipe
-from opps.model.structure import Structure
+from .bend import Bend
+from .elbow import Elbow
+from .flange import Flange
+from .pipe import Pipe
+from .point import Point
+from .structure import Structure
 
 
 class Pipeline(Structure):
@@ -16,6 +17,7 @@ class Pipeline(Structure):
         self.control_points: list[Point] = []
 
     def load(self, path):
+        from opps.io.pcf.pcf_handler import group_structures, create_classes
         with open(path, "r", encoding="iso_8859_1") as c2:
             lines = c2.readlines()
         groups = group_structures(lines)

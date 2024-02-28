@@ -1,6 +1,6 @@
 import vtk
 
-from opps.model.bend import Bend
+from opps.model import Bend
 
 from .utils import paint_data
 

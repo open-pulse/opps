@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from opps.model.bend import Bend
-from opps.model.point import Point
+from .bend import Bend
+from .point import Point
 
 
 def normalize(vector):

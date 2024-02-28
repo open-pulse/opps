@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from opps.model.point import Point
-from opps.model.structure import Structure
+from .point import Point
+from .structure import Structure
 
 
 def normalize(vector):
