@@ -4,7 +4,7 @@ import numpy as np
 from opps.model.pipe import Pipe
 from opps.model.bend import Bend
 from opps.model import Point
-from opps.model.pipeline_editor import PipelineEditor
+from opps.model.editors.main_editor import MainEditor
 
 
 class StepHandler:
