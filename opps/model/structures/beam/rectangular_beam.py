@@ -21,4 +21,3 @@ class RectangularBeam(Beam):
 
     def __hash__(self) -> int:
         return id(self)
-

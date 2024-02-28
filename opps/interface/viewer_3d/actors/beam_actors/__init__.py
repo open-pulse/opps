@@ -1,1 +1,2 @@
 from .rectangular_beam_actor import RectangularBeamActor
+from .circular_beam_actor import CircularBeamActor

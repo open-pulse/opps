@@ -11,3 +11,4 @@ class ReducerEccentric(Structure):
     offset_z: float = 0
     start_diameter: float = 0.1
     end_diameter: float = 0.1
+    thickness: float = 0.01
