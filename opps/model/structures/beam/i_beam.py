@@ -14,3 +14,14 @@ class IBeam(Beam):
     thickness_1: float = 0.01
     thickness_2: float = 0.01
     thickness_3: float = 0.01
+
+    def get_points(self):
+        return [self.start, self.end]
+
+    def as_vtk(self):
+        from opps.interface.viewer_3d.actors import IBeamActor
+
+        return IBeamActor(self)
+
+    def __hash__(self) -> int:
+        return id(self)
