@@ -21,6 +21,16 @@ class PipelineEditor:
         self.selected_structures = []
         self.staged_structures = []
 
+    def reset(self):
+        # not the same as __init__
+        self.pipeline.structures.clear()
+        self.deltas = np.array([0, 0, 0])
+        self.default_diameter = 0.2
+
+        self.selected_points.clear()
+        self.selected_structures.clear()
+        self.staged_structures.clear()
+
     def set_anchor(self, point):
         self.anchor = point
 
