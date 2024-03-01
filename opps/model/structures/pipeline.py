@@ -8,6 +8,7 @@ from .flange import Flange
 from .pipe import Pipe
 from .point import Point
 from .structure import Structure
+from .beam import Beam
 
 
 class Pipeline(Structure):
@@ -98,7 +99,7 @@ class Pipeline(Structure):
         control_points = list()
         for structure in self.structures:
             points.extend(structure.get_points())
-            if not isinstance(structure, Pipe):
+            if not isinstance(structure, Pipe | Beam):
                 continue
             control_points.extend(structure.get_points())
 
