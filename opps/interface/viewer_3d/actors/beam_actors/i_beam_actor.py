@@ -26,6 +26,7 @@ class IBeamActor(vtk.vtkActor):
 
         rx, ry, rz = align_y_rotations(vector)
         transform = vtk.vtkTransform()
+        transform.Translate(*self.beam.start.coords())
         transform.RotateZ(-np.degrees(rz))
         transform.RotateY(-np.degrees(ry))
         transform.RotateX(-np.degrees(rx))
