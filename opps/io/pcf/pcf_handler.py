@@ -63,7 +63,7 @@ class PCFHandler:
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
-        radius = float(r0) / 2
+        radius = float(r0) 
 
         return Pipe(start, end, radius, radius)
 
@@ -76,8 +76,8 @@ class PCFHandler:
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
         corner = Point(float(x2), float(y2), float(z2))
-        start_radius = float(d0) / 2
-        end_radius = float(d1) / 2
+        start_radius = float(d0) 
+        end_radius = float(d1) 
 
         start_coords = np.array([float(x0), float(y0), float(z0)])
         end_coords = np.array([float(x1), float(y1), float(z1)])
@@ -121,7 +121,7 @@ class PCFHandler:
         end = Point(float(x1), float(y1), float(z1))
         position = start
         normal = start.coords() - end.coords()
-        start_radius = float(r0) / 2
+        start_radius = float(r0) 
 
         color = (0, 0, 255)
 
@@ -136,8 +136,8 @@ class PCFHandler:
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
         corner = Point(float(x2), float(y2), float(z2))
-        start_radius = float(r0) / 2
-        end_radius = float(r1) / 2
+        start_radius = float(r0) 
+        end_radius = float(r1) 
 
         start_coords = np.array([float(x0), float(y0), float(z0)])
         end_coords = np.array([float(x1), float(y1), float(z1)])
