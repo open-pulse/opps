@@ -4,7 +4,7 @@ from dataclasses import dataclass, fields
 
 import numpy as np
 
-from opps.model import Structure, Bend, Elbow, Flange, Pipe, Pipeline, Point
+from opps.model import Structure, Bend, Elbow, Flange, Pipe, Pipeline, Point, IBeam, CBeam, TBeam, RectangularBeam, CircularBeam
 
 
 class MainEditor:
@@ -131,6 +131,21 @@ class MainEditor:
         self.add_structure(new_pipe)
         self.anchor = next_point
         return new_pipe
+
+    def add_i_beam(self, deltas=None, **kwargs):
+        if deltas != None:
+            self.deltas = deltas
+
+        if self.anchor not in self.pipeline.control_points:
+            return
+
+        current_point = self.anchor
+        next_point = Point(*(current_point.coords() + self.deltas))
+        new_beam = IBeam(current_point, next_point, **kwargs)
+
+        self.add_structure(new_beam)
+        self.anchor = next_point
+        return new_beam
 
     def add_bend(self, curvature_radius=0.3):
         start_point = self.anchor
