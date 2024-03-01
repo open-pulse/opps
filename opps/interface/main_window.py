@@ -115,16 +115,7 @@ class MainWindow(QMainWindow):
 
     def delete_selection_callback(self):
         editor = self.render_widget.editor
-        selected_structures = editor.selected_structures
-        selected_points = editor.selected_points
-
-        for structure in selected_structures:
-            editor.remove_structure(structure, rejoin=True)
-
-        for point in selected_points:
-            editor.remove_point(point, rejoin=False)
-
-        editor.clear_selection()
+        editor.delete_selection()
         app().update()
 
     def selection_callback(self):

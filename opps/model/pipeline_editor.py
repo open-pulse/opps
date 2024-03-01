@@ -17,9 +17,9 @@ class PipelineEditor:
         self.anchor = self.pipeline.points[0]
         self.default_diameter = 0.2
 
-        self.selected_points = []
-        self.selected_structures = []
-        self.staged_structures = []
+        self.selected_points = set()
+        self.selected_structures = set()
+        self.staged_structures = list()
 
     def set_anchor(self, point):
         self.anchor = point
@@ -264,6 +264,15 @@ class PipelineEditor:
             structure.selected = False
         self.selected_points.clear()
         self.selected_structures.clear()
+
+    def delete_selection(self):
+        for structure in self.selected_structures:
+            self.remove_structure(structure, rejoin=True)
+
+        for point in self.selected_points:
+            self.remove_point(point, rejoin=False)
+        
+        self.clear_selection()
 
     def update(self):
         self.pipeline._update_curvatures()
