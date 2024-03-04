@@ -72,12 +72,12 @@ class Application(QApplication):
     def _save_cad(self, path):
         exporter = CADHandler()
         exporter.save(path, self.pipeline)
-        print("Saving CAD")
+        
 
     def _save_pcf(self, path):
         self.pcf_exporter = PCFExporter()
         self.pcf_exporter.save(path,self.pipeline)
-        print("Saving PCF")
+        
 
     def get_point(self, point_index) -> Point:
         return self.editor.points[point_index]
