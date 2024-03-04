@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from itertools import chain
 
 import numpy as np
 import vtk
@@ -8,7 +9,9 @@ from PyQt5.QtWidgets import QApplication
 
 from opps.interface.viewer_3d.actors import ControlPointsActor, PassivePointsActor, SelectedPointsActor
 
+from vtkat.interactor_styles import BoxSelectionInteractorStyle
 from vtkat.render_widgets import CommonRenderWidget
+from vtkat.pickers import CellPropertyAreaPicker, CellAreaPicker
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -16,8 +19,12 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def __init__(self, editor, parent=None):
         super().__init__(parent)
+        self.left_clicked.connect(self.click_callback)
         self.left_released.connect(self.selection_callback)
         self.editor = editor
+
+        self.interactor_style = BoxSelectionInteractorStyle()
+        self.render_interactor.SetInteractorStyle(self.interactor_style)
 
         self.selected_structure = None
         self.pipeline_actor = None
@@ -93,57 +100,63 @@ class EditorRenderWidget(CommonRenderWidget):
         self.passive_points_actor = None
         self.selected_points_actor = None
 
+    def click_callback(self, x, y):
+        self.mouse_click = x, y
+
     def selection_callback(self, x, y):
         modifiers = QApplication.keyboardModifiers()
         ctrl_pressed = bool(modifiers & Qt.ControlModifier)
         shift_pressed = bool(modifiers & Qt.ShiftModifier)
         alt_pressed = bool(modifiers & Qt.AltModifier)
 
-        # First try to select points
-        selected_point = self._pick_point(x, y)
-        if selected_point is not None:
+        picked_points = self._pick_points(x, y)
+        picked_structures = self._pick_structures(x, y)
+
+        # give selection priority to points 
+        if len(picked_points) == 1 and len(picked_structures) <= 1:
+            picked_structures.clear()
+
+        if picked_points:
             self.editor.select_points(
-                [selected_point], join=ctrl_pressed | shift_pressed, remove=alt_pressed
+                picked_points,
+                join=ctrl_pressed | shift_pressed,
+                remove=alt_pressed
             )
-            self.update_selection()
-            return
 
-        # If no points were found try structures
-        selected_structure = self._pick_structure(x, y)
-        if selected_structure is not None:
+        if picked_structures is not None:
             self.editor.select_structures(
-                [selected_structure], join=ctrl_pressed | shift_pressed, remove=alt_pressed
+                picked_structures,
+                join=ctrl_pressed | shift_pressed,
+                remove=alt_pressed
             )
-            self.update_selection()
-            return
 
-        self.editor.clear_selection()
+        if (not picked_points) and (not picked_structures):
+            self.editor.clear_selection() 
+
         self.update_selection()
 
-    def _pick_point(self, x, y):
-        index = self._pick_actor(x, y, self.control_points_actor)
+    def _pick_points(self, x, y):
         pipeline = self.editor.pipeline
-        if index >= 0:
-            return pipeline.control_points[index]
 
-        index = self._pick_actor(x, y, self.passive_points_actor)
-        if index >= 0:
-            return pipeline.points[index]
+        picked = self._pick_actor(x, y, self.control_points_actor)
+        indexes = picked.get(self.control_points_actor, [])
+        control_points = [pipeline.control_points[i] for i in  indexes]
 
-    def _pick_structure(self, x, y):
+        picked = self._pick_actor(x, y, self.passive_points_actor)
+        indexes = picked.get(self.passive_points_actor, [])
+        passive_points = [pipeline.points[i] for i in  indexes]
+        
+        combined_points = set(control_points + passive_points)
+        return list(combined_points)
+
+    def _pick_structures(self, x, y):
         pipeline = self.editor.pipeline
-        index = self._pick_actor(x, y, self.pipeline_actor)
-        if index >= 0:
-            data: vtk.vtkPolyData = self.pipeline_actor.GetMapper().GetInput()
-            cell_identifier = data.GetCellData().GetArray("cell_identifier")
-            if cell_identifier is None:
-                return
-            structure_index = cell_identifier.GetValue(index)
-            return pipeline.structures[structure_index]
+        indexes = self._pick_property(x, y, "cell_identifier", self.pipeline_actor)
+        return [pipeline.structures[i] for i in indexes]
 
     def _pick_actor(self, x, y, actor_to_select):
-        selection_picker = vtk.vtkCellPicker()
-        selection_picker.SetTolerance(0.005)
+        selection_picker = CellAreaPicker()
+        selection_picker._cell_picker.SetTolerance(0.0015)
         pickability = dict()
 
         for actor in self.renderer.GetActors():
@@ -153,12 +166,41 @@ class EditorRenderWidget(CommonRenderWidget):
             else:
                 actor.PickableOff()
 
-        selection_picker.Pick(x, y, 0, self.renderer)
+        x0, y0 = self.mouse_click
+        mouse_moved = (abs(x0 - x) > 10) or (abs(y0 - y) > 10)
+        if mouse_moved:
+            selection_picker.area_pick(x0, y0, x, y, self.renderer)
+        else:
+            selection_picker.pick(x, y, 0, self.renderer)
 
         for actor in self.renderer.GetActors():
             actor.SetPickable(pickability[actor])
 
-        return selection_picker.GetCellId()
+        return selection_picker.get_picked()
+
+    def _pick_property(self, x, y, property_name, desired_actor):
+        selection_picker = CellPropertyAreaPicker(property_name, desired_actor)
+        selection_picker._cell_picker.SetTolerance(0.0015)
+        pickability = dict()
+
+        for actor in self.renderer.GetActors():
+            pickability[actor] = actor.GetPickable()
+            if actor == desired_actor:
+                actor.PickableOn()
+            else:
+                actor.PickableOff()
+
+        x0, y0 = self.mouse_click
+        mouse_moved = (abs(x0 - x) > 10) or (abs(y0 - y) > 10)
+        if mouse_moved:
+            selection_picker.area_pick(x0, y0, x, y, self.renderer)
+        else:
+            selection_picker.pick(x, y, 0, self.renderer)
+
+        for actor in self.renderer.GetActors():
+            actor.SetPickable(pickability[actor])
+
+        return selection_picker.get_picked()
 
     def update_selection(self):
         if self.editor.selected_points:

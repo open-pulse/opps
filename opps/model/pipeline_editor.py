@@ -244,7 +244,8 @@ class PipelineEditor:
         elif remove:
             self.selected_points -= points
         else:
-            self.clear_selection()
+            if len(points) == 1:
+                self.clear_selection()
             self.selected_points = points
 
     def select_structures(self, structures, join=False, remove=False):
@@ -262,7 +263,8 @@ class PipelineEditor:
         elif remove:
             self.selected_structures -= structures
         else:
-            self.clear_selection()
+            if len(structures) == 1:
+                self.clear_selection()
             self.selected_structures = structures
 
         # apply the selection flag again for selected structures
