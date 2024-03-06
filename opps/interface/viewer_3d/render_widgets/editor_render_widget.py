@@ -26,6 +26,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.selected_points_actor = None
         self.coords = np.array([0, 0, 0])
 
+        self.renderer.GetActiveCamera().SetParallelProjection(True)
         self.create_axes()
         self.update_plot()
 
