@@ -1,4 +1,4 @@
-from itertools import pairwise
+from pathlib import Path 
 
 import numpy as np
 
@@ -13,6 +13,7 @@ class PCFExporter:
         pass
 
     def save(self, path, pipeline):
+        path = Path(path).with_suffix(".pcf")
         var = self.encoder(pipeline)
          
         with open(path, "w", encoding="iso_8859_1") as file:
