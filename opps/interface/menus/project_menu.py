@@ -32,7 +32,7 @@ class ProjectMenu(QMenu):
         self.addAction(self.save_project_as_action)
 
     def new_project_callback(self):
-        app().new()
+        app().geometry_toolbox.new()
 
     def open_project_callback(self):
         app().main_window.open_dialog()
@@ -42,3 +42,6 @@ class ProjectMenu(QMenu):
 
     def save_project_as_callback(self):
         app().main_window.save_as_dialog()
+
+        
+

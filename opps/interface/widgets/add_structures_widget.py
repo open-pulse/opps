@@ -25,7 +25,7 @@ class AddStructuresWidget(QWidget):
     # applied = pyqtSignal(float, float, float)
     on_close = pyqtSignal()
 
-    def __init__(self, parent, render_widget):
+    def __init__(self, render_widget, parent):
         super().__init__(parent)
         uic.loadUi(UI_DIR / "add_structure.ui", self)
 
@@ -54,7 +54,7 @@ class AddStructuresWidget(QWidget):
         self.section_button.clicked.connect(self.section_callback)
         self.bend_checkbox.stateChanged.connect(self.auto_bend_callback)
         self.apply_button.clicked.connect(self.apply_callback)
-        app().selection_changed.connect(self.selection_callback)
+        self.render_widget.selection_changed.connect(self.selection_callback)
 
     def get_displacement(self):
         dx = self.dx_box.text() or 0
@@ -110,8 +110,7 @@ class AddStructuresWidget(QWidget):
         )
 
     def closeEvent(self, a0) -> None:
-        self.render_widget.show_passive_points = True
-        self.render_widget.unstage_structure()
+        self.render_widget.editor.dismiss()
         return super().closeEvent(a0)
 
     def separator(self):
@@ -121,12 +120,12 @@ class AddStructuresWidget(QWidget):
         return s
 
     def selection_callback(self):
-        points = list(app().get_selected_points())
+        points = list(app().geometry_toolbox.get_selected_points())
         if not points:
             return
 
         *_, last_point = points
-        enable = last_point in app().editor.control_points
+        enable = last_point in app().geometry_toolbox.pipeline.control_points
         self.dx_box.setEnabled(enable)
         self.dy_box.setEnabled(enable)
         self.dz_box.setEnabled(enable)

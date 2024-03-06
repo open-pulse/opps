@@ -21,18 +21,25 @@ from opps.model import Bend, Elbow
 
 
 class EditBendWidget(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, render_widget, parent):
+        super().__init__(parent)
         uic.loadUi(UI_DIR / "edit_bend.ui", self)
+
+        self.render_widget = render_widget
 
         self._define_qt_variables()
         self._create_connections()
 
     def update(self):
         super().update()
-        *_, structure = app().get_selected_structures()
+        editor = self.render_widget.editor
+        if not editor.selected_structures:
+            return
+
+        *_, structure = editor.selected_structures
         if not isinstance(structure, Bend):
             return
+
         self.curvature_box.setText(str(structure.curvature))
 
     def _define_qt_variables(self):
@@ -44,7 +51,11 @@ class EditBendWidget(QWidget):
         self.morph_list.itemClicked.connect(self.moph_list_callback)
 
     def curvature_modified_callback(self, text):
-        *_, structure = app().get_selected_structures()
+        editor = self.render_widget.editor
+        if not editor.selected_structures:
+            return
+
+        *_, structure = editor.selected_structures
         if not isinstance(structure, Bend):
             return
 
@@ -70,9 +81,14 @@ class EditBendWidget(QWidget):
         else:
             return
 
-        *_, structure = app().get_selected_structures()
+        editor = self.render_widget.editor
+        if not editor.selected_structures:
+            return
+
+        *_, structure = editor.selected_structures
         if not isinstance(structure, Bend):
             return
-        new_structure = app().editor.morph(structure, _type)
-        app().select_structures([new_structure])
+        
+        new_structure = editor.morph(structure, _type)
+        editor.select_structures([new_structure])
         app().update()

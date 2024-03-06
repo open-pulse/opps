@@ -20,23 +20,31 @@ from opps.model import Point
 
 
 class EditPointWidget(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, render_widget, parent):
+        super().__init__(parent)
         uic.loadUi(UI_DIR / "edit_point.ui", self)
+
+        self.render_widget = render_widget
+
         self._define_qt_variables()
         self._create_connections()
 
     def update(self):
         super().update()
-        *_, last_point = app().get_selected_points()
-        if last_point is None:
+
+        editor = self.render_widget.editor
+        if not editor.selected_points:
+            return
+
+        *_, last_point = editor.selected_points
+        if not isinstance(last_point, Point):
             return
 
         self.dx_box.setText(str(round(last_point.x, 3)))
         self.dy_box.setText(str(round(last_point.y, 3)))
         self.dz_box.setText(str(round(last_point.z, 3)))
 
-        enable = last_point in app().editor.control_points
+        enable = last_point in app().geometry_toolbox.pipeline.control_points
         self.dx_box.setEnabled(enable)
         self.dy_box.setEnabled(enable)
         self.dz_box.setEnabled(enable)
@@ -49,7 +57,6 @@ class EditPointWidget(QWidget):
         self.dx_box.setPlaceholderText(text)
         self.dy_box.setPlaceholderText(text)
         self.dz_box.setPlaceholderText(text)
-
 
     def _define_qt_variables(self):
         self.dx_box: QLineEdit = self.findChild(QLineEdit, "dx_box")
@@ -77,8 +84,12 @@ class EditPointWidget(QWidget):
         return dx, dy, dz
 
     def position_edited_callback(self):
-        *_, point = app().get_selected_points()
-        if point is None:
+        editor = self.render_widget.editor
+        if not editor.selected_points:
+            return
+
+        *_, last_point = editor.selected_points
+        if not isinstance(last_point, Point):
             return
 
         try:
@@ -86,23 +97,26 @@ class EditPointWidget(QWidget):
         except ValueError:
             return
 
-        point.set_coords(x, y, z)
+        last_point.set_coords(x, y, z)
         app().update()
 
     def flange_callback(self):
-        app().editor.add_flange()
-        app().editor.commit()
-        app().clear_selection()
+        editor = self.render_widget.editor
+        editor.add_flange()
+        editor.commit()
+        editor.clear_selection()
         app().update()
 
     def bend_callback(self):
-        app().editor.add_bend()
-        app().editor.commit()
-        app().clear_selection()
+        editor = self.render_widget.editor
+        editor.add_bend()
+        editor.commit()
+        editor.clear_selection()
         app().update()
 
     def elbow_callback(self):
-        app().editor.add_elbow()
-        app().editor.commit()
-        app().clear_selection()
+        editor = self.render_widget.editor
+        editor.add_elbow()
+        editor.commit()
+        editor.clear_selection()
         app().update()

@@ -27,3 +27,12 @@ class Flange(Structure):
 
     def __hash__(self) -> int:
         return id(self)
+    
+    def replace_point(self, old, new):
+        if self.start == old:
+            self.start = new
+
+        elif self.end == old:
+            self.end = new
+
+

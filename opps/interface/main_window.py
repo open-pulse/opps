@@ -17,7 +17,6 @@ from opps.interface.widgets import AddStructuresWidget, EditStructuresWidget
 from opps.interface.widgets.cross_section_widget import CrossSectionWidget
 from opps.model import Pipe
 
-
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
@@ -26,15 +25,16 @@ class MainWindow(QMainWindow):
 
         self.delete_action = QAction(self)
         self.delete_action.setShortcut("del")
-        self.delete_action.triggered.connect(app().delete_selection)
+        self.delete_action.triggered.connect(self.delete_selection_callback)
         self.addAction(self.delete_action)
 
-        app().selection_changed.connect(self.selection_callback)
 
         self._create_menu_bar()
         self._configure_window()
         self._create_central_widget()
         self.start_creation_mode()
+
+        self.render_widget.selection_changed.connect(self.selection_callback)
 
     def open_dialog(self):
         path, check = QFileDialog.getOpenFileName(
@@ -46,14 +46,14 @@ class MainWindow(QMainWindow):
         if not check:
             return
 
-        app().open(path)
+        app().geometry_toolbox.open(path)
         self.render_widget.update_plot()
 
     def save_dialog(self):
-        if app().save_path is None:
+        if app().geometry_toolbox.save_path is None:
             self.save_as_dialog()
         else:
-            app().save(app().save_path)
+            app().geometry_toolbox.save(app().geometry_toolbox.save_path)
 
     def save_as_dialog(self):
         path, check = QFileDialog.getSaveFileName(
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         if not check:
             return
 
-        app().save(path)
+        app().geometry_toolbox.save(path)
 
     def sizeHint(self) -> QSize:
         return QSize(800, 600)
@@ -81,7 +81,8 @@ class MainWindow(QMainWindow):
         self.menu_bar.addMenu(ModeMenu(self))
 
     def _create_central_widget(self):
-        self.render_widget = EditorRenderWidget()
+        editor = app().geometry_toolbox.editor
+        self.render_widget = EditorRenderWidget(editor)
         self.render_widget.set_theme("dark")
         self.setCentralWidget(self.render_widget)
 
@@ -97,7 +98,7 @@ class MainWindow(QMainWindow):
         if self.floating_widget is not None:
             self.floating_widget.close()
 
-        self.floating_widget = AddStructuresWidget(self, self.render_widget)
+        self.floating_widget = AddStructuresWidget(self.render_widget, self)
         self.floating_widget.show()
 
     def start_edition_mode(self):
@@ -109,14 +110,20 @@ class MainWindow(QMainWindow):
         if self.floating_widget is not None:
             self.floating_widget.close()
 
-        self.floating_widget = EditStructuresWidget(self, self.render_widget)
+        self.floating_widget = EditStructuresWidget(self.render_widget, self)
         self.floating_widget.show()
+
+    def delete_selection_callback(self):
+        editor = self.render_widget.editor
+        editor.delete_selection()
+        app().update()
 
     def selection_callback(self):
         if isinstance(self.floating_widget, AddStructuresWidget):
             if self.floating_widget.isVisible():
                 return
 
-        something_selected = app().selected_points or app().selected_structures
+        editor = self.render_widget.editor
+        something_selected = editor.selected_points or editor.selected_structures
         if something_selected:
             self.start_edition_mode()

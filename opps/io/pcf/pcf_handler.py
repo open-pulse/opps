@@ -99,8 +99,6 @@ class PCFHandler:
         end_curve_radius = math.dist(center_coords, end_coords)
         radius = 0.5 * (start_curve_radius + end_curve_radius)
         
-        color = (255, 0, 0)
-
         return Bend(
             start,
             end,
@@ -108,7 +106,6 @@ class PCFHandler:
             curvature = radius,
             start_diameter = start_radius,
             end_diameter = end_radius,
-            color = color,
             auto = False,
         )
 
@@ -123,9 +120,7 @@ class PCFHandler:
         normal = start.coords() - end.coords()
         start_radius = float(r0) 
 
-        color = (0, 0, 255)
-
-        return Flange(position, normal, start_radius, color=color)
+        return Flange(position, normal, start_radius)
 
 
     def create_elbow(self,group):
@@ -159,8 +154,6 @@ class PCFHandler:
         end_curve_radius = math.dist(center_coords, end_coords)
         radius = 0.5 * (start_curve_radius + end_curve_radius)
 
-        color = (0, 255, 0)
-
         return Elbow(
             start,
             end,
@@ -168,6 +161,5 @@ class PCFHandler:
             curvature=radius,
             start_diameter=start_radius,
             end_diameter=end_radius,
-            color=color,
             auto=False,
         )
