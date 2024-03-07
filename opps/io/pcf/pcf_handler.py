@@ -61,9 +61,9 @@ class PCFHandler:
         _, x0, y0, z0, r0 = group[1].split()
         _, x1, y1, z1, r1 = group[2].split()
 
-        start = Point(float(x0), float(y0), float(z0))
-        end = Point(float(x1), float(y1), float(z1))
-        radius = float(r0) 
+        start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
+        radius = float(r0) / 1000
 
         return Pipe(start, end, radius, radius)
 
@@ -73,15 +73,15 @@ class PCFHandler:
         _, x1, y1, z1, d1 = group[2].split()
         _, x2, y2, z2 = group[3].split()
 
-        start = Point(float(x0), float(y0), float(z0))
-        end = Point(float(x1), float(y1), float(z1))
-        corner = Point(float(x2), float(y2), float(z2))
-        start_radius = float(d0) 
-        end_radius = float(d1) 
+        start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
+        corner = Point(float(x2) / 1000, float(y2) / 1000, float(z2) / 1000)
+        start_radius = float(d0) / 1000
+        end_radius = float(d1) / 1000 
 
-        start_coords = np.array([float(x0), float(y0), float(z0)])
-        end_coords = np.array([float(x1), float(y1), float(z1)])
-        corner_coords = np.array([float(x2), float(y2), float(z2)])
+        start_coords = np.array([float(x0) / 1000, float(y0) / 1000, float(z0) / 1000])
+        end_coords = np.array([float(x1) / 1000, float(y1) / 1000, float(z1) / 1000])
+        corner_coords = np.array([float(x2) / 1000, float(y2) / 1000, float(z2) / 1000])
 
         a_vector = start_coords - corner_coords
         b_vector = end_coords - corner_coords
@@ -114,11 +114,11 @@ class PCFHandler:
         _, x0, y0, z0, r0 = group[1].split()
         _, x1, y1, z1, r1 = group[2].split()
 
-        start = Point(float(x0), float(y0), float(z0))
-        end = Point(float(x1), float(y1), float(z1))
+        start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
         position = start
         normal = start.coords() - end.coords()
-        start_radius = float(r0) 
+        start_radius = float(r0) / 1000
 
         return Flange(position, normal, start_radius)
 
@@ -128,15 +128,15 @@ class PCFHandler:
         _, x1, y1, z1, r1 = group[2].split()
         _, x2, y2, z2 = group[3].split()
 
-        start = Point(float(x0), float(y0), float(z0))
-        end = Point(float(x1), float(y1), float(z1))
-        corner = Point(float(x2), float(y2), float(z2))
-        start_radius = float(r0) 
-        end_radius = float(r1) 
+        start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
+        corner = Point(float(x2) / 1000, float(y2) / 1000, float(z2) / 1000)
+        start_radius = float(r0) / 1000
+        end_radius = float(r1) / 1000
 
-        start_coords = np.array([float(x0), float(y0), float(z0)])
-        end_coords = np.array([float(x1), float(y1), float(z1)])
-        corner_coords = np.array([float(x2), float(y2), float(z2)])
+        start_coords = np.array([float(x0) / 1000, float(y0) / 1000, float(z0) / 1000])
+        end_coords = np.array([float(x1) / 1000, float(y1) / 1000, float(z1) / 1000])
+        corner_coords = np.array([float(x2) / 1000, float(y2) / 1000, float(z2) / 1000])
 
         a_vector = start_coords - corner_coords
         b_vector = end_coords - corner_coords
