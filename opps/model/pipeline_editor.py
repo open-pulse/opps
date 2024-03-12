@@ -237,6 +237,9 @@ class PipelineEditor:
     def select_points(self, points, join=False, remove=False):
         points = set(points)
 
+        if not points:
+            return
+
         if join and remove:
             self.selected_points ^= points
         elif join:
@@ -250,6 +253,9 @@ class PipelineEditor:
 
     def select_structures(self, structures, join=False, remove=False):
         structures = set(structures)
+
+        if not structures:
+            return
 
         # clear all the selected flags
         for structure in self.pipeline.structures:
