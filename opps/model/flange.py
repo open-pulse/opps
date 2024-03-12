@@ -17,7 +17,7 @@ class Flange(Structure):
     def get_points(self):
         return [self.position]
 
-    def set_diameter(self, diameter):
+    def set_diameter(self, diameter, *args):
         self.diameter = diameter
 
     def as_vtk(self):

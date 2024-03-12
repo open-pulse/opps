@@ -15,7 +15,8 @@ class PipelineEditor:
 
         self.deltas = np.array([0, 0, 0])
         self.anchor = self.pipeline.points[0]
-        self.default_diameter = 0.2
+        self.default_initial_diameter = 0.2
+        self.default_final_diameter = 0.2
 
         self.selected_points = set()
         self.selected_structures = set()
@@ -25,7 +26,8 @@ class PipelineEditor:
         # not the same as __init__
         self.pipeline.structures.clear()
         self.deltas = np.array([0, 0, 0])
-        self.default_diameter = 0.2
+        self.default_initial_diameter = 0.2
+        self.default_final_diameter = 0.2
 
         self.selected_points.clear()
         self.selected_structures.clear()
@@ -115,8 +117,9 @@ class PipelineEditor:
         else:
             self.set_anchor(self.pipeline.control_points[-1])
 
-    def change_diameter(self, diameter):
-        self.default_diameter = diameter
+    def change_diameter(self, initial_diameter, final_diameter):
+        self.default_initial_diameter = initial_diameter
+        self.default_final_diameter = final_diameter
 
     def get_diameters_at_point(self):
         diameters = []
@@ -137,7 +140,7 @@ class PipelineEditor:
         next_point = Point(*(current_point.coords() + self.deltas))
 
         new_pipe = Pipe(current_point, next_point)
-        new_pipe.set_diameter(self.default_diameter)
+        new_pipe.set_diameter(self.default_initial_diameter, self.default_final_diameter)
 
         self.add_structure(new_pipe)
         self.anchor = next_point
@@ -165,7 +168,7 @@ class PipelineEditor:
                 return new_bend
 
         new_bend = Bend(start_point, end_point, corner_point, curvature_radius)
-        new_bend.set_diameter(self.default_diameter)
+        new_bend.set_diameter(self.default_initial_diameter, self.default_final_diameter)
         self.add_structure(new_bend)
         self.anchor = end_point
         return new_bend
@@ -192,7 +195,7 @@ class PipelineEditor:
                 return new_elbow
 
         new_elbow = Elbow(start_point, end_point, corner_point, curvature_radius)
-        new_elbow.set_diameter(self.default_diameter)
+        new_elbow.set_diameter(self.default_initial_diameter, self.default_final_diameter)
         self.add_structure(new_elbow)
         self.anchor = end_point
         return new_elbow
@@ -211,12 +214,12 @@ class PipelineEditor:
                 continue
             if joint.corner == self.anchor:
                 new_flange = Flange(joint.start, normal=np.array([1, 0, 0]))
-                new_flange.set_diameter(self.default_diameter)
+                new_flange.set_diameter(self.default_initial_diameter)
                 self.add_structure(new_flange)
                 return new_flange
 
         new_flange = Flange(self.anchor, normal=np.array([1, 0, 0]))
-        new_flange.set_diameter(self.default_diameter)
+        new_flange.set_diameter(self.default_initial_diameter)
         self.add_structure(new_flange)
         return new_flange
 

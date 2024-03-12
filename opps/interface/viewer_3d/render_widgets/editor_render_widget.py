@@ -69,10 +69,10 @@ class EditorRenderWidget(CommonRenderWidget):
         self.editor.add_bent_pipe((dx,dy,dz), radius)
         self.update_plot()
 
-    def update_default_diameter(self, d):
-        self.editor.change_diameter(d)
+    def update_default_diameter(self, initial_diameter, final_diameter=0):
+        self.editor.change_diameter(initial_diameter, final_diameter)
         for structure in self.editor.staged_structures:
-            structure.set_diameter(d)
+            structure.set_diameter(initial_diameter, final_diameter)
         self.update_plot()
 
     def add_flange(self):
@@ -156,7 +156,6 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def _pick_actor(self, x, y, actor_to_select):
         selection_picker = CellAreaPicker()
-        selection_picker._cell_picker.SetTolerance(0.0015)
         pickability = dict()
 
         for actor in self.renderer.GetActors():
@@ -180,7 +179,6 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def _pick_property(self, x, y, property_name, desired_actor):
         selection_picker = CellPropertyAreaPicker(property_name, desired_actor)
-        selection_picker._cell_picker.SetTolerance(0.0015)
         pickability = dict()
 
         for actor in self.renderer.GetActors():
