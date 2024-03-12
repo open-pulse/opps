@@ -70,6 +70,9 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update_plot()
 
     def update_default_diameter(self, initial_diameter, final_diameter=0):
+        if final_diameter == 0:
+            final_diameter = initial_diameter
+
         self.editor.change_diameter(initial_diameter, final_diameter)
         for structure in self.editor.staged_structures:
             structure.set_diameter(initial_diameter, final_diameter)
