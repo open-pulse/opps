@@ -9,7 +9,7 @@ from opps.model.structure import Structure
 
 
 class PipelineEditor:
-    def __init__(self, pipeline: Pipeline, origin=(0.0, 0.0, 0.0)):
+    def __init__(self, pipeline: Pipeline):
         self.pipeline = pipeline
         self.pipeline._update_points()
 
@@ -233,7 +233,10 @@ class PipelineEditor:
         if self.anchor not in self.pipeline.control_points:
             return
 
-        self.add_bend(curvature_radius)
+        # do not add a bend if the only avaliable point is the origin
+        if len(self.pipeline.points) > 1:
+            self.add_bend(curvature_radius)
+
         return self.add_pipe(deltas)
 
     # SELECTION
