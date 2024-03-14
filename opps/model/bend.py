@@ -84,7 +84,9 @@ class Bend(Structure):
         self.end.set_coords(*self.corner.coords())
 
     def is_colapsed(self):
-        return self.start == self.end == self.corner
+        a = np.allclose(self.start.coords(), self.corner.coords())
+        b = np.allclose(self.corner.coords(), self.end.coords())
+        return a and b
 
     def set_diameter(self, start_diameter, final_diameter, *args):
         self.start_diameter = start_diameter
