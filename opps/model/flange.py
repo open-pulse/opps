@@ -11,6 +11,7 @@ class Flange(Structure):
     position: Point
     normal: np.ndarray
     diameter: float = 0.1
+    thickness: float = 0 
     color: tuple = (172, 236, 236)
     auto: bool = True
 

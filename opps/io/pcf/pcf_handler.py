@@ -60,17 +60,19 @@ class PCFHandler:
     def create_pipe(self,group):
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
         x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence=1)
+        thickness = self.load_parameter("R2_WALL_THK", group)
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
         radius = float(r0) 
 
-        return Pipe(start, end, radius, radius)
+        return Pipe(start, end, radius, radius, thickness)
 
     def create_bend(self,group):
         x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence= 0)
         x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence= 1)
         x2, y2, z2 = self.load_parameter("CENTRE-POINT", group)
+        thickness = self.load_parameter("R2_WALL_THK", group)
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
@@ -105,6 +107,7 @@ class PCFHandler:
             curvature = radius,
             start_diameter = start_radius,
             end_diameter = end_radius,
+            thickness = thickness
             auto = False,
         )
 
@@ -112,6 +115,7 @@ class PCFHandler:
     def create_flange(self,group):
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence= 0)
         x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence= 1)
+        thickness = self.load_parameter("R2_WALL_THK", group)
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
@@ -119,13 +123,14 @@ class PCFHandler:
         normal = start.coords() - end.coords()
         start_radius = float(r0) 
 
-        return Flange(position, normal, start_radius)
+        return Flange(position, normal, start_radius, thickness)
 
 
     def create_elbow(self,group):
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence= 0)
         x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence= 1)
         x2, y2, z2 = self.load_parameter("CENTRE-POINT", group)
+        thickness = self.load_parameter("R2_WALL_THK", group)
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
@@ -160,6 +165,7 @@ class PCFHandler:
             curvature=radius,
             start_diameter=start_radius,
             end_diameter=end_radius,
+            thickness = thickness,
             auto=False,
         )
 
