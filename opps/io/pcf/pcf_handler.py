@@ -164,19 +164,18 @@ class PCFHandler:
         )
 
     def load_parameter(self, parameter_name: str, group: list[str], occurence: int = 0) -> list[str]:
-        parameters = []
+        
         current_occurrence = 0
     
         for line in group:
-            if parameter_name in line:
-                parts = line.split()
-
-                if parts[0] == parameter_name:
+            if parameter_name not in line:
+                continue
+            parts = line.split()
+            if parts[0] != parameter_name:
+                continue
+            if current_occurrence == occurence:                    
+                return parts[1:]
+                
+            current_occurrence += 1
                     
-                    if current_occurrence == occurence:                    
-                        parameters.extend(parts[1:])
-                        return parameters
-                    
-                    current_occurrence += 1
-                    
-        return (parameters)
+        return []
