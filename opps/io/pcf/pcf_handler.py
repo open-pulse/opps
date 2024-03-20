@@ -107,7 +107,7 @@ class PCFHandler:
             curvature = radius,
             start_diameter = start_radius,
             end_diameter = end_radius,
-            thickness = thickness
+            thickness = thickness,
             auto = False,
         )
 
