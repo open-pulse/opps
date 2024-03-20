@@ -58,8 +58,8 @@ class PCFHandler:
 
 
     def create_pipe(self,group):
-        _, x0, y0, z0, r0 = group[1].split()
-        _, x1, y1, z1, r1 = group[2].split()
+        x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
+        x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence=1)
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
@@ -67,11 +67,10 @@ class PCFHandler:
 
         return Pipe(start, end, radius, radius)
 
-
     def create_bend(self,group):
-        _, x0, y0, z0, d0 = group[1].split()
-        _, x1, y1, z1, d1 = group[2].split()
-        _, x2, y2, z2 = group[3].split()
+        x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence= 0)
+        x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence= 1)
+        x2, y2, z2 = self.load_parameter("CENTRE-POINT", group)
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
@@ -111,8 +110,8 @@ class PCFHandler:
 
 
     def create_flange(self,group):
-        _, x0, y0, z0, r0 = group[1].split()
-        _, x1, y1, z1, r1 = group[2].split()
+        x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence= 0)
+        x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence= 1)
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
@@ -124,9 +123,9 @@ class PCFHandler:
 
 
     def create_elbow(self,group):
-        _, x0, y0, z0, r0 = group[1].split()
-        _, x1, y1, z1, r1 = group[2].split()
-        _, x2, y2, z2 = group[3].split()
+        x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence= 0)
+        x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence= 1)
+        x2, y2, z2 = self.load_parameter("CENTRE-POINT", group)
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
@@ -163,3 +162,21 @@ class PCFHandler:
             end_diameter=end_radius,
             auto=False,
         )
+
+    def load_parameter(self, parameter_name: str, group: list[str], occurence: int = 0) -> list[str]:
+        parameters = []
+        current_occurrence = 0
+    
+        for line in group:
+            if parameter_name in line:
+                parts = line.split()
+
+                if parts[0] == parameter_name:
+                    
+                    if current_occurrence == occurence:                    
+                        parameters.extend(parts[1:])
+                        return parameters
+                    
+                    current_occurrence += 1
+                    
+        return (parameters)
