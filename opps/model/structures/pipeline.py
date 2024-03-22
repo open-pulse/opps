@@ -13,6 +13,7 @@ from .beam import Beam
 
 class Pipeline(Structure):
     def __init__(self):
+        self.origin = Point(0, 0, 0)
         self.structures: list[Structure] = []
         self.points: list[Point] = []
         self.control_points: list[Point] = []
@@ -26,7 +27,7 @@ class Pipeline(Structure):
 
     def add_structure(self, structure):
         self.structures.append(structure)
-    
+
     def remove_structure(self, structure):
         index = self.get_index(structure)
         if index >= 0:
@@ -126,10 +127,9 @@ class Pipeline(Structure):
         for i in sorted(indexes_to_remove, reverse=True):
             control_points.pop(i)
 
-        if not control_points:
-            origin = Point(0,0,0)
-            control_points.append(origin)
-            points.append(origin)
+        if not control_points and not points:
+            control_points.append(self.origin)
+            points.append(self.origin)
 
         self.control_points = list(control_points)
         self.points = list(points)

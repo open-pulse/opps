@@ -12,8 +12,11 @@ from opps.model import Pipeline
 from opps.model.editors.main_editor import MainEditor
 from opps.model import Structure, Point
 from opps.io.cad_file.step_handler import StepHandler
+from opps.io.pcf.pcf_handler import PCFHandler
+from opps.io.pcf.pcf_exporter import PCFExporter
 from opps.interface import main_window
 from opps.model import RectangularBeam
+
 
 class GeometryToolbox(QObject):
     selection_changed = pyqtSignal()
@@ -59,14 +62,17 @@ class GeometryToolbox(QObject):
         self.update()
 
     def _open_pcf(self, path):
-        self.pipeline.load(path)
+        self.pcf_handler = PCFHandler()
+        self.pcf_handler.load(path,self.pipeline)
         self.update()
 
     def _save_cad(self, path):
-        StepHandler().save(path, self.editor)
+        step_handler = StepHandler()
+        step_handler.save(path, self.editor)
 
     def _save_pcf(self, path):
-        print("Saving PCF")
+        self.pcf_exporter = PCFExporter()
+        self.pcf_exporter.save(path,self.pipeline)
 
     def get_point(self, point_index) -> Point:
         return self.pipeline.points[point_index]

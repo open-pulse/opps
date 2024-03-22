@@ -69,7 +69,8 @@ class AddStructuresWidget(QWidget):
         try:
             dx, dy, dz = self.get_displacement()
             auto_bend = self.bend_checkbox.isChecked()
-            self.render_widget.stage_pipe_deltas(dx, dy, dz, auto_bend)
+            radius = 0.3 if auto_bend else 0
+            self.render_widget.stage_pipe_deltas(dx, dy, dz, radius)
         except ValueError:
             pass
 

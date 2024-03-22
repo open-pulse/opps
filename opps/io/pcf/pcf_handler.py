@@ -1,117 +1,161 @@
 from itertools import pairwise
 
 import numpy as np
+import math
 
 from opps.model import Bend, Elbow, Flange, Pipe, Point
 
 
-def group_structures(lines_list):
-    structures_list = []
-    index_list = []
-    for i, line in enumerate(lines_list):
-        if line[0:4] != "    ":
-            index_list.append(i)
-    for a, b in pairwise(index_list):
-        structures_list.append(lines_list[a:b])
+class PCFHandler:
+    def __init__(self):
+        pass
 
-    return structures_list
+    def load(self, path, pipeline):
 
+        with open(path, "r", encoding="iso_8859_1") as c2:
+            lines = c2.readlines()
+            groups = self.group_structures(lines)
+            pipeline.structures = self.create_classes(groups)
 
-def create_classes(groups):
-    objects = []
-    for group in groups:
-        if group[0].strip() == "PIPE":
-            pipe = create_pipe(group)
-            objects.append(pipe)
+    def group_structures(self,lines_list):
+        structures_list = []
+        index_list = []
+        lines_list.append("")
 
-        elif group[0].strip() == "BEND":
-            bend = create_bend(group)
-            objects.append(bend)
+        for i, line in enumerate(lines_list):
+            if line[0:4] != "    ":
+                index_list.append(i)
+        for a, b in pairwise(index_list):
+            structures_list.append(lines_list[a:b])
 
-        elif group[0].strip() == "FLANGE":
-            flange = create_flange(group)
-            objects.append(flange)
-
-        elif group[0].strip() == "ELBOW":
-            elbow = create_elbow(group)
-            objects.append(elbow)
-
-    return objects
+        return structures_list
 
 
-def create_pipe(group):
-    _, x0, y0, z0, r0 = group[1].split()
-    _, x1, y1, z1, r1 = group[2].split()
+    def create_classes(self,groups):
+        objects = []
+        for group in groups:
+            if group[0].strip() == "PIPE":
+                pipe = self.create_pipe(group)
+                objects.append(pipe)
 
-    start = Point(float(x0), float(y0), float(z0))
-    end = Point(float(x1), float(y1), float(z1))
-    radius = float(r0) / 2
+            elif group[0].strip() == "BEND":
+                bend = self.create_bend(group)
+                objects.append(bend)
 
-    return Pipe(start, end, radius, radius)
+            elif group[0].strip() == "FLANGE":
+                flange = self.create_flange(group)
+                objects.append(flange)
 
+            elif group[0].strip() == "ELBOW":
+                elbow = self.create_elbow(group)
+                objects.append(elbow)
 
-def create_bend(group):
-    _, x0, y0, z0, r0 = group[1].split()
-    _, x1, y1, z1, r1 = group[2].split()
-    _, x2, y2, z2 = group[3].split()
-    _, curvature = group[6].split()
-
-    start = Point(float(x0), float(y0), float(z0))
-    end = Point(float(x1), float(y1), float(z1))
-    center = Point(float(x2), float(y2), float(z2))
-    start_radius = float(r0) / 2
-    end_radius = float(r1) / 2
-    curvature = float(curvature)
-
-    color = (255, 0, 0)
-
-    return Bend(
-        start,
-        end,
-        center,
-        curvature=curvature,
-        start_diameter=start_radius,
-        end_diameter=end_radius,
-        color=color,
-        auto=False,
-    )
+        return objects
 
 
-def create_flange(group):
-    _, x0, y0, z0, r0 = group[1].split()
-    _, x1, y1, z1, r1 = group[2].split()
+    def create_pipe(self,group):
+        _, x0, y0, z0, r0 = group[1].split()
+        _, x1, y1, z1, r1 = group[2].split()
 
-    start = Point(float(x0), float(y0), float(z0))
-    end = Point(float(x1), float(y1), float(z1))
-    position = start
-    normal = start.coords() - end.coords()
-    start_radius = float(r0) / 2
+        start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
+        radius = float(r0) / 1000
 
-    color = (0, 0, 255)
-
-    return Flange(position, normal, start_radius, color=color)
+        return Pipe(start, end, radius, radius)
 
 
-def create_elbow(group):
-    _, x0, y0, z0, r0 = group[1].split()
-    _, x1, y1, z1, r1 = group[2].split()
-    _, x2, y2, z2 = group[3].split()
+    def create_bend(self,group):
+        _, x0, y0, z0, d0 = group[1].split()
+        _, x1, y1, z1, d1 = group[2].split()
+        _, x2, y2, z2 = group[3].split()
 
-    start = Point(float(x0), float(y0), float(z0))
-    end = Point(float(x1), float(y1), float(z1))
-    center = Point(float(x2), float(y2), float(z2))
-    start_radius = float(r0) / 2
-    end_radius = float(r1) / 2
+        start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
+        corner = Point(float(x2) / 1000, float(y2) / 1000, float(z2) / 1000)
+        start_radius = float(d0) / 1000
+        end_radius = float(d1) / 1000 
 
-    color = (0, 255, 0)
+        start_coords = np.array([float(x0) / 1000, float(y0) / 1000, float(z0) / 1000])
+        end_coords = np.array([float(x1) / 1000, float(y1) / 1000, float(z1) / 1000])
+        corner_coords = np.array([float(x2) / 1000, float(y2) / 1000, float(z2) / 1000])
 
-    return Elbow(
-        start,
-        end,
-        center,
-        curvature=1.5 * start_radius,
-        start_diameter=start_radius,
-        end_diameter=end_radius,
-        color=color,
-        auto=False,
-    )
+        a_vector = start_coords - corner_coords
+        b_vector = end_coords - corner_coords
+        c_vector = a_vector + b_vector
+        c_vector_normalized = c_vector / np.linalg.norm(c_vector)
+
+        norm_a_vector = np.linalg.norm(a_vector)
+        norm_b_vector = np.linalg.norm(b_vector)
+
+        corner_distance = norm_a_vector / np.sqrt(0.5 * ((np.dot(a_vector, b_vector) / (norm_a_vector * norm_b_vector)) + 1))
+
+        center_coords = corner_coords + c_vector_normalized * corner_distance
+
+        start_curve_radius = math.dist(center_coords, start_coords)
+        end_curve_radius = math.dist(center_coords, end_coords)
+        radius = 0.5 * (start_curve_radius + end_curve_radius)
+        
+        return Bend(
+            start,
+            end,
+            corner,  
+            curvature = radius,
+            start_diameter = start_radius,
+            end_diameter = end_radius,
+            auto = False,
+        )
+
+
+    def create_flange(self,group):
+        _, x0, y0, z0, r0 = group[1].split()
+        _, x1, y1, z1, r1 = group[2].split()
+
+        start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
+        position = start
+        normal = start.coords() - end.coords()
+        start_radius = float(r0) / 1000
+
+        return Flange(position, normal, start_radius)
+
+
+    def create_elbow(self,group):
+        _, x0, y0, z0, r0 = group[1].split()
+        _, x1, y1, z1, r1 = group[2].split()
+        _, x2, y2, z2 = group[3].split()
+
+        start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
+        corner = Point(float(x2) / 1000, float(y2) / 1000, float(z2) / 1000)
+        start_radius = float(r0) / 1000
+        end_radius = float(r1) / 1000
+
+        start_coords = np.array([float(x0) / 1000, float(y0) / 1000, float(z0) / 1000])
+        end_coords = np.array([float(x1) / 1000, float(y1) / 1000, float(z1) / 1000])
+        corner_coords = np.array([float(x2) / 1000, float(y2) / 1000, float(z2) / 1000])
+
+        a_vector = start_coords - corner_coords
+        b_vector = end_coords - corner_coords
+        c_vector = a_vector + b_vector
+        c_vector_normalized = c_vector / np.linalg.norm(c_vector)
+
+        norm_a_vector = np.linalg.norm(a_vector)
+        norm_b_vector = np.linalg.norm(b_vector)
+
+        corner_distance = norm_a_vector / np.sqrt(0.5 * ((np.dot(a_vector, b_vector) / (norm_a_vector * norm_b_vector)) + 1))
+
+        center_coords = corner_coords + c_vector_normalized * corner_distance
+
+        start_curve_radius = math.dist(center_coords, start_coords)
+        end_curve_radius = math.dist(center_coords, end_coords)
+        radius = 0.5 * (start_curve_radius + end_curve_radius)
+
+        return Elbow(
+            start,
+            end,
+            corner,
+            curvature=radius,
+            start_diameter=start_radius,
+            end_diameter=end_radius,
+            auto=False,
+        )

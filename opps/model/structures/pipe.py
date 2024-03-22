@@ -13,17 +13,9 @@ class Pipe(Structure):
     start_diameter: float = 0.1
     end_diameter: float = 0.1
 
-    def set_diameter(self, diameter, point=None):
-        if point is None:
-            self.start_diameter = diameter
-            self.end_diameter = diameter
-            return
-
-        if point == self.start:
-            self.start_diameter = diameter
-
-        if point == self.end:
-            self.end_diameter = diameter
+    def set_diameter(self, start_diameter, final_diameter, *args):
+        self.start_diameter = start_diameter
+        self.end_diameter = final_diameter
 
     def get_diameters(self):
         return [self.start_diameter, self.end_diameter]

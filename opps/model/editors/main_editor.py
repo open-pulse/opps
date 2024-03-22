@@ -14,11 +14,23 @@ class MainEditor:
 
         self.deltas = np.array([0, 0, 0])
         self.anchor = self.pipeline.points[0]
-        self.default_diameter = 0.2
+        self.default_initial_diameter = 0.2
+        self.default_final_diameter = 0.2
 
-        self.selected_points = []
-        self.selected_structures = []
-        self.staged_structures = []
+        self.selected_points = set()
+        self.selected_structures = set()
+        self.staged_structures = list()
+
+    def reset(self):
+        # not the same as __init__
+        self.pipeline.structures.clear()
+        self.deltas = np.array([0, 0, 0])
+        self.default_initial_diameter = 0.2
+        self.default_final_diameter = 0.2
+
+        self.selected_points.clear()
+        self.selected_structures.clear()
+        self.staged_structures.clear()
 
     def set_anchor(self, point):
         self.anchor = point
@@ -104,8 +116,9 @@ class MainEditor:
         else:
             self.set_anchor(self.pipeline.control_points[-1])
 
-    def change_diameter(self, diameter):
-        self.default_diameter = diameter
+    def change_diameter(self, initial_diameter, final_diameter):
+        self.default_initial_diameter = initial_diameter
+        self.default_final_diameter = final_diameter
 
     def get_diameters_at_point(self):
         diameters = []
@@ -126,7 +139,7 @@ class MainEditor:
         next_point = Point(*(current_point.coords() + self.deltas))
 
         new_pipe = Pipe(current_point, next_point)
-        new_pipe.set_diameter(self.default_diameter)
+        new_pipe.set_diameter(self.default_initial_diameter, self.default_final_diameter)
 
         self.add_structure(new_pipe)
         self.anchor = next_point
@@ -169,7 +182,7 @@ class MainEditor:
                 return new_bend
 
         new_bend = Bend(start_point, end_point, corner_point, curvature_radius)
-        new_bend.set_diameter(self.default_diameter)
+        new_bend.set_diameter(self.default_initial_diameter, self.default_final_diameter)
         self.add_structure(new_bend)
         self.anchor = end_point
         return new_bend
@@ -196,7 +209,7 @@ class MainEditor:
                 return new_elbow
 
         new_elbow = Elbow(start_point, end_point, corner_point, curvature_radius)
-        new_elbow.set_diameter(self.default_diameter)
+        new_elbow.set_diameter(self.default_initial_diameter, self.default_final_diameter)
         self.add_structure(new_elbow)
         self.anchor = end_point
         return new_elbow
@@ -215,12 +228,12 @@ class MainEditor:
                 continue
             if joint.corner == self.anchor:
                 new_flange = Flange(joint.start, normal=np.array([1, 0, 0]))
-                new_flange.set_diameter(self.default_diameter)
+                new_flange.set_diameter(self.default_initial_diameter)
                 self.add_structure(new_flange)
                 return new_flange
 
         new_flange = Flange(self.anchor, normal=np.array([1, 0, 0]))
-        new_flange.set_diameter(self.default_diameter)
+        new_flange.set_diameter(self.default_initial_diameter)
         self.add_structure(new_flange)
         return new_flange
 
@@ -234,12 +247,18 @@ class MainEditor:
         if self.anchor not in self.pipeline.control_points:
             return
 
-        self.add_bend(curvature_radius)
+        # do not add a bend if the only avaliable point is the origin
+        if len(self.pipeline.points) > 1:
+            self.add_bend(curvature_radius)
+
         return self.add_pipe(deltas)
 
     # SELECTION
     def select_points(self, points, join=False, remove=False):
         points = set(points)
+
+        if not points:
+            return
 
         if join and remove:
             self.selected_points ^= points
@@ -248,11 +267,15 @@ class MainEditor:
         elif remove:
             self.selected_points -= points
         else:
-            self.clear_selection()
+            if len(points) == 1:
+                self.clear_selection()
             self.selected_points = points
 
     def select_structures(self, structures, join=False, remove=False):
         structures = set(structures)
+
+        if not structures:
+            return
 
         # clear all the selected flags
         for structure in self.pipeline.structures:
@@ -266,7 +289,8 @@ class MainEditor:
         elif remove:
             self.selected_structures -= structures
         else:
-            self.clear_selection()
+            if len(structures) == 1:
+                self.clear_selection()
             self.selected_structures = structures
 
         # apply the selection flag again for selected structures
@@ -278,6 +302,15 @@ class MainEditor:
             structure.selected = False
         self.selected_points.clear()
         self.selected_structures.clear()
+
+    def delete_selection(self):
+        for structure in self.selected_structures:
+            self.remove_structure(structure, rejoin=True)
+
+        for point in self.selected_points:
+            self.remove_point(point, rejoin=False)
+        
+        self.clear_selection()
 
     def update(self):
         self.pipeline._update_curvatures()

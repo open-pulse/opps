@@ -33,6 +33,7 @@ class PipeActor(vtk.vtkActor):
         tube_filter.SetInputData(polydata)
         tube_filter.SetNumberOfSides(30)
         tube_filter.SetVaryRadiusToVaryRadiusByAbsoluteScalar()
+        tube_filter.CappingOn()
         tube_filter.Update()
 
         data = tube_filter.GetOutput()
