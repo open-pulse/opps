@@ -15,6 +15,9 @@ class Structure:
     def get_points(self):
         raise NotImplementedError()
 
+    def replace_point(self, old, new):
+        raise NotImplementedError()
+
     def as_vtk(self):
         raise NotImplementedError("vtk actor creation not implemented.")
 

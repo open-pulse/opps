@@ -73,7 +73,7 @@ class AddStructuresWidget(QWidget):
         pipeline = self.render_widget.pipeline
 
         pipeline.dismiss()
-        pipeline.add_pipe((dx, dy, dz))
+        pipeline.add_bent_pipe((dx, dy, dz), 0.3)
         self.render_widget.update_plot()
 
     def add_flange_callback(self):

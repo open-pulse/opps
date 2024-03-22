@@ -10,25 +10,27 @@ from .structures.point import Point
 from .structures.structure import Structure
 from .structures.beam import Beam
 
+from opps.model.editors.main_editor import MainEditor
 
 class Pipeline(Structure):
     def __init__(self):
-        self.origin = Point(0, 0, 0)
-        self.structures: list[Structure] = []
-        self.points: list[Point] = []
-        self.control_points: list[Point] = []
+        self.points: list[Point] = list()
+        self.structures: list[Structure] = list()
+
+        self.main_editor = MainEditor(self)
 
     # Essential functions
     def commit(self):
-        pass
+        print("commit")
 
     def dismiss(self):
-        pass
+        print("dismiss")
 
     def add_point(self, point: Point):
         self.points.append(point)
 
     def add_structure(self, structure: Structure):
+        structure.staged = True
         self.structures.append(structure)
 
     def remove_point(self, point: Point):
@@ -38,6 +40,18 @@ class Pipeline(Structure):
     def remove_structure(self, structure: Structure):
         for i in self.get_structure_indexes(structure):
             self.structures.pop(i)
+    
+    def detatch_point(self, point: Point):
+        for structure in self.structures:
+            if point in structure.get_points():
+                new_point = Point(*point.coords())
+                structure.replace_point(point, new_point)
+
+    def attatch_point(self, point: Point):
+        for structure in self.structures:
+            for p in structure.get_points():
+                if np.allclose(p.coords(), point.coords()):
+                    structure.replace_point(p, point)
 
     # Essential functions plural
     def add_points(self, points: list[Point]):
@@ -74,10 +88,13 @@ class Pipeline(Structure):
 
     # Main Editor
     def add_pipe(self, deltas):
-        pass
+        self.main_editor.add_pipe(deltas)
 
     def add_bend(self, curvature_radius):
-        pass
+        self.main_editor.add_bend(curvature_radius)
+    
+    def add_bent_pipe(self, deltas, curvature_radius):
+        self.main_editor.add_bent_pipe(deltas, curvature_radius)
 
     # Common
     def as_vtk(self):

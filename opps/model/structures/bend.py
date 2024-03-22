@@ -41,6 +41,13 @@ class Bend(Structure):
         c_vector = normalize(a_vector + b_vector)
         return Point(*(self.corner.coords() + c_vector * center_distance))
 
+    def normalize_values_vector(self, vec_a: np.ndarray, vec_b: np.ndarray, curvature_radius: float):
+        sin_angle = np.linalg.norm(vec_a - vec_b) / 2
+        angle = np.arcsin(sin_angle)
+        corner_distance = np.cos(angle) * curvature_radius / np.sin(angle)
+        self.start.set_coords(*(self.corner.coords() + corner_distance * vec_a))
+        self.end.set_coords(*(self.corner.coords() + corner_distance * vec_b))
+
     def normalize_values(self, start: Point, end: Point):
         if (start.coords() == self.corner.coords()).all():
             self.colapse()
