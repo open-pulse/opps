@@ -70,11 +70,9 @@ class AddStructuresWidget(QWidget):
         
         auto_bend = self.bend_checkbox.isChecked()
         radius = 0.3 if auto_bend else 0
-        editor = self.render_widget.editor
-        pipeline = self.render_widget.editor.pipeline
+        pipeline = self.render_widget.pipeline
 
         pipeline.dismiss()
-        editor.clear_selection()
         pipeline.add_pipe((dx, dy, dz))
         self.render_widget.update_plot()
 
@@ -92,8 +90,8 @@ class AddStructuresWidget(QWidget):
         dx, dy, dz = self.get_displacement()
         if (dx, dy, dz) == (0, 0, 0):
             return
-        editor = self.render_widget.editor
-        editor.commit()
+        pipeline = self.render_widget.pipeline
+        pipeline.commit()
         self.coords_modified_callback()
 
     def configure_window(self):
@@ -110,7 +108,7 @@ class AddStructuresWidget(QWidget):
         )
 
     def closeEvent(self, a0) -> None:
-        self.render_widget.editor.pipeline.dismiss()
+        self.render_widget.pipeline.dismiss()
         return super().closeEvent(a0)
 
     def selection_callback(self):

@@ -16,7 +16,7 @@ class EditorRenderWidget(CommonRenderWidget):
         super().__init__(parent)
         self.left_clicked.connect(self.click_callback)
         self.left_released.connect(self.selection_callback)
-        self.editor = editor
+        self.pipeline = editor
 
         self.interactor_style = BoxSelectionInteractorStyle()
         self.render_interactor.SetInteractorStyle(self.interactor_style)
@@ -34,12 +34,10 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_plot(self, reset_camera=True):
         self.remove_actors()
 
-        pipeline = self.editor.pipeline
-
-        self.pipeline_actor = pipeline.as_vtk()
-        self.control_points_actor = ControlPointsActor(pipeline.control_points)
-        self.passive_points_actor = PassivePointsActor(pipeline.points)
-        self.selected_points_actor = SelectedPointsActor(self.editor.selected_points)
+        self.pipeline_actor = self.pipeline.as_vtk()
+        self.control_points_actor = ControlPointsActor(self.pipeline.points)
+        self.passive_points_actor = PassivePointsActor(self.pipeline.points)
+        self.selected_points_actor = SelectedPointsActor([])
 
         # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
@@ -66,6 +64,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.mouse_click = x, y
 
     def selection_callback(self, x, y):
+        return 
         modifiers = QApplication.keyboardModifiers()
         ctrl_pressed = bool(modifiers & Qt.ControlModifier)
         shift_pressed = bool(modifiers & Qt.ShiftModifier)
@@ -79,42 +78,39 @@ class EditorRenderWidget(CommonRenderWidget):
             picked_structures.clear()
 
         if picked_points:
-            self.editor.select_points(
+            self.pipeline.select_points(
                 picked_points,
                 join=ctrl_pressed | shift_pressed,
                 remove=alt_pressed
             )
 
         if picked_structures is not None:
-            self.editor.select_structures(
+            self.pipeline.select_structures(
                 picked_structures,
                 join=ctrl_pressed | shift_pressed,
                 remove=alt_pressed
             )
 
         if (not picked_points) and (not picked_structures):
-            self.editor.clear_selection() 
+            self.pipeline.clear_selection() 
 
         self.update_selection()
 
     def _pick_points(self, x, y):
-        pipeline = self.editor.pipeline
-
         picked = self._pick_actor(x, y, self.control_points_actor)
         indexes = picked.get(self.control_points_actor, [])
-        control_points = [pipeline.control_points[i] for i in  indexes]
+        control_points = [self.pipeline.control_points[i] for i in  indexes]
 
         picked = self._pick_actor(x, y, self.passive_points_actor)
         indexes = picked.get(self.passive_points_actor, [])
-        passive_points = [pipeline.points[i] for i in  indexes]
+        passive_points = [self.pipeline.points[i] for i in  indexes]
         
         combined_points = set(control_points + passive_points)
         return list(combined_points)
 
     def _pick_structures(self, x, y):
-        pipeline = self.editor.pipeline
         indexes = self._pick_property(x, y, "cell_identifier", self.pipeline_actor)
-        return [pipeline.structures[i] for i in indexes]
+        return [self.pipeline.structures[i] for i in indexes]
 
     def _pick_actor(self, x, y, actor_to_select):
         selection_picker = CellAreaPicker()
@@ -164,9 +160,9 @@ class EditorRenderWidget(CommonRenderWidget):
 
     def update_selection(self):
         # Only dismiss structure creation if something was actually selected
-        something_selected = self.editor.selected_points or self.editor.selected_structures
+        something_selected = self.pipeline.selected_points or self.pipeline.selected_structures
         if something_selected:
-            self.editor.dismiss()
+            self.pipeline.dismiss()
 
         self.selection_changed.emit()
         self.update_plot(reset_camera=False)

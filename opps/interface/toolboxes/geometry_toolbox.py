@@ -1,6 +1,5 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from opps.model import Pipeline
-from opps.model.editors.pipeline_editor import PipelineEditor
 
 from pathlib import Path
 from typing import Generator
@@ -9,7 +8,6 @@ from PyQt5.QtCore import pyqtSignal
 
 from opps.io.cad_file.cad_handler import *
 from opps.model import Pipeline
-from opps.model.editors.pipeline_editor import PipelineEditor
 from opps.model import Structure, Point
 from opps.io.cad_file.step_handler import StepHandler
 from opps.io.pcf.pcf_handler import PCFHandler
@@ -30,7 +28,6 @@ class GeometryToolbox(QObject):
         self.selected_structures = set()
 
         self.pipeline = Pipeline()
-        self.editor = PipelineEditor(self.pipeline)
 
     def new(self):
         self.pipeline.structures.clear()

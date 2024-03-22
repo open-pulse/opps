@@ -80,8 +80,8 @@ class MainWindow(QMainWindow):
         self.menu_bar.addMenu(ModeMenu(self))
 
     def _create_central_widget(self):
-        editor = app().geometry_toolbox.editor
-        self.render_widget = EditorRenderWidget(editor)
+        pipeline = app().geometry_toolbox.pipeline
+        self.render_widget = EditorRenderWidget(pipeline)
         self.render_widget.set_theme("dark")
         self.setCentralWidget(self.render_widget)
 
