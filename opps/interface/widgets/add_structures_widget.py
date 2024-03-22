@@ -16,9 +16,6 @@ from PyQt5.QtWidgets import (
 
 from opps import UI_DIR, app
 
-from .cross_section_widget import CrossSectionWidget
-
-
 class AddStructuresWidget(QWidget):
     # index_changed = pyqtSignal(int)
     # modified = pyqtSignal(float, float, float)
@@ -85,12 +82,6 @@ class AddStructuresWidget(QWidget):
 
     def section_callback(self):
         return
-        cross_section = CrossSectionWidget.get_cross_section()
-        if cross_section is None:
-            return
-
-        diameter = cross_section.diameter
-        self.render_widget.update_default_diameter(diameter)
 
     def auto_bend_callback(self, checked):
         editor = self.render_widget.editor

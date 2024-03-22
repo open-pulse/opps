@@ -2,13 +2,13 @@ from itertools import pairwise
 
 import numpy as np
 
-from .bend import Bend
-from .elbow import Elbow
-from .flange import Flange
-from .pipe import Pipe
-from .point import Point
-from .structure import Structure
-from .beam import Beam
+from .structures.bend import Bend
+from .structures.elbow import Elbow
+from .structures.flange import Flange
+from .structures.pipe import Pipe
+from .structures.point import Point
+from .structures.structure import Structure
+from .structures.beam import Beam
 
 
 class Pipeline(Structure):

@@ -14,7 +14,6 @@ from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
     EditorRenderWidget,
 )
 from opps.interface.widgets import AddStructuresWidget, EditStructuresWidget
-from opps.interface.widgets.cross_section_widget import CrossSectionWidget
 from opps.model import Pipe
 
 class MainWindow(QMainWindow):
