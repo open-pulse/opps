@@ -1,2 +1,2 @@
 from .structures import *
-from .editors.main_editor import MainEditor
+from .editors.pipeline_editor import PipelineEditor

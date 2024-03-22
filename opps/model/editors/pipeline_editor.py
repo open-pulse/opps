@@ -7,7 +7,7 @@ import numpy as np
 from opps.model import Structure, Bend, Elbow, Flange, Pipe, Pipeline, Point, IBeam, CBeam, TBeam, RectangularBeam, CircularBeam
 
 
-class MainEditor:
+class PipelineEditor:
     def __init__(self, pipeline: Pipeline, origin=(0.0, 0.0, 0.0)):
         self.pipeline = pipeline
         self.pipeline._update_points()

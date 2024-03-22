@@ -2,7 +2,7 @@ import gmsh
 import math
 import numpy as np
 from opps.model import Pipe, Bend, Point
-from opps.model.editors.main_editor import MainEditor
+from opps.model.editors.pipeline_editor import PipelineEditor
 
 
 class StepHandler:
