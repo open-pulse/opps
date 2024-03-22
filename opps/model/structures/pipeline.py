@@ -18,35 +18,69 @@ class Pipeline(Structure):
         self.points: list[Point] = []
         self.control_points: list[Point] = []
 
-    def load(self, path):
-        from opps.io.pcf.pcf_handler import group_structures, create_classes
-        with open(path, "r", encoding="iso_8859_1") as c2:
-            lines = c2.readlines()
-        groups = group_structures(lines)
-        self.structures = create_classes(groups)
+    # Essential functions
+    def add_point(self, point: Point):
+        self.points.append(point)
 
-    def add_structure(self, structure):
+    def add_structure(self, structure: Structure):
         self.structures.append(structure)
 
-    def remove_structure(self, structure):
-        index = self.get_index(structure)
-        if index >= 0:
-            return self.structures.pop(index)
+    def remove_point(self, point: Point):
+        for i in self.get_point_indexes(point):
+            self.points.pop(i)
 
-    def get_index(self, structure):
-        index = -1
+    def remove_structure(self, structure: Structure):
+        for i in self.get_structure_indexes(structure):
+            self.structures.pop(i)
+
+    # Essential functions plural
+    def add_points(self, points: list[Point]):
+        for point in points:
+            self.add_point(point)
+
+    def add_structures(self, structures: list[Structure]):
+        for structure in structures:
+            self.add_structure(structure)
+
+    def remove_points(self, points: list[Point]):
+        for point in points:
+            self.remove_point(point)
+
+    def remove_structures(self, structures: list[Structure]):
+        for structure in structures:
+            self.remove_structure(structure)
+
+    def get_point_indexes(self, point: Point):
+        indexes = []
+        for i, s in enumerate(self.points):
+            if id(s) == id(point):
+                indexes.append(i)
+        indexes.reverse()
+        return indexes
+
+    def get_structure_indexes(self, structure: Structure):
+        indexes = []
         for i, s in enumerate(self.structures):
             if id(s) == id(structure):
-                index = i
-                break
-        return index
-
+                indexes.append(i)
+        indexes.reverse()
+        return indexes
+    
+    # Utils
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipeline_actor import (
             PipelineActor,
         )
 
         return PipelineActor(self)
+
+    def __hash__(self) -> int:
+        return id(self)
+
+
+
+
+
 
     def _update_flanges(self):
         for flange in self.structures:
@@ -148,5 +182,3 @@ class Pipeline(Structure):
 
         return oposite_points
 
-    def __hash__(self) -> int:
-        return id(self)
