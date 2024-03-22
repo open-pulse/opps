@@ -19,6 +19,12 @@ class Pipeline(Structure):
         self.control_points: list[Point] = []
 
     # Essential functions
+    def commit(self):
+        pass
+
+    def dismiss(self):
+        pass
+
     def add_point(self, point: Point):
         self.points.append(point)
 
@@ -65,8 +71,15 @@ class Pipeline(Structure):
                 indexes.append(i)
         indexes.reverse()
         return indexes
-    
-    # Utils
+
+    # Main Editor
+    def add_pipe(self, deltas):
+        pass
+
+    def add_bend(self, curvature_radius):
+        pass
+
+    # Common
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipeline_actor import (
             PipelineActor,
@@ -83,6 +96,7 @@ class Pipeline(Structure):
 
 
     def _update_flanges(self):
+        return
         for flange in self.structures:
             if not isinstance(flange, Flange):
                 continue
@@ -98,6 +112,7 @@ class Pipeline(Structure):
             flange.normal = flange.position.coords() - oposite_a.coords()
 
     def _update_curvatures(self):
+        return
         # First colapse all joint that can be colapsed.
         # This prevents cases were a normalization of a
         # joint disturbs the normalization of others.
@@ -130,6 +145,7 @@ class Pipeline(Structure):
             joint.normalize_values(oposite_a, oposite_b)
 
     def _update_points(self):
+        return
         points = list()
         control_points = list()
         for structure in self.structures:

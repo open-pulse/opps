@@ -87,6 +87,7 @@ class GeometryToolbox(QObject):
         return self.selected_structures
 
     def delete_selection(self):
+        return 
         for structure in self.get_selected_structures():
             self.editor.remove_structure(structure, rejoin=True)
 
@@ -143,4 +144,5 @@ class GeometryToolbox(QObject):
     #     self.selection_changed.emit()
 
     def update(self):
+        return
         self.editor.update()

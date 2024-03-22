@@ -113,11 +113,13 @@ class MainWindow(QMainWindow):
         self.floating_widget.show()
 
     def delete_selection_callback(self):
+        return
         editor = self.render_widget.editor
         editor.delete_selection()
         app().update()
 
     def selection_callback(self):
+        return
         if isinstance(self.floating_widget, AddStructuresWidget):
             if self.floating_widget.isVisible():
                 return

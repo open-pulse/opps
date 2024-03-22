@@ -13,7 +13,7 @@ class PipelineEditor:
         self.pipeline._update_points()
 
         self.deltas = np.array([0, 0, 0])
-        self.anchor = self.pipeline.points[0]
+        self.anchor = Point(0, 0, 0)
         self.default_initial_diameter = 0.2
         self.default_final_diameter = 0.2
 
@@ -313,9 +313,10 @@ class PipelineEditor:
         self.clear_selection()
 
     def update(self):
-        self.pipeline._update_curvatures()
-        self.pipeline._update_flanges()
-        self.pipeline._update_points()
+        pass
+        # self.pipeline._update_curvatures()
+        # self.pipeline._update_flanges()
+        # self.pipeline._update_points()
 
     def _structure_params(self, structure):
         """

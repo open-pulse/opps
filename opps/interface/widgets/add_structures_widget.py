@@ -71,10 +71,11 @@ class AddStructuresWidget(QWidget):
         auto_bend = self.bend_checkbox.isChecked()
         radius = 0.3 if auto_bend else 0
         editor = self.render_widget.editor
+        pipeline = self.render_widget.editor.pipeline
 
-        editor.dismiss()
+        pipeline.dismiss()
         editor.clear_selection()
-        editor.add_pipe((dx, dy, dz))
+        pipeline.add_pipe((dx, dy, dz))
         self.render_widget.update_plot()
 
     def add_flange_callback(self):
@@ -109,7 +110,7 @@ class AddStructuresWidget(QWidget):
         )
 
     def closeEvent(self, a0) -> None:
-        self.render_widget.editor.dismiss()
+        self.render_widget.editor.pipeline.dismiss()
         return super().closeEvent(a0)
 
     def selection_callback(self):
