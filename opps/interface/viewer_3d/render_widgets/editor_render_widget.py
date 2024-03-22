@@ -1,9 +1,4 @@
-from dataclasses import dataclass
-from enum import Enum
-from itertools import chain
-
 import numpy as np
-import vtk
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication
 
@@ -31,7 +26,6 @@ class EditorRenderWidget(CommonRenderWidget):
         self.control_points_actor = None
         self.passive_points_actor = None
         self.selected_points_actor = None
-        self.coords = np.array([0, 0, 0])
 
         self.renderer.GetActiveCamera().SetParallelProjection(True)
         self.create_axes()
@@ -56,41 +50,6 @@ class EditorRenderWidget(CommonRenderWidget):
         if reset_camera:
             self.renderer.ResetCamera()
         self.update()
-
-    def change_anchor(self, point):
-        self.editor.dismiss()
-        self.editor.set_anchor(point)
-        self.coords = point.coords()
-        self.update_plot(reset_camera=False)
-
-    def stage_pipe_deltas(self, dx, dy, dz, radius=0.3):
-        self.editor.dismiss()
-        self.editor.clear_selection()
-        self.editor.add_bent_pipe((dx,dy,dz), radius)
-        self.update_plot()
-
-    def update_default_diameter(self, initial_diameter, final_diameter=0):
-        if final_diameter == 0:
-            final_diameter = initial_diameter
-
-        self.editor.change_diameter(initial_diameter, final_diameter)
-        for structure in self.editor.staged_structures:
-            structure.set_diameter(initial_diameter, final_diameter)
-        self.update_plot()
-
-    def add_flange(self):
-        self.editor.dismiss()
-        self.editor.add_flange()
-        self.editor.add_bent_pipe()
-        self.update()
-
-    def commit_structure(self):
-        self.coords = self.editor.anchor.coords()
-        self.editor.commit()
-        self.update_plot()
-
-    def unstage_structure(self):
-        self.update_plot()
 
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
@@ -204,12 +163,6 @@ class EditorRenderWidget(CommonRenderWidget):
         return selection_picker.get_picked()
 
     def update_selection(self):
-        if self.editor.selected_points:
-            # the last point selected is the one that will
-            # be the "anchor" to continue the pipe creation
-            *_, point = self.editor.selected_points
-            self.change_anchor(point)
-
         # Only dismiss structure creation if something was actually selected
         something_selected = self.editor.selected_points or self.editor.selected_structures
         if something_selected:

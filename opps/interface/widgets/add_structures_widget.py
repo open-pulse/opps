@@ -37,15 +37,15 @@ class AddStructuresWidget(QWidget):
         self._create_connections()
 
     def _define_qt_variables(self):
-        self.dx_box: QLineEdit = self.findChild(QLineEdit, "dx_box")
-        self.dy_box: QLineEdit = self.findChild(QLineEdit, "dy_box")
-        self.dz_box: QLineEdit = self.findChild(QLineEdit, "dz_box")
+        self.dx_box: QLineEdit
+        self.dy_box: QLineEdit
+        self.dz_box: QLineEdit
 
-        self.bend_checkbox: QCheckBox = self.findChild(QCheckBox, "bend_checkbox")
+        self.bend_checkbox: QCheckBox
 
-        self.section_button: QPushButton = self.findChild(QPushButton, "section_button")
-        self.material_button: QPushButton = self.findChild(QPushButton, "material_button")
-        self.apply_button: QPushButton = self.findChild(QPushButton, "apply_button")
+        self.section_button: QPushButton
+        self.material_button: QPushButton
+        self.apply_button: QPushButton
 
     def _create_connections(self):
         self.dx_box.textEdited.connect(self.coords_modified_callback)
@@ -68,17 +68,23 @@ class AddStructuresWidget(QWidget):
     def coords_modified_callback(self):
         try:
             dx, dy, dz = self.get_displacement()
-            auto_bend = self.bend_checkbox.isChecked()
-            radius = 0.3 if auto_bend else 0
-            self.render_widget.stage_pipe_deltas(dx, dy, dz, radius)
         except ValueError:
-            pass
+            return
+        
+        auto_bend = self.bend_checkbox.isChecked()
+        radius = 0.3 if auto_bend else 0
+        editor = self.render_widget.editor
+
+        editor.dismiss()
+        editor.clear_selection()
+        editor.add_pipe((dx, dy, dz))
+        self.render_widget.update_plot()
 
     def add_flange_callback(self):
-        self.render_widget.add_flange()
-        self.coords_modified_callback()
+        pass
 
     def section_callback(self):
+        return
         cross_section = CrossSectionWidget.get_cross_section()
         if cross_section is None:
             return
@@ -87,14 +93,15 @@ class AddStructuresWidget(QWidget):
         self.render_widget.update_default_diameter(diameter)
 
     def auto_bend_callback(self, checked):
-        self.render_widget.unstage_structure()
-        self.coords_modified_callback()
+        editor = self.render_widget.editor
+        editor.dismiss()
 
     def apply_callback(self):
         dx, dy, dz = self.get_displacement()
         if (dx, dy, dz) == (0, 0, 0):
             return
-        self.render_widget.commit_structure()
+        editor = self.render_widget.editor
+        editor.commit()
         self.coords_modified_callback()
 
     def configure_window(self):
@@ -113,12 +120,6 @@ class AddStructuresWidget(QWidget):
     def closeEvent(self, a0) -> None:
         self.render_widget.editor.dismiss()
         return super().closeEvent(a0)
-
-    def separator(self):
-        s = QFrame()
-        s.setFrameShape(QFrame.Shape.HLine)
-        s.setFrameShadow(QFrame.Shadow.Sunken)
-        return s
 
     def selection_callback(self):
         points = list(app().geometry_toolbox.get_selected_points())
