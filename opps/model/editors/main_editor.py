@@ -9,66 +9,50 @@ if TYPE_CHECKING:
 class MainEditor:
     def __init__(self, pipeline: 'Pipeline') -> None:
         self.pipeline = pipeline
-        self.next_selection = list()
-
-        self.current_point = Point(0,0,0)
+        self.next_border = list()
 
     def add_pipe(self, deltas):
         pipes = list()        
         for point in self.pipeline.selected_points:
             next_point = Point(*(point.coords() + deltas))
-            self.next_selection.append(next_point)
+            self.next_border.append(next_point)
 
             pipe = Pipe(point, next_point)
             pipes.append(pipe)
             self.pipeline.add_structure(pipe)
-        return pipe
+        return pipes
 
-    def add_bend(self, curvature_radius, allow_dangling=True) -> Bend | None:
-        connected_points = self.pipeline._connected_points(self.current_point)
-        if len(connected_points) <= 1:
-            if allow_dangling:
-                return self.add_dangling_bend(curvature_radius)
-            else:
-                return None
+    def add_bend(self, curvature_radius, allow_dangling=False) -> Bend | None:
+        if not self.pipeline.selected_points:
+            return
+        
+        *_, point = self.pipeline.selected_points
 
-        vec_a = self.current_point - connected_points[0]
-        vec_b = self.current_point - connected_points[1]
-        vec_a_size = np.linalg.norm(vec_a)
-        vec_b_size = np.linalg.norm(vec_b)
-        if vec_a_size == 0 or vec_b_size == 0:
+        vec_a, vec_b, dangling = self._get_bend_vectors(point)
+        if dangling and not allow_dangling:
             return None
 
-        vec_a /= vec_a_size
-        vec_b /= vec_b_size
-
-        # The vectors are parallel
-        if np.dot(vec_a, vec_b) == 1:
+        if abs(np.dot(vec_a, vec_b)) == 1:
             return None
 
-        start_point = self.current_point
-        corner_point = start_point.copy()
-        end_point = start_point.copy()
-        self.current_point = end_point
+        detatched = self.pipeline.detatch_point(point)
+        if len(detatched) == 0:
+            start = point.copy()
+            end = point.copy()
+        elif len(detatched) == 1:
+            start = detatched[0]
+            end = point.copy()
+        else:
+            start, end, *_ = detatched
 
-        bend = Bend(start_point, end_point, corner_point)
-        bend.normalize_values_vector(vec_a, vec_b)
+        bend = Bend(start, end, point, curvature_radius)
+        bend.normalize_values_vector(vec_a, vec_b, curvature_radius)
         self.pipeline.add_structure(bend)
-        return Bend
-
-
-
-
-        # bend = Bend(start_point, end_point, corner_point, curvature_radius)
-        # self.pipeline.add_structure(bend)
-        # return bend
-
-    def add_dangling_bend(self, curvature_radius, direction=None):
-        return None
+        return bend
 
     def add_bent_pipe(self, deltas, curvature_radius):
-        bend = self.add_bend(curvature_radius)
         pipe = self.add_pipe(deltas)
+        bend = self.add_bend(curvature_radius)
         return bend, pipe
 
 
@@ -92,10 +76,32 @@ class MainEditor:
         
         # return bend, pipe
 
+    def _get_bend_vectors(self, point: Point):
+        directions = self.get_point_directions(point)
+
+        if len(directions) == 0:
+            vec_a = np.array([-1, 0, 0])
+            vec_b = np.array([0, 1, 0])
+            dangling = True
+        
+        elif len(directions) == 1:
+            vec_a = directions[0]
+            if not np.allclose(vec_a, [0, 0, 1]):
+                vec_b = np.cross(vec_a, [0, 0, 1])
+            else:
+                vec_b = np.cross(vec_a, [1, 0, 0])
+            dangling = True
+
+        else:
+            vec_a, vec_b, *_ = directions
+            dangling = False
+
+        return vec_a, vec_b, dangling
+
     def get_point_directions(self, point: Point):
         directions = []
 
-        for structure in self.pipeline.structures:
+        for structure in self.pipeline.all_structures():
             if not point in structure.get_points():
                 continue
 

@@ -13,6 +13,7 @@ from .structures.beam import Beam
 from opps.model.editors.main_editor import MainEditor
 from opps.model.editors.selection_editor import SelectionEditor
 
+
 class Pipeline(Structure):
     def __init__(self):
         self.points: list[Point] = list()
@@ -45,14 +46,14 @@ class Pipeline(Structure):
         self.points += self.staged_points
         self.structures += self.staged_structures
 
-        # update the selection with the newest created points
-        self.select_points(self.main_editor.next_selection)
-        self.main_editor.next_selection.clear()
+        # select the points to continue the creation
+        self.select_points(self.main_editor.next_border)
+        self.main_editor.next_border.clear()
 
     def dismiss(self):
         self.staged_points.clear()
         self.staged_structures.clear()
-        self.main_editor.next_selection.clear()
+        self.main_editor.next_border.clear()
 
     def add_point(self, point: Point):
         self.staged_points.append(point)
@@ -71,10 +72,13 @@ class Pipeline(Structure):
             self.structures.pop(i)
     
     def detatch_point(self, point: Point):
-        for structure in self.structures:
+        detatched = []
+        for structure in self.all_structures():
             if point in structure.get_points():
-                new_point = Point(*point.coords())
+                new_point = point.copy()
+                detatched.append(new_point)
                 structure.replace_point(point, new_point)
+        return detatched
 
     def attatch_point(self, point: Point):
         for structure in self.structures:
