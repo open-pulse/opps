@@ -55,29 +55,8 @@ class MainEditor:
         bend = self.add_bend(curvature_radius)
         return bend, pipe
 
-
-        # bend = self.add_bend(curvature_radius)
-
-        # connected_points = self.pipeline._connected_points(bend.start)
-        # if connected_points == 1:
-        #     pipe = self.add_pipe(deltas)
-        #     bend.normalize_values(connected_points[0], pipe.end)
-        #     return bend, pipe
-        # else:
-        #     pass 
-
-        # connected_points = (
-        #     self.pipeline._connected_points(bend.start)
-        #     + self.pipeline._connected_points(bend.end))
-    
-        # if len(connected_points) == 2:
-        #     bend.colapse()
-        #     bend.normalize_values(*connected_points)
-        
-        # return bend, pipe
-
     def _get_bend_vectors(self, point: Point):
-        directions = self.get_point_directions(point)
+        directions = self._get_point_vectors(point)
 
         if len(directions) == 0:
             vec_a = np.array([-1, 0, 0])
@@ -98,7 +77,7 @@ class MainEditor:
 
         return vec_a, vec_b, dangling
 
-    def get_point_directions(self, point: Point):
+    def _get_point_vectors(self, point: Point):
         directions = []
 
         for structure in self.pipeline.all_structures():
