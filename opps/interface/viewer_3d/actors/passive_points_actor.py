@@ -1,4 +1,4 @@
-import vtk 
+import vtk
 from vtkat.poly_data import VerticesData
 
 
@@ -7,7 +7,7 @@ class PassivePointsActor(vtk.vtkActor):
         super().__init__()
         self.points = points
         self.build()
-    
+
     def build(self):
         coords = [p.coords() for p in self.points]
         data = VerticesData(coords)
@@ -16,7 +16,7 @@ class PassivePointsActor(vtk.vtkActor):
         self.SetMapper(mapper)
 
         self.GetProperty().SetPointSize(12)
-        self.GetProperty().SetColor([i/255 for i in (255, 200, 110)])
+        self.GetProperty().SetColor([i / 255 for i in (255, 200, 110)])
         self.GetProperty().LightingOff()
 
         offset = -66000

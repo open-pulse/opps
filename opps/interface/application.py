@@ -13,7 +13,6 @@ class Application(QApplication):
 
         self.geometry_toolbox = GeometryToolbox()
 
-
         self.main_window = MainWindow()
         self.main_window.show()
 

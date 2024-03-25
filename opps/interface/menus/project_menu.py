@@ -42,6 +42,3 @@ class ProjectMenu(QMenu):
 
     def save_project_as_callback(self):
         app().main_window.save_as_dialog()
-
-        
-

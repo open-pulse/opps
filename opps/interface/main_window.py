@@ -17,6 +17,7 @@ from opps.interface.widgets import AddStructuresWidget, EditStructuresWidget
 from opps.interface.widgets.cross_section_widget import CrossSectionWidget
 from opps.model import Pipe
 
+
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
@@ -27,7 +28,6 @@ class MainWindow(QMainWindow):
         self.delete_action.setShortcut("del")
         self.delete_action.triggered.connect(self.delete_selection_callback)
         self.addAction(self.delete_action)
-
 
         self._create_menu_bar()
         self._configure_window()
