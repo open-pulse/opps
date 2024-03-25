@@ -17,7 +17,7 @@ class PipelineActor(vtk.vtkActor):
         append_filter = vtk.vtkAppendPolyData()
         selection_color = (247, 0, 20)
 
-        for i, shape in enumerate(self.pipeline.structures):
+        for i, shape in enumerate(self.pipeline.all_structures()):
             shape_data = shape.as_vtk().GetMapper().GetInput()
 
             if shape.staged:

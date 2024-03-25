@@ -1,4 +1,4 @@
-from itertools import pairwise
+from itertools import chain
 
 import numpy as np
 
@@ -17,21 +17,47 @@ class Pipeline(Structure):
         self.points: list[Point] = list()
         self.structures: list[Structure] = list()
 
+        self.staged_points: list[Point] = list()
+        self.staged_structures: list[Structure] = list()
+
+        self.selected_points: list[Point] = list()
+        self.selected_structures: list[Structure] = list()
+
+        # tmp
+        p = Point(0, 0, 0)
+        self.points.append(p)
+        self.selected_points.append(p)
+
         self.main_editor = MainEditor(self)
+
+    def all_points(self):
+        return chain(self.points, self.staged_points)
+
+    def all_structures(self):
+        return chain(self.structures, self.staged_structures)
 
     # Essential functions
     def commit(self):
-        print("commit")
+        for structure in self.staged_structures:
+            structure.staged = False
+        self.points += self.staged_points
+        self.structures += self.staged_structures
+
+        # tmp
+        self.selected_points.clear()
+        self.selected_points.append(self.main_editor.current_point)
 
     def dismiss(self):
-        print("dismiss")
+        self.staged_points.clear()
+        self.staged_structures.clear()
 
     def add_point(self, point: Point):
-        self.points.append(point)
+        self.staged_points.append(point)
 
     def add_structure(self, structure: Structure):
         structure.staged = True
-        self.structures.append(structure)
+        self.staged_structures.append(structure)
+        self.add_points(structure.get_points())
 
     def remove_point(self, point: Point):
         for i in self.get_point_indexes(point):

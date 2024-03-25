@@ -12,7 +12,10 @@ class MainEditor:
         self.current_point = Point(0,0,0)
 
     def add_pipe(self, deltas):
-        point = self.current_point
+        if not self.pipeline.selected_points:
+            return
+
+        *_, point = self.pipeline.selected_points
         next_point = Point(*(point.coords() + deltas))
         self.current_point = next_point
 
