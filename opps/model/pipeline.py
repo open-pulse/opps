@@ -43,14 +43,22 @@ class Pipeline(Structure):
     def commit(self):
         for structure in self.staged_structures:
             structure.staged = False
-        self.points += self.staged_points
-        self.structures += self.staged_structures
+
+        self.points.extend(self.staged_points)
+        self.structures.extend(self.staged_structures)
 
         # select the points to continue the creation
         self.select_points(self.main_editor.next_border)
         self.main_editor.next_border.clear()
 
+        self.staged_points.clear()
+        self.staged_structures.clear()
+        self.main_editor.next_border.clear()
+
     def dismiss(self):
+        for structure in self.staged_structures:
+            if isinstance(structure, Bend):
+                structure.colapse()
         self.staged_points.clear()
         self.staged_structures.clear()
         self.main_editor.next_border.clear()
