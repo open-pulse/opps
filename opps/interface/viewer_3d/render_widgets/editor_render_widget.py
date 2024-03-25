@@ -6,12 +6,15 @@ import numpy as np
 import vtk
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication
-
-from opps.interface.viewer_3d.actors import ControlPointsActor, PassivePointsActor, SelectedPointsActor
-
 from vtkat.interactor_styles import BoxSelectionInteractorStyle
+from vtkat.pickers import CellAreaPicker, CellPropertyAreaPicker
 from vtkat.render_widgets import CommonRenderWidget
-from vtkat.pickers import CellPropertyAreaPicker, CellAreaPicker
+
+from opps.interface.viewer_3d.actors import (
+    ControlPointsActor,
+    PassivePointsActor,
+    SelectedPointsActor,
+)
 
 
 class EditorRenderWidget(CommonRenderWidget):
@@ -66,7 +69,7 @@ class EditorRenderWidget(CommonRenderWidget):
     def stage_pipe_deltas(self, dx, dy, dz, radius=0.3):
         self.editor.dismiss()
         self.editor.clear_selection()
-        self.editor.add_bent_pipe((dx,dy,dz), radius)
+        self.editor.add_bent_pipe((dx, dy, dz), radius)
         self.update_plot()
 
     def update_default_diameter(self, initial_diameter, final_diameter=0):
@@ -121,23 +124,15 @@ class EditorRenderWidget(CommonRenderWidget):
         picked_points = self._pick_points(x, y)
         picked_structures = self._pick_structures(x, y)
 
-        # give selection priority to points 
+        # give selection priority to points
         if len(picked_points) == 1 and len(picked_structures) <= 1:
             picked_structures.clear()
 
         if picked_points:
-            self.editor.select_points(
-                picked_points,
-                join=join,
-                remove=remove
-            )
+            self.editor.select_points(picked_points, join=join, remove=remove)
 
         if picked_structures:
-            self.editor.select_structures(
-                picked_structures,
-                join=join,
-                remove=remove
-            )
+            self.editor.select_structures(picked_structures, join=join, remove=remove)
 
         self.update_selection()
 
@@ -149,13 +144,13 @@ class EditorRenderWidget(CommonRenderWidget):
 
         picked = self._pick_actor(x, y, self.control_points_actor)
         indexes = picked.get(self.control_points_actor, [])
-        control_points = [pipeline.control_points[i] for i in  indexes]
+        control_points = [pipeline.control_points[i] for i in indexes]
 
         passive_points = list()
         if not control_points or mouse_moved:
             picked = self._pick_actor(x, y, self.passive_points_actor)
             indexes = picked.get(self.passive_points_actor, [])
-            passive_points = [pipeline.points[i] for i in  indexes]
+            passive_points = [pipeline.points[i] for i in indexes]
 
         combined_points = set(control_points + passive_points)
         return list(combined_points)
