@@ -45,13 +45,14 @@ class Pipeline(Structure):
         self.points += self.staged_points
         self.structures += self.staged_structures
 
-        # tmp
-        self.selected_points.clear()
-        self.selected_points.append(self.main_editor.current_point)
+        # update the selection with the newest created points
+        self.select_points(self.main_editor.next_selection)
+        self.main_editor.next_selection.clear()
 
     def dismiss(self):
         self.staged_points.clear()
         self.staged_structures.clear()
+        self.main_editor.next_selection.clear()
 
     def add_point(self, point: Point):
         self.staged_points.append(point)

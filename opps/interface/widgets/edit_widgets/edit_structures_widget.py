@@ -63,11 +63,11 @@ class EditStructuresWidget(QWidget):
         )
 
     def selection_callback(self):
-        editor = self.render_widget.editor
+        pipeline = self.render_widget.pipeline
 
-        if editor.selected_structures:
+        if pipeline.selected_structures:
             self._structures_selection_callback()
-        elif editor.selected_points:
+        elif pipeline.selected_points:
             self.stacked_layout.setCurrentWidget(self.edit_point_widget)
         else:
             self.stacked_layout.setCurrentWidget(self.empty_text_widget)
@@ -75,9 +75,9 @@ class EditStructuresWidget(QWidget):
         self.stacked_layout.currentWidget().update()
 
     def _structures_selection_callback(self):
-        editor = self.render_widget.editor
+        pipeline = self.render_widget.pipeline
 
-        structure, *_ = editor.selected_structures
+        structure, *_ = pipeline.selected_structures
 
         if isinstance(structure, Pipe):
             self.stacked_layout.setCurrentWidget(self.edit_pipe_widget)

@@ -9,18 +9,19 @@ if TYPE_CHECKING:
 class MainEditor:
     def __init__(self, pipeline: 'Pipeline') -> None:
         self.pipeline = pipeline
+        self.next_selection = list()
+
         self.current_point = Point(0,0,0)
 
     def add_pipe(self, deltas):
-        if not self.pipeline.selected_points:
-            return
+        pipes = list()        
+        for point in self.pipeline.selected_points:
+            next_point = Point(*(point.coords() + deltas))
+            self.next_selection.append(next_point)
 
-        *_, point = self.pipeline.selected_points
-        next_point = Point(*(point.coords() + deltas))
-        self.current_point = next_point
-
-        pipe = Pipe(point, next_point)
-        self.pipeline.add_structure(pipe)
+            pipe = Pipe(point, next_point)
+            pipes.append(pipe)
+            self.pipeline.add_structure(pipe)
         return pipe
 
     def add_bend(self, curvature_radius, allow_dangling=True) -> Bend | None:
