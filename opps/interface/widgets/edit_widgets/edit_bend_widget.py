@@ -88,7 +88,7 @@ class EditBendWidget(QWidget):
         *_, structure = editor.selected_structures
         if not isinstance(structure, Bend):
             return
-        
+
         new_structure = editor.morph(structure, _type)
         editor.select_structures([new_structure])
         app().update()

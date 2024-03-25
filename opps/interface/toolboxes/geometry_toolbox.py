@@ -4,9 +4,13 @@ from opps.model import Pipeline
 from pathlib import Path
 from typing import Generator
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 
+from opps.interface import main_window
 from opps.io.cad_file.cad_handler import *
+from opps.io.cad_file.step_handler import StepHandler
+from opps.io.pcf.pcf_exporter import PCFExporter
+from opps.io.pcf.pcf_handler import PCFHandler
 from opps.model import Pipeline
 from opps.model import Structure, Point
 from opps.io.cad_file.step_handler import StepHandler
@@ -41,7 +45,7 @@ class GeometryToolbox(QObject):
             self._open_pcf(path)
         else:
             self._open_cad(path)
-        
+
         # self.editor.merge_coincident_points()
 
     def save(self, path):
@@ -60,7 +64,7 @@ class GeometryToolbox(QObject):
 
     def _open_pcf(self, path):
         self.pcf_handler = PCFHandler()
-        self.pcf_handler.load(path,self.pipeline)
+        self.pcf_handler.load(path, self.pipeline)
         self.update()
 
     def _save_cad(self, path):
@@ -69,7 +73,7 @@ class GeometryToolbox(QObject):
 
     def _save_pcf(self, path):
         self.pcf_exporter = PCFExporter()
-        self.pcf_exporter.save(path,self.pipeline)
+        self.pcf_exporter.save(path, self.pipeline)
 
     def get_point(self, point_index) -> Point:
         return self.pipeline.points[point_index]

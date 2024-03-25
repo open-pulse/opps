@@ -198,7 +198,7 @@ class PipelineEditor:
                 continue
             if joint.corner == start_point:
                 new_elbow = self.morph(joint, Elbow)
-            
+
                 if not self.pipeline._connected_points(joint.start):
                     self.anchor = joint.start
                 elif not self.pipeline._connected_points(joint.end):
@@ -240,8 +240,8 @@ class PipelineEditor:
     def add_bent_pipe(self, deltas=None, curvature_radius=0.3):
         if deltas != None:
             self.set_deltas(deltas)
-        
-        if all(self.deltas == (0,0,0)):
+
+        if all(self.deltas == (0, 0, 0)):
             return
 
         if self.anchor not in self.pipeline.control_points:
@@ -267,8 +267,6 @@ class PipelineEditor:
         elif remove:
             self.selected_points -= points
         else:
-            if len(points) == 1:
-                self.clear_selection()
             self.selected_points = points
 
     def select_structures(self, structures, join=False, remove=False):
@@ -289,8 +287,6 @@ class PipelineEditor:
         elif remove:
             self.selected_structures -= structures
         else:
-            if len(structures) == 1:
-                self.clear_selection()
             self.selected_structures = structures
 
         # apply the selection flag again for selected structures
@@ -309,7 +305,7 @@ class PipelineEditor:
 
         for point in self.selected_points:
             self.remove_point(point, rejoin=False)
-        
+
         self.clear_selection()
 
     def update(self):
