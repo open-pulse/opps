@@ -112,6 +112,12 @@ class EditorRenderWidget(CommonRenderWidget):
         shift_pressed = bool(modifiers & Qt.ShiftModifier)
         alt_pressed = bool(modifiers & Qt.AltModifier)
 
+        join = ctrl_pressed | shift_pressed
+        remove = alt_pressed
+
+        if not (join or remove):
+            self.editor.clear_selection()
+
         picked_points = self._pick_points(x, y)
         picked_structures = self._pick_structures(x, y)
 
@@ -122,33 +128,35 @@ class EditorRenderWidget(CommonRenderWidget):
         if picked_points:
             self.editor.select_points(
                 picked_points,
-                join=ctrl_pressed | shift_pressed,
-                remove=alt_pressed
+                join=join,
+                remove=remove
             )
 
-        if picked_structures is not None:
+        if picked_structures:
             self.editor.select_structures(
                 picked_structures,
-                join=ctrl_pressed | shift_pressed,
-                remove=alt_pressed
+                join=join,
+                remove=remove
             )
-
-        if (not picked_points) and (not picked_structures):
-            self.editor.clear_selection() 
 
         self.update_selection()
 
     def _pick_points(self, x, y):
         pipeline = self.editor.pipeline
 
+        x0, y0 = self.mouse_click
+        mouse_moved = (abs(x0 - x) > 10) or (abs(y0 - y) > 10)
+
         picked = self._pick_actor(x, y, self.control_points_actor)
         indexes = picked.get(self.control_points_actor, [])
         control_points = [pipeline.control_points[i] for i in  indexes]
 
-        picked = self._pick_actor(x, y, self.passive_points_actor)
-        indexes = picked.get(self.passive_points_actor, [])
-        passive_points = [pipeline.points[i] for i in  indexes]
-        
+        passive_points = list()
+        if not control_points or mouse_moved:
+            picked = self._pick_actor(x, y, self.passive_points_actor)
+            indexes = picked.get(self.passive_points_actor, [])
+            passive_points = [pipeline.points[i] for i in  indexes]
+
         combined_points = set(control_points + passive_points)
         return list(combined_points)
 
