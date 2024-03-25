@@ -15,11 +15,11 @@ from opps.interface.viewer_3d.actors import (
 class EditorRenderWidget(CommonRenderWidget):
     selection_changed = pyqtSignal()
 
-    def __init__(self, editor, parent=None):
+    def __init__(self, pipeline, parent=None):
         super().__init__(parent)
         self.left_clicked.connect(self.click_callback)
         self.left_released.connect(self.selection_callback)
-        self.pipeline = editor
+        self.pipeline = pipeline
 
         self.interactor_style = BoxSelectionInteractorStyle()
         self.render_interactor.SetInteractorStyle(self.interactor_style)
@@ -40,7 +40,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.pipeline_actor = self.pipeline.as_vtk()
         self.control_points_actor = ControlPointsActor(self.pipeline.points)
         self.passive_points_actor = PassivePointsActor(self.pipeline.points)
-        self.selected_points_actor = SelectedPointsActor([])
+        self.selected_points_actor = SelectedPointsActor(self.pipeline.selected_points)
 
         # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
@@ -53,35 +53,35 @@ class EditorRenderWidget(CommonRenderWidget):
         self.update()
 
     def change_anchor(self, point):
-        self.editor.dismiss()
-        self.editor.set_anchor(point)
+        self.pipeline.dismiss()
+        self.pipeline.set_anchor(point)
         self.coords = point.coords()
         self.update_plot(reset_camera=False)
 
     def stage_pipe_deltas(self, dx, dy, dz, radius=0.3):
-        self.editor.dismiss()
-        self.editor.clear_selection()
-        self.editor.add_bent_pipe((dx, dy, dz), radius)
+        self.pipeline.dismiss()
+        self.pipeline.clear_selection()
+        self.pipeline.add_bent_pipe((dx, dy, dz), radius)
         self.update_plot()
 
     def update_default_diameter(self, initial_diameter, final_diameter=0):
         if final_diameter == 0:
             final_diameter = initial_diameter
 
-        self.editor.change_diameter(initial_diameter, final_diameter)
-        for structure in self.editor.staged_structures:
+        self.pipeline.change_diameter(initial_diameter, final_diameter)
+        for structure in self.pipeline.staged_structures:
             structure.set_diameter(initial_diameter, final_diameter)
         self.update_plot()
 
     def add_flange(self):
-        self.editor.dismiss()
-        self.editor.add_flange()
-        self.editor.add_bent_pipe()
+        self.pipeline.dismiss()
+        self.pipeline.add_flange()
+        self.pipeline.add_bent_pipe()
         self.update()
 
     def commit_structure(self):
-        self.coords = self.editor.anchor.coords()
-        self.editor.commit()
+        self.coords = self.pipeline.anchor.coords()
+        self.pipeline.commit()
         self.update_plot()
 
     def unstage_structure(self):
@@ -102,7 +102,6 @@ class EditorRenderWidget(CommonRenderWidget):
         self.mouse_click = x, y
 
     def selection_callback(self, x, y):
-        return 
         modifiers = QApplication.keyboardModifiers()
         ctrl_pressed = bool(modifiers & Qt.ControlModifier)
         shift_pressed = bool(modifiers & Qt.ShiftModifier)
@@ -112,7 +111,7 @@ class EditorRenderWidget(CommonRenderWidget):
         remove = alt_pressed
 
         if not (join or remove):
-            self.editor.clear_selection()
+            self.pipeline.clear_selection()
 
         picked_points = self._pick_points(x, y)
         picked_structures = self._pick_structures(x, y)
@@ -122,35 +121,37 @@ class EditorRenderWidget(CommonRenderWidget):
             picked_structures.clear()
 
         if picked_points:
-            self.editor.select_points(picked_points, join=join, remove=remove)
+            self.pipeline.select_points(picked_points, join=join, remove=remove)
 
         if picked_structures:
-            self.editor.select_structures(picked_structures, join=join, remove=remove)
+            self.pipeline.select_structures(picked_structures, join=join, remove=remove)
 
         self.update_selection()
 
     def _pick_points(self, x, y):
-        pipeline = self.editor.pipeline
-
         x0, y0 = self.mouse_click
         mouse_moved = (abs(x0 - x) > 10) or (abs(y0 - y) > 10)
 
         picked = self._pick_actor(x, y, self.control_points_actor)
         indexes = picked.get(self.control_points_actor, [])
-        control_points = [pipeline.control_points[i] for i in indexes]
+        control_points = [self.pipeline.points[i] for i in indexes]
 
-        passive_points = list()
-        if not control_points or mouse_moved:
-            picked = self._pick_actor(x, y, self.passive_points_actor)
-            indexes = picked.get(self.passive_points_actor, [])
-            passive_points = [pipeline.points[i] for i in indexes]
+        # passive_points = list()
+        # if not control_points or mouse_moved:
+        #     picked = self._pick_actor(x, y, self.passive_points_actor)
+        #     indexes = picked.get(self.passive_points_actor, [])
+        #     passive_points = [self.pipeline.points[i] for i in indexes]
 
-        combined_points = set(control_points + passive_points)
-        return list(combined_points)
+        # combined_points = set(control_points + passive_points)
+        # return list(combined_points)
+        return control_points
 
     def _pick_structures(self, x, y):
-        indexes = self._pick_property(x, y, "cell_identifier", self.pipeline_actor)
-        return [self.pipeline.structures[i] for i in indexes]
+        try:
+            indexes = self._pick_property(x, y, "cell_identifier", self.pipeline_actor)
+            return [self.pipeline.structures[i] for i in indexes]
+        except IndexError:
+            return list()
 
     def _pick_actor(self, x, y, actor_to_select):
         selection_picker = CellAreaPicker()

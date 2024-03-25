@@ -11,6 +11,7 @@ from .structures.structure import Structure
 from .structures.beam import Beam
 
 from opps.model.editors.main_editor import MainEditor
+from opps.model.editors.selection_editor import SelectionEditor
 
 class Pipeline(Structure):
     def __init__(self):
@@ -29,6 +30,7 @@ class Pipeline(Structure):
         self.selected_points.append(p)
 
         self.main_editor = MainEditor(self)
+        self.selection_editor = SelectionEditor(self)
 
     def all_points(self):
         return chain(self.points, self.staged_points)
@@ -122,6 +124,16 @@ class Pipeline(Structure):
     def add_bent_pipe(self, deltas, curvature_radius):
         self.main_editor.add_bent_pipe(deltas, curvature_radius)
 
+    # Selection Editor
+    def select_points(self, points, join=False, remove=False):
+        self.selection_editor.select_points(points, join, remove)
+
+    def select_structures(self, structures, join=False, remove=False):
+        self.selection_editor.select_structures(structures, join, remove)
+
+    def clear_selection(self):
+        self.selection_editor.clear_selection()
+    
     # Common
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipeline_actor import (
