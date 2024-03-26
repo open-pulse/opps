@@ -22,33 +22,33 @@ class MainEditor:
             self.pipeline.add_structure(pipe)
         return pipes
 
-    def add_bend(self, curvature_radius, allow_dangling=False) -> Bend | None:
-        if not self.pipeline.selected_points:
-            return
-        
-        *_, point = self.pipeline.selected_points
+    def add_bend(self, curvature_radius, allow_dangling=False) -> Bend | None:        
+        bends = list()
 
-        vec_a, vec_b, dangling = self._get_bend_vectors(point)
-        if dangling and not allow_dangling:
-            return None
+        for point in self.pipeline.selected_points:    
+            vec_a, vec_b, dangling = self._get_bend_vectors(point)
+            if dangling and not allow_dangling:
+                return None
 
-        if abs(np.dot(vec_a, vec_b)) == 1:
-            return None
+            if abs(np.dot(vec_a, vec_b)) == 1:
+                return None
 
-        detatched = self.pipeline.detatch_point(point)
-        if len(detatched) == 0:
-            start = point.copy()
-            end = point.copy()
-        elif len(detatched) == 1:
-            start = detatched[0]
-            end = point.copy()
-        else:
-            start, end, *_ = detatched
+            detatched = self.pipeline.detatch_point(point)
+            if len(detatched) == 0:
+                start = point.copy()
+                end = point.copy()
+            elif len(detatched) == 1:
+                start = detatched[0]
+                end = point.copy()
+            else:
+                start, end, *_ = detatched
 
-        bend = Bend(start, end, point, curvature_radius)
-        bend.normalize_values_vector(vec_a, vec_b, curvature_radius)
-        self.pipeline.add_structure(bend)
-        return bend
+            bend = Bend(start, end, point, curvature_radius)
+            bend.normalize_values_vector(vec_a, vec_b, curvature_radius)
+            self.pipeline.add_structure(bend)
+            bends.append(bend)
+
+        return bends
 
     def add_bent_pipe(self, deltas, curvature_radius):
         pipe = self.add_pipe(deltas)
