@@ -12,20 +12,21 @@ class MainEditor:
         self.next_border = list()
 
     def add_pipe(self, deltas):
-        pipes = list()        
+        pipes = list()
+ 
         for point in self.pipeline.selected_points:
             next_point = Point(*(point.coords() + deltas))
             self.next_border.append(next_point)
-
             pipe = Pipe(point, next_point)
-            pipes.append(pipe)
             self.pipeline.add_structure(pipe)
+            pipes.append(pipe)
+
         return pipes
 
     def add_bend(self, curvature_radius, allow_dangling=False) -> Bend | None:        
         bends = list()
 
-        for point in self.pipeline.selected_points:    
+        for point in self.pipeline.selected_points:
             vec_a, vec_b, dangling = self._get_bend_vectors(point)
             if dangling and not allow_dangling:
                 return None
@@ -49,6 +50,20 @@ class MainEditor:
             bends.append(bend)
 
         return bends
+
+    def add_flange(self):
+        flanges = list()
+
+        for point in self.pipeline.selected_points:
+            vectors = self._get_point_vectors(point)
+            vectors.append(np.array([1, 0, 0]))  # the default flange points to the right
+            
+            normal, *_ = vectors
+            flange = Flange(point, normal=normal)
+            self.pipeline.add_structure(flange)
+            flanges.append(flange)
+
+        return flanges
 
     def add_bent_pipe(self, deltas, curvature_radius):
         pipe = self.add_pipe(deltas)

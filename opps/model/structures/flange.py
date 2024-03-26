@@ -28,8 +28,5 @@ class Flange(Structure):
         return id(self)
 
     def replace_point(self, old, new):
-        if self.start == old:
+        if self.position == old:
             self.start = new
-
-        elif self.end == old:
-            self.end = new
