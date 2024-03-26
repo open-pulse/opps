@@ -137,6 +137,9 @@ class Pipeline(Structure):
     def add_bent_pipe(self, deltas, curvature_radius):
         self.main_editor.add_bent_pipe(deltas, curvature_radius)
 
+    def recalculate_curvatures(self):
+        self.main_editor.recalculate_curvatures()
+
     # Selection Editor
     def select_points(self, points, join=False, remove=False):
         self.selection_editor.select_points(points, join, remove)
