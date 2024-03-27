@@ -12,6 +12,7 @@ from .structures.beam import Beam
 
 from opps.model.editors.main_editor import MainEditor
 from opps.model.editors.selection_editor import SelectionEditor
+from opps.model.editors.points_editor import PointsEditor
 
 
 class Pipeline(Structure):
@@ -30,7 +31,11 @@ class Pipeline(Structure):
         self.points.append(p)
         self.selected_points.append(p)
 
+        # Instead of placing incountable lines of code here,
+        # most of the functions are a facade, and their actual
+        # implementation is handled by one of the following editors.
         self.main_editor = MainEditor(self)
+        self.points_editor = PointsEditor(self)
         self.selection_editor = SelectionEditor(self)
 
     def all_points(self):
@@ -78,32 +83,6 @@ class Pipeline(Structure):
     def remove_structure(self, structure: Structure):
         for i in self.get_structure_indexes(structure):
             self.structures.pop(i)
-    
-    def detatch_point(self, point: Point):
-        detatched = []
-        first_point = True
-        for structure in self.all_structures():
-            if point not in structure.get_points():
-                continue
-
-            # we still want to keep this point in the pipeline
-            # so we only substitute the next ones.
-            if first_point:
-                first_point = False
-                continue
-
-            new_point = point.copy()
-            detatched.append(new_point)
-            structure.replace_point(point, new_point)
-
-        self.add_points(detatched)
-        return detatched
-
-    def attatch_point(self, point: Point):
-        for structure in self.structures:
-            for p in structure.get_points():
-                if np.allclose(p.coords(), point.coords()):
-                    structure.replace_point(p, point)
 
     # Essential functions plural
     def add_points(self, points: list[Point]):
@@ -150,6 +129,19 @@ class Pipeline(Structure):
 
     def recalculate_curvatures(self):
         self.main_editor.recalculate_curvatures()
+
+    # Points Editor 
+    def attatch_point(self, point: Point):
+        self.points_editor.attatch_point(point)
+
+    def detatch_point(self, point: Point):
+        self.points_editor.dettatch_point(point)
+
+    def join_points(self, points: list[Point]):
+        self.points_editor.join_points(points)
+
+    def move_point(self, point, new_position):
+        self.points_editor.move_point(point, new_position)
 
     # Selection Editor
     def select_points(self, points, join=False, remove=False):
