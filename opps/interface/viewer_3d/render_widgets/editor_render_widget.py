@@ -11,19 +11,20 @@ from opps.interface.viewer_3d.actors import (
     SelectedPointsActor,
 )
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from opps.model import Pipeline
+
 
 class EditorRenderWidget(CommonRenderWidget):
     selection_changed = pyqtSignal()
 
-    def __init__(self, pipeline, parent=None):
+    def __init__(self, pipeline: 'Pipeline', parent=None):
         super().__init__(parent)
-        self.left_clicked.connect(self.click_callback)
-        self.left_released.connect(self.selection_callback)
-        self.pipeline = pipeline
-
         self.interactor_style = BoxSelectionInteractorStyle()
         self.render_interactor.SetInteractorStyle(self.interactor_style)
 
+        self.pipeline = pipeline
         self.selected_structure = None
         self.pipeline_actor = None
         self.control_points_actor = None
@@ -33,6 +34,9 @@ class EditorRenderWidget(CommonRenderWidget):
         self.renderer.GetActiveCamera().SetParallelProjection(True)
         self.create_axes()
         self.update_plot()
+        self.left_clicked.connect(self.click_callback)
+        self.left_released.connect(self.selection_callback)
+
 
     def update_plot(self, reset_camera=True):
         self.remove_actors()

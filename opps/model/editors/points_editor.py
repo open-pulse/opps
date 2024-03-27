@@ -2,7 +2,9 @@ import numpy as np
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from opps.model import Pipeline, Point
+    from opps.model import Pipeline
+
+from opps.model import Point
 
 
 class PointsEditor:

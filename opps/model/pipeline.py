@@ -135,7 +135,7 @@ class Pipeline(Structure):
         self.points_editor.attatch_point(point)
 
     def detatch_point(self, point: Point):
-        self.points_editor.dettatch_point(point)
+        return self.points_editor.dettatch_point(point)
 
     def join_points(self, points: list[Point]):
         self.points_editor.join_points(points)
