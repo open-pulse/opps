@@ -76,27 +76,30 @@ class MainEditor:
 
     def recalculate_curvatures(self):
         # collapse all curvatures
-        for structure in self.pipeline.structures_of_type(Bend):
-            if structure.auto:
-                structure.colapse()
+        for bend in self.pipeline.structures_of_type(Bend):
+            if bend.auto:
+                bend.colapse()
 
         to_remove = []
 
         # get vectors and update the curvatures
         # not working yet =)
-        for structure in self.pipeline.structures_of_type(Bend):
-            a_vectors = self._get_point_vectors(structure.start)
-            b_vectors = self._get_point_vectors(structure.end)
+        for bend in self.pipeline.structures_of_type(Bend):
+            if not bend.auto:
+                continue
+
+            a_vectors = self._get_point_vectors(bend.start)
+            b_vectors = self._get_point_vectors(bend.end)
 
             if (not a_vectors) or  (not b_vectors):
-                to_remove.append(structure)
+                to_remove.append(bend)
                 continue
 
             vec_a, vec_b = a_vectors[0], b_vectors[0]
             if abs(np.dot(vec_a, vec_b)) == 1:
                 return None
 
-            structure.normalize_values_vector(vec_a, vec_b)
+            bend.normalize_values_vector(vec_a, vec_b)
 
     def _get_bend_vectors(self, point: Point):
         directions = self._get_point_vectors(point)
@@ -123,15 +126,15 @@ class MainEditor:
     def _get_point_vectors(self, point: Point):
         directions = list()
 
-        for structure in self.pipeline.structures_of_type(Pipe):
-            if not point in structure.get_points():
+        for pipe in self.pipeline.structures_of_type(Pipe):
+            if not point in pipe.get_points():
                 continue
 
-            if id(structure.start) == id(point):
-                vector = structure.end.coords() - point.coords()
+            if id(pipe.start) == id(point):
+                vector = pipe.end.coords() - point.coords()
                 size = np.linalg.norm(vector)
-            elif id(structure.end) == id(point):
-                vector = structure.start.coords() - point.coords()
+            elif id(pipe.end) == id(point):
+                vector = pipe.start.coords() - point.coords()
                 size = np.linalg.norm(vector)
             else:
                 continue

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from opps.model import Pipeline
 
-from opps.model import Point
+from opps.model import Point, Bend
 
 
 class PointsEditor:
@@ -24,8 +24,8 @@ class PointsEditor:
             if point not in structure.get_points():
                 continue
 
-            # we still want to keep this point in the pipeline
-            # so we only substitute the next ones.
+            # we still want to keep the currenc point in the 
+            # pipeline so we only substitute the next ones.
             if first_point:
                 first_point = False
                 continue
