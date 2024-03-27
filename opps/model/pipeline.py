@@ -81,11 +81,22 @@ class Pipeline(Structure):
     
     def detatch_point(self, point: Point):
         detatched = []
+        first_point = True
         for structure in self.all_structures():
-            if point in structure.get_points():
-                new_point = point.copy()
-                detatched.append(new_point)
-                structure.replace_point(point, new_point)
+            if point not in structure.get_points():
+                continue
+
+            # we still want to keep this point in the pipeline
+            # so we only substitute the next ones.
+            if first_point:
+                first_point = False
+                continue
+
+            new_point = point.copy()
+            detatched.append(new_point)
+            structure.replace_point(point, new_point)
+
+        self.add_points(detatched)
         return detatched
 
     def attatch_point(self, point: Point):

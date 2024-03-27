@@ -31,20 +31,24 @@ class MainEditor:
             if dangling and not allow_dangling:
                 return None
 
-            if abs(np.dot(vec_a, vec_b)) == 1:
+            angle_between_pipes = np.arccos(np.dot(vec_a, vec_b))
+            if angle_between_pipes == 0:
                 return None
 
-            detatched = self.pipeline.detatch_point(point)
-            if len(detatched) == 0:
-                start = point.copy()
-                end = point.copy()
-            elif len(detatched) == 1:
-                start = detatched[0]
-                end = point.copy()
-            else:
-                start, end, *_ = detatched
+            if angle_between_pipes == np.pi:  # 180º
+                return None
 
-            bend = Bend(start, end, point, curvature_radius)
+            start = point
+            corner = point.copy()
+            end = point.copy()
+
+            # detatch the connection between pipes (if it exists)
+            # to add the bend in between them
+            detatched = self.pipeline.detatch_point(point)
+            if len(detatched) >= 1:
+                end = detatched[0]
+
+            bend = Bend(start, end, corner, curvature_radius)
             bend.normalize_values_vector(vec_a, vec_b)
             self.pipeline.add_structure(bend)
             bends.append(bend)
