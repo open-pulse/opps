@@ -1,4 +1,5 @@
 from itertools import chain
+from typing import TypeVar, Generator
 
 import numpy as np
 
@@ -13,6 +14,10 @@ from .structures.beam import Beam
 from opps.model.editors.main_editor import MainEditor
 from opps.model.editors.selection_editor import SelectionEditor
 from opps.model.editors.points_editor import PointsEditor
+
+
+# only to help the editor, ignore it
+generic_type = TypeVar("generic_type")
 
 
 class Pipeline(Structure):
@@ -43,6 +48,11 @@ class Pipeline(Structure):
 
     def all_structures(self):
         return chain(self.structures, self.staged_structures)
+
+    def structures_of_type(self, structure_type: generic_type) -> Generator[generic_type, None, None]:
+        for structure in self.all_structures():
+            if isinstance(structure, structure_type):
+                yield structure
 
     # Essential functions
     def commit(self):

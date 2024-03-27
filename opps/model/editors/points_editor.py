@@ -38,5 +38,5 @@ class PointsEditor:
         return detatched
 
     def move_point(self, point: Point, new_position: tuple[float, float, float]):
-        point.set_coords(new_position)
+        point.set_coords(*new_position)
         self.pipeline.recalculate_curvatures()

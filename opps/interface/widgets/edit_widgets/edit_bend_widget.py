@@ -32,11 +32,11 @@ class EditBendWidget(QWidget):
 
     def update(self):
         super().update()
-        editor = self.render_widget.editor
-        if not editor.selected_structures:
+        pipeline = self.render_widget.pipeline
+        if not pipeline.selected_structures:
             return
 
-        *_, structure = editor.selected_structures
+        *_, structure = pipeline.selected_structures
         if not isinstance(structure, Bend):
             return
 
@@ -51,11 +51,11 @@ class EditBendWidget(QWidget):
         self.morph_list.itemClicked.connect(self.moph_list_callback)
 
     def curvature_modified_callback(self, text):
-        editor = self.render_widget.editor
-        if not editor.selected_structures:
+        pipeline = self.render_widget.pipeline
+        if not pipeline.selected_structures:
             return
 
-        *_, structure = editor.selected_structures
+        *_, structure = pipeline.selected_structures
         if not isinstance(structure, Bend):
             return
 
@@ -81,14 +81,14 @@ class EditBendWidget(QWidget):
         else:
             return
 
-        editor = self.render_widget.editor
-        if not editor.selected_structures:
+        pipeline = self.render_widget.pipeline
+        if not pipeline.selected_structures:
             return
 
-        *_, structure = editor.selected_structures
+        *_, structure = pipeline.selected_structures
         if not isinstance(structure, Bend):
             return
 
-        new_structure = editor.morph(structure, _type)
-        editor.select_structures([new_structure])
+        new_structure = pipeline.morph(structure, _type)
+        pipeline.select_structures([new_structure])
         app().update()

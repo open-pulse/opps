@@ -114,17 +114,16 @@ class MainWindow(QMainWindow):
 
     def delete_selection_callback(self):
         return
-        editor = self.render_widget.editor
-        editor.delete_selection()
+        pipeline = self.render_widget.pipeline
+        pipeline.delete_selection()
         app().update()
 
     def selection_callback(self):
-        return
         if isinstance(self.floating_widget, AddStructuresWidget):
             if self.floating_widget.isVisible():
                 return
 
-        editor = self.render_widget.editor
-        something_selected = editor.selected_points or editor.selected_structures
+        pipeline = self.render_widget.pipeline
+        something_selected = pipeline.selected_points or pipeline.selected_structures
         if something_selected:
             self.start_edition_mode()

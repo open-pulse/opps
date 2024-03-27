@@ -32,11 +32,11 @@ class EditPointWidget(QWidget):
     def update(self):
         super().update()
 
-        editor = self.render_widget.editor
-        if not editor.selected_points:
+        pipeline = self.render_widget.pipeline
+        if not pipeline.selected_points:
             return
 
-        *_, last_point = editor.selected_points
+        *_, last_point = pipeline.selected_points
         if not isinstance(last_point, Point):
             return
 
@@ -44,7 +44,7 @@ class EditPointWidget(QWidget):
         self.dy_box.setText(str(round(last_point.y, 3)))
         self.dz_box.setText(str(round(last_point.z, 3)))
 
-        enable = last_point in app().geometry_toolbox.pipeline.control_points
+        enable = last_point in pipeline.points
         self.dx_box.setEnabled(enable)
         self.dy_box.setEnabled(enable)
         self.dz_box.setEnabled(enable)
@@ -84,11 +84,11 @@ class EditPointWidget(QWidget):
         return dx, dy, dz
 
     def position_edited_callback(self):
-        editor = self.render_widget.editor
-        if not editor.selected_points:
+        pipeline = self.render_widget.pipeline
+        if not pipeline.selected_points:
             return
 
-        *_, last_point = editor.selected_points
+        *_, last_point = pipeline.selected_points
         if not isinstance(last_point, Point):
             return
 
@@ -97,26 +97,26 @@ class EditPointWidget(QWidget):
         except ValueError:
             return
 
-        last_point.set_coords(x, y, z)
+        pipeline.move_point(last_point, (x, y, z))
         app().update()
 
     def flange_callback(self):
-        editor = self.render_widget.editor
-        editor.add_flange()
-        editor.commit()
-        editor.clear_selection()
+        pipeline = self.render_widget.pipeline
+        pipeline.add_flange()
+        pipeline.commit()
+        pipeline.clear_selection()
         app().update()
 
     def bend_callback(self):
-        editor = self.render_widget.editor
-        editor.add_bend()
-        editor.commit()
-        editor.clear_selection()
+        pipeline = self.render_widget.pipeline
+        pipeline.add_bend()
+        pipeline.commit()
+        pipeline.clear_selection()
         app().update()
 
     def elbow_callback(self):
-        editor = self.render_widget.editor
-        editor.add_elbow()
-        editor.commit()
-        editor.clear_selection()
+        pipeline = self.render_widget.pipeline
+        pipeline.add_elbow()
+        pipeline.commit()
+        pipeline.clear_selection()
         app().update()

@@ -45,7 +45,7 @@ class EditStructuresWidget(QWidget):
 
         self.configure_window()
 
-        # self.render_widget.selection_changed.connect(self.selection_callback)
+        self.render_widget.selection_changed.connect(self.selection_callback)
         self.selection_callback()
 
     def configure_window(self):
