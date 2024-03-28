@@ -73,7 +73,7 @@ class AddStructuresWidget(QWidget):
         pipeline = self.render_widget.pipeline
 
         pipeline.dismiss()
-        pipeline.add_bent_pipe((dx, dy, dz), 0.3)
+        pipeline.add_bent_pipe((dx, dy, dz), radius)
         self.render_widget.update_plot()
 
     def add_flange_callback(self):
@@ -83,8 +83,9 @@ class AddStructuresWidget(QWidget):
         return
 
     def auto_bend_callback(self, checked):
-        editor = self.render_widget.editor
-        editor.dismiss()
+        pipeline = self.render_widget.pipeline
+        pipeline.dismiss()
+        self.coords_modified_callback()
 
     def apply_callback(self):
         try:
