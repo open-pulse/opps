@@ -158,13 +158,16 @@ class Pipeline(Structure):
 
     # Main Editor
     def add_pipe(self, deltas):
-        self.main_editor.add_pipe(deltas)
+        return self.main_editor.add_pipe(deltas)
 
     def add_bend(self, curvature_radius):
-        self.main_editor.add_bend(curvature_radius)
+        return self.main_editor.add_bend(curvature_radius)
     
+    def add_flange(self):
+        return self.main_editor.add_flange()
+
     def add_bent_pipe(self, deltas, curvature_radius):
-        self.main_editor.add_bent_pipe(deltas, curvature_radius)
+        return self.main_editor.add_bent_pipe(deltas, curvature_radius)
 
     def recalculate_curvatures(self):
         self.main_editor.recalculate_curvatures()

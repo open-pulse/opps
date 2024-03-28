@@ -13,8 +13,12 @@ class PointsEditor:
     
     def attatch_point(self, point: Point):
         replaced_points = []
+
         for structure in self.pipeline.structures:
             for p in structure.get_points():
+                if id(p) == id(point):
+                    continue
+
                 if np.allclose(p.coords(), point.coords()):
                     structure.replace_point(p, point)
                     replaced_points.append(p)
