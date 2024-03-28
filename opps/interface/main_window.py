@@ -113,7 +113,6 @@ class MainWindow(QMainWindow):
         self.floating_widget.show()
 
     def delete_selection_callback(self):
-        return
         pipeline = self.render_widget.pipeline
         pipeline.delete_selection()
         app().update()

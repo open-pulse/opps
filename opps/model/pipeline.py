@@ -86,13 +86,42 @@ class Pipeline(Structure):
         self.staged_structures.append(structure)
         self.add_points(structure.get_points())
 
-    def remove_point(self, point: Point):
+    def remove_point(self, point: Point, rejoin=True):
+        if not isinstance(point, Point):
+            return
+
         for i in self.get_point_indexes(point):
             self.points.pop(i)
 
-    def remove_structure(self, structure: Structure):
+        structures_to_remove = []
+        for structure in self.structures:
+            if point in structure.get_points():
+                structures_to_remove.append(structure)
+
+        for structure in structures_to_remove:
+            self.remove_structure(structure, rejoin)
+
+    def remove_structure(self, structure: Structure, rejoin=True):
+        if not isinstance(structure, Structure):
+            return
+
+        if rejoin and isinstance(structure, Bend | Elbow):
+            structure.colapse()
+
         for i in self.get_structure_indexes(structure):
             self.structures.pop(i)
+        
+        if rejoin and isinstance(structure, Bend | Elbow):
+            self.attatch_point(structure.corner)            
+    
+    def delete_selection(self):
+        for structure in self.selected_structures:
+            self.remove_structure(structure, rejoin=True)
+        
+        for point in self.selected_points:
+            self.remove_point(point, rejoin=False)
+        
+        self.clear_selection()
 
     # Essential functions plural
     def add_points(self, points: list[Point]):

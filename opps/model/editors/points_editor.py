@@ -12,10 +12,16 @@ class PointsEditor:
         self.pipeline = pipeline
     
     def attatch_point(self, point: Point):
+        replaced_points = []
         for structure in self.pipeline.structures:
             for p in structure.get_points():
                 if np.allclose(p.coords(), point.coords()):
                     structure.replace_point(p, point)
+                    replaced_points.append(p)
+
+        for point in replaced_points:
+            for i in self.pipeline.get_point_indexes(point):
+                self.pipeline.points.pop(i)
 
     def dettatch_point(self, point: Point):
         detatched = []
