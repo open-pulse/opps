@@ -96,10 +96,22 @@ class MainEditor:
                 continue
 
             vec_a, vec_b = a_vectors[0], b_vectors[0]
-            if abs(np.dot(vec_a, vec_b)) == 1:
-                return None
+            angle_between_pipes = np.arccos(np.dot(vec_a, vec_b))
+
+            if angle_between_pipes == 0:
+                to_remove.append(bend)
+                continue
+
+            if angle_between_pipes == np.pi:  # 180º
+                to_remove.append(bend)
+                continue
 
             bend.normalize_values_vector(vec_a, vec_b)
+
+        # Removing collapsed bends feels weird for users.
+        # If you still want this for some reason discomment
+        # the following line:
+        # self.pipeline.remove_structures(to_remove)
 
     def _get_bend_vectors(self, point: Point):
         directions = self._get_point_vectors(point)
