@@ -109,7 +109,7 @@ class EditPointWidget(QWidget):
 
     def bend_callback(self):
         pipeline = self.render_widget.pipeline
-        pipeline.add_bend()
+        pipeline.add_bend(0.3)
         pipeline.commit()
         pipeline.clear_selection()
         app().update()
