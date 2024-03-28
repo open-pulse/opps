@@ -87,9 +87,14 @@ class AddStructuresWidget(QWidget):
         editor.dismiss()
 
     def apply_callback(self):
-        dx, dy, dz = self.get_displacement()
+        try:
+            dx, dy, dz = self.get_displacement()
+        except ValueError:
+            return
+
         if (dx, dy, dz) == (0, 0, 0):
             return
+
         pipeline = self.render_widget.pipeline
         pipeline.commit()
         self.coords_modified_callback()
