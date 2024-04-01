@@ -12,8 +12,11 @@ class MainEditor:
         self.next_border = list()
 
     def add_pipe(self, deltas):
+        if not np.array(deltas).any():  # all zeros
+            return []
+
         pipes = list()
- 
+
         for point in self.pipeline.selected_points:
             next_point = Point(*(point.coords() + deltas))
             self.next_border.append(next_point)
@@ -21,11 +24,12 @@ class MainEditor:
             self.pipeline.add_structure(pipe)
             pipes.append(pipe)
 
+        self._colapse_overloaded_bend()
+
         return pipes
 
     def add_bend(self, curvature_radius, allow_dangling=False) -> Bend | None:        
         bends = list()
-
         for point in self.pipeline.selected_points:
             vec_a, vec_b, dangling = self._get_bend_vectors(point)
             if dangling and not allow_dangling:
@@ -80,8 +84,6 @@ class MainEditor:
             if bend.auto:
                 bend.colapse()
 
-        to_remove = []
-
         for flange in self.pipeline.structures_of_type(Flange):
             if not flange.auto:
                 continue
@@ -100,18 +102,15 @@ class MainEditor:
             b_vectors = self._get_point_vectors(bend.end)
 
             if (not a_vectors) or  (not b_vectors):
-                to_remove.append(bend)
                 continue
 
             vec_a, vec_b = a_vectors[0], b_vectors[0]
             angle_between_pipes = np.arccos(np.dot(vec_a, vec_b))
 
             if angle_between_pipes == 0:
-                to_remove.append(bend)
                 continue
 
             if angle_between_pipes == np.pi:  # 180º
-                to_remove.append(bend)
                 continue
 
             bend.normalize_values_vector(vec_a, vec_b)
@@ -119,8 +118,29 @@ class MainEditor:
         # Removing collapsed bends feels weird for users.
         # If you still want this for some reason discomment
         # the following line:
-        # self.pipeline.remove_structures(to_remove)
+        # self.remove_collapsed_bends()
 
+
+    def remove_collapsed_bends(self):
+        to_remove = []
+        for bend in self.pipeline.structures_of_type(Bend):
+            if bend.is_colapsed():
+                to_remove.append(bend)
+        self.pipeline.remove_structures(to_remove)
+        return to_remove
+
+    def _colapse_overloaded_bend(self):
+        '''
+        If a bend, that should connect only two pipes, has a third connection
+        or more, this function will colapse it.
+        Then, during the commit, these colapsed bends can be safelly removed.
+        '''
+
+        for point in self.pipeline.selected_points:
+            for bend in self.pipeline.structures_of_type(Bend):
+                if id(bend.corner) == id(point):
+                    bend.colapse()
+        
     def _get_bend_vectors(self, point: Point):
         directions = self._get_point_vectors(point)
 

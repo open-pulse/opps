@@ -56,6 +56,8 @@ class Pipeline(Structure):
 
     # Essential functions
     def commit(self):
+        self.main_editor.remove_collapsed_bends()
+
         for structure in self.staged_structures:
             structure.staged = False
 
@@ -74,9 +76,12 @@ class Pipeline(Structure):
         for structure in self.staged_structures:
             if isinstance(structure, Bend):
                 structure.colapse()
+
         self.staged_points.clear()
         self.staged_structures.clear()
         self.main_editor.next_border.clear()
+
+        self.main_editor.recalculate_curvatures()
 
     def add_point(self, point: Point):
         self.staged_points.append(point)
