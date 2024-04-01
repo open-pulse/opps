@@ -4,6 +4,7 @@ import vtk
 from opps.interface.viewer_3d.utils.cross_section_sources import (
     rectangular_beam_data,
 )
+from opps.interface.viewer_3d.utils.cell_utils import paint_data
 from opps.interface.viewer_3d.utils.rotations import align_y_rotations
 from opps.model import RectangularBeam
 
@@ -20,8 +21,11 @@ class RectangularBeamActor(vtk.vtkActor):
             length, self.beam.width, self.beam.height, self.beam.thickness
         )
 
+        x, y, z = self.beam.start.coords()
         rx, ry, rz = align_y_rotations(vector)
+
         transform = vtk.vtkTransform()
+        transform.Translate(x, y, z)
         transform.RotateZ(-np.degrees(rz))
         transform.RotateY(-np.degrees(ry))
         transform.RotateX(-np.degrees(rx))
@@ -33,7 +37,11 @@ class RectangularBeamActor(vtk.vtkActor):
         transform_filter.SetTransform(transform)
         transform_filter.Update()
 
+        data = transform_filter.GetOutput()
+        color = self.beam.color
+        paint_data(data, color)
+
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(transform_filter.GetOutput())
+        mapper.SetInputData(data)
         mapper.SetScalarModeToUseCellData()
         self.SetMapper(mapper)

@@ -4,6 +4,7 @@ from typing import Generator, TypeVar
 import numpy as np
 
 from opps.model.editors.main_editor import MainEditor
+from opps.model.editors.beam_editor import BeamEditor
 from opps.model.editors.points_editor import PointsEditor
 from opps.model.editors.selection_editor import SelectionEditor
 
@@ -39,6 +40,7 @@ class Pipeline(Structure):
         # most of the functions are a facade, and their actual
         # implementation is handled by one of the following editors.
         self.main_editor = MainEditor(self)
+        self.beam_editor = BeamEditor(self)
         self.points_editor = PointsEditor(self)
         self.selection_editor = SelectionEditor(self)
 
@@ -66,8 +68,10 @@ class Pipeline(Structure):
         self.structures.extend(self.staged_structures)
 
         # select the points to continue the creation
-        self.select_points(self.main_editor.next_border)
+        next_border = self.main_editor.next_border + self.beam_editor.next_border
+        self.select_points(next_border)
         self.main_editor.next_border.clear()
+        self.beam_editor.next_border.clear()
 
         self.staged_points.clear()
         self.staged_structures.clear()
@@ -81,6 +85,7 @@ class Pipeline(Structure):
         self.staged_points.clear()
         self.staged_structures.clear()
         self.main_editor.next_border.clear()
+        self.beam_editor.next_border.clear()
 
         self.main_editor.recalculate_curvatures()
 
@@ -180,6 +185,22 @@ class Pipeline(Structure):
 
     def recalculate_curvatures(self):
         self.main_editor.recalculate_curvatures()
+    
+    # Beam Editor
+    def add_circular_beam(self, deltas):
+        return self.beam_editor.add_circular_beam(deltas)
+
+    def add_rectangular_beam(self, deltas):
+        return self.beam_editor.add_rectangular_beam(deltas)
+
+    def add_c_beam(self, deltas):
+        return self.beam_editor.add_c_beam(deltas)
+
+    def add_t_beam(self, deltas):
+        return self.beam_editor.add_t_beam(deltas)
+
+    def add_i_beam(self, deltas):
+        return self.beam_editor.add_i_beam(deltas)
 
     # Points Editor
     def attatch_point(self, point: Point):
