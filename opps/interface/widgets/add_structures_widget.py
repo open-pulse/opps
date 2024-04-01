@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (
 )
 
 from opps import UI_DIR, app
+from opps.interface.viewer_3d.render_widgets.editor_render_widget import EditorRenderWidget
 
 
 class AddStructuresWidget(QWidget):
@@ -23,7 +24,7 @@ class AddStructuresWidget(QWidget):
     # applied = pyqtSignal(float, float, float)
     on_close = pyqtSignal()
 
-    def __init__(self, render_widget, parent):
+    def __init__(self, render_widget: EditorRenderWidget, parent):
         super().__init__(parent)
         uic.loadUi(UI_DIR / "add_structure.ui", self)
 

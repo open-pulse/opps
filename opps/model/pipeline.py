@@ -163,17 +163,20 @@ class Pipeline(Structure):
         return indexes
 
     # Main Editor
-    def add_pipe(self, deltas):
-        return self.main_editor.add_pipe(deltas)
+    def add_pipe(self, deltas, **kwargs):
+        return self.main_editor.add_pipe(deltas, **kwargs)
 
-    def add_bend(self, curvature_radius):
-        return self.main_editor.add_bend(curvature_radius)
+    def add_bend(self, curvature_radius, **kwargs):
+        return self.main_editor.add_bend(curvature_radius, **kwargs)
 
-    def add_flange(self):
-        return self.main_editor.add_flange()
+    def add_flange(self, **kwargs):
+        return self.main_editor.add_flange(**kwargs)
 
-    def add_bent_pipe(self, deltas, curvature_radius):
-        return self.main_editor.add_bent_pipe(deltas, curvature_radius)
+    def add_bent_pipe(self, deltas, curvature_radius, **kwargs):
+        return self.main_editor.add_bent_pipe(deltas, curvature_radius, **kwargs)
+
+    def add_reducer_eccentric(self, deltas, **kwargs):
+        return self.main_editor.add_reducer_eccentric(deltas, **kwargs)
 
     def recalculate_curvatures(self):
         self.main_editor.recalculate_curvatures()

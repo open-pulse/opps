@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 
-from opps.model import Bend, Flange, Pipe, Point
+from opps.model import ReducerEccentric, Bend, Flange, Pipe, Point
 
 
 class MainEditor:
@@ -13,7 +13,7 @@ class MainEditor:
         self.pipeline = pipeline
         self.next_border = list()
 
-    def add_pipe(self, deltas):
+    def add_pipe(self, deltas: tuple[float, float, float], **kwargs) -> list[Pipe]:
         if not np.array(deltas).any():  # all zeros
             return []
 
@@ -22,27 +22,27 @@ class MainEditor:
         for point in self.pipeline.selected_points:
             next_point = Point(*(point.coords() + deltas))
             self.next_border.append(next_point)
-            pipe = Pipe(point, next_point)
+            pipe = Pipe(point, next_point, **kwargs)
             self.pipeline.add_structure(pipe)
             pipes.append(pipe)
 
-        self._colapse_overloaded_bend()
+        self._colapse_overloaded_bends()
 
         return pipes
 
-    def add_bend(self, curvature_radius, allow_dangling=False) -> Bend | None:
+    def add_bend(self, curvature_radius: float, allow_dangling=False, **kwargs) -> list[Bend]:
         bends = list()
         for point in self.pipeline.selected_points:
             vec_a, vec_b, dangling = self._get_bend_vectors(point)
             if dangling and not allow_dangling:
-                return None
+                return []
 
             angle_between_pipes = np.arccos(np.dot(vec_a, vec_b))
             if angle_between_pipes == 0:
-                return None
+                return []
 
             if angle_between_pipes == np.pi:  # 180º
-                return None
+                return []
 
             start = point
             corner = point.copy()
@@ -54,14 +54,14 @@ class MainEditor:
             if len(detatched) >= 1:
                 end = detatched[0]
 
-            bend = Bend(start, end, corner, curvature_radius)
+            bend = Bend(start, end, corner, curvature_radius, **kwargs)
             bend.normalize_values_vector(vec_a, vec_b)
             self.pipeline.add_structure(bend)
             bends.append(bend)
 
         return bends
 
-    def add_flange(self):
+    def add_flange(self, **kwargs) -> list[Flange]:
         flanges = list()
 
         for point in self.pipeline.selected_points:
@@ -69,16 +69,30 @@ class MainEditor:
             vectors.append(np.array([1, 0, 0]))  # the default flange points to the right
 
             normal, *_ = vectors
-            flange = Flange(point, normal=normal)
+            flange = Flange(point, normal=normal, **kwargs)
             self.pipeline.add_structure(flange)
             flanges.append(flange)
 
         return flanges
 
-    def add_bent_pipe(self, deltas, curvature_radius):
-        pipe = self.add_pipe(deltas)
-        bend = self.add_bend(curvature_radius)
-        return bend, pipe
+    def add_bent_pipe(self, deltas: tuple[float, float, float], curvature_radius: float, **kwargs) -> list[Pipe | Bend]:
+        pipes  = self.add_pipe(deltas, **kwargs)
+        bends  = self.add_bend(curvature_radius, **kwargs)
+        return bends + pipes
+
+    def add_reducer_eccentric(self, deltas: tuple[float, float, float], **kwargs) -> list[ReducerEccentric]:
+        reducers = []
+
+        for point in self.pipeline.selected_points:
+            next_point = Point(*(point.coords() + deltas))
+            self.next_border.append(next_point)
+            reducer = ReducerEccentric(point, next_point, **kwargs)
+            self.pipeline.add_structure(reducer)
+            reducers.append(reducer)
+
+        self._colapse_overloaded_bends()
+
+        return reducers
 
     def recalculate_curvatures(self):
         # collapse all curvatures
@@ -130,7 +144,7 @@ class MainEditor:
         self.pipeline.remove_structures(to_remove)
         return to_remove
 
-    def _colapse_overloaded_bend(self):
+    def _colapse_overloaded_bends(self):
         """
         If a bend, that should connect only two pipes, has a third connection
         or more, this function will colapse it.
