@@ -2,11 +2,7 @@ from pathlib import Path
 
 import numpy as np
 
-from opps.model import Bend
-from opps.model import Elbow
-from opps.model import Flange
-from opps.model import Pipe
-from opps.model import Point
+from opps.model import Bend, Elbow, Flange, Pipe, Point
 
 
 class PCFExporter:

@@ -1,9 +1,11 @@
-import vtk
 import numpy as np
+import vtk
 
-from opps.model import CircularBeam
-from opps.interface.viewer_3d.utils.cross_section_sources import circular_beam_data
+from opps.interface.viewer_3d.utils.cross_section_sources import (
+    circular_beam_data,
+)
 from opps.interface.viewer_3d.utils.rotations import align_y_rotations
+from opps.model import CircularBeam
 
 
 class CircularBeamActor(vtk.vtkActor):
@@ -21,7 +23,7 @@ class CircularBeamActor(vtk.vtkActor):
         transform.RotateZ(-np.degrees(rz))
         transform.RotateY(-np.degrees(ry))
         transform.RotateX(-np.degrees(rx))
-        transform.Translate(0, length/2, 0)
+        transform.Translate(0, length / 2, 0)
         transform.Update()
 
         transform_filter = vtk.vtkTransformFilter()

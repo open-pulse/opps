@@ -6,8 +6,8 @@ def align_y_rotations(vector):
     rx, ry, rz = 0, 0, 0
 
     xy_length = np.sqrt(x * x + y * y)
-    vector_length = np.sqrt(x*x + y*y + z*z)
-    
+    vector_length = np.sqrt(x * x + y * y + z * z)
+
     if xy_length:
         rz = np.arccos(y / xy_length)
 

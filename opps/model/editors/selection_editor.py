@@ -1,12 +1,13 @@
+from typing import TYPE_CHECKING
+
 import numpy as np
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from opps.model import Pipeline
 
 
 class SelectionEditor:
-    def __init__(self, pipeline: 'Pipeline') -> None:
+    def __init__(self, pipeline: "Pipeline") -> None:
         self.pipeline = pipeline
 
     def select_points(self, points, join=False, remove=False):
@@ -14,7 +15,7 @@ class SelectionEditor:
 
         if not points:
             return
-        
+
         current_selection = set(self.pipeline.selected_points)
 
         if join and remove:
@@ -25,7 +26,7 @@ class SelectionEditor:
             current_selection -= points
         else:
             current_selection = points
-        
+
         self.pipeline.selected_points = list(current_selection)
 
     def select_structures(self, structures, join=False, remove=False):
@@ -33,7 +34,7 @@ class SelectionEditor:
 
         if not structures:
             return
-        
+
         current_selection = set(self.pipeline.selected_structures)
 
         # clear all the selected flags
@@ -53,7 +54,7 @@ class SelectionEditor:
         # apply the selection flag again for selected structures
         for structure in current_selection:
             structure.selected = True
-        
+
         self.pipeline.selected_structures = list(current_selection)
 
     def clear_selection(self):

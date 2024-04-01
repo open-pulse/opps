@@ -3,9 +3,7 @@ import math
 import gmsh
 import numpy as np
 
-from opps.model import Point
-from opps.model import Bend
-from opps.model import Pipe
+from opps.model import Bend, Pipe, Point
 from opps.model.editors.pipeline_editor import PipelineEditor
 
 

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from .structure import Structure
+
 from .point import Point
+from .structure import Structure
 
 
 @dataclass

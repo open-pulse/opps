@@ -1,16 +1,17 @@
+from typing import TYPE_CHECKING
+
 import numpy as np
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from opps.model import Pipeline
 
-from opps.model import Point, Bend
+from opps.model import Bend, Point
 
 
 class PointsEditor:
-    def __init__(self, pipeline: 'Pipeline') -> None:
+    def __init__(self, pipeline: "Pipeline") -> None:
         self.pipeline = pipeline
-    
+
     def attatch_point(self, point: Point):
         replaced_points = []
 
@@ -34,7 +35,7 @@ class PointsEditor:
             if point not in structure.get_points():
                 continue
 
-            # we still want to keep the currenc point in the 
+            # we still want to keep the currenc point in the
             # pipeline so we only substitute the next ones.
             if first_point:
                 first_point = False

@@ -1,6 +1,3 @@
-from PyQt5.QtCore import QObject, pyqtSignal
-from opps.model import Pipeline
-
 from pathlib import Path
 from typing import Generator
 
@@ -11,13 +8,7 @@ from opps.io.cad_file.cad_handler import *
 from opps.io.cad_file.step_handler import StepHandler
 from opps.io.pcf.pcf_exporter import PCFExporter
 from opps.io.pcf.pcf_handler import PCFHandler
-from opps.model import Pipeline
-from opps.model import Structure, Point
-from opps.io.cad_file.step_handler import StepHandler
-from opps.io.pcf.pcf_handler import PCFHandler
-from opps.io.pcf.pcf_exporter import PCFExporter
-from opps.interface import main_window
-from opps.model import RectangularBeam
+from opps.model import Pipeline, Point, RectangularBeam, Structure
 
 
 class GeometryToolbox(QObject):
@@ -88,7 +79,7 @@ class GeometryToolbox(QObject):
         return self.selected_structures
 
     def delete_selection(self):
-        return 
+        return
         for structure in self.get_selected_structures():
             self.editor.remove_structure(structure, rejoin=True)
 

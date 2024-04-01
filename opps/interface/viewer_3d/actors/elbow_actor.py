@@ -2,8 +2,8 @@ import numpy as np
 import vtk
 
 from opps.interface.viewer_3d.actors.flange_actor import FlangeActor
-from opps.model import Elbow, Flange
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
+from opps.model import Elbow, Flange
 
 
 class ElbowActor(vtk.vtkActor):

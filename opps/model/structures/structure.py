@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from opps.model import Point
+
 
 class Structure:
     color: tuple[int, int, int] = (255, 255, 255)
@@ -16,7 +18,7 @@ class Structure:
             self.__extra_info = dict()
         return self.__extra_info
 
-    def get_points(self) -> list['Point']:
+    def get_points(self) -> list["Point"]:
         raise NotImplementedError()
 
     def replace_point(self, old, new):

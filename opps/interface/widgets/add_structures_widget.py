@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import (
 
 from opps import UI_DIR, app
 
+
 class AddStructuresWidget(QWidget):
     # index_changed = pyqtSignal(int)
     # modified = pyqtSignal(float, float, float)
@@ -67,7 +68,7 @@ class AddStructuresWidget(QWidget):
             dx, dy, dz = self.get_displacement()
         except ValueError:
             return
-        
+
         auto_bend = self.bend_checkbox.isChecked()
         radius = 0.3 if auto_bend else 0
         pipeline = self.render_widget.pipeline

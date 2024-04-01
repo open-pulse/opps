@@ -1,9 +1,11 @@
-import vtk
 import numpy as np
+import vtk
 
-from opps.model import ReducerEccentric
-from opps.interface.viewer_3d.utils.cross_section_sources import eccentric_reducer_data
+from opps.interface.viewer_3d.utils.cross_section_sources import (
+    eccentric_reducer_data,
+)
 from opps.interface.viewer_3d.utils.rotations import align_y_rotations
+from opps.model import ReducerEccentric
 
 
 class ReducerEccentricActor(vtk.vtkActor):
@@ -15,11 +17,11 @@ class ReducerEccentricActor(vtk.vtkActor):
         vector = self.reducer.end.coords() - self.reducer.start.coords()
         length = np.linalg.norm(vector)
         source = eccentric_reducer_data(
-            length, 
-            self.reducer.start_diameter, 
+            length,
+            self.reducer.start_diameter,
             self.reducer.end_diameter,
             self.reducer.offset_y,
-            self.reducer.offset_z
+            self.reducer.offset_z,
         )
 
         rx, ry, rz = align_y_rotations(vector)
@@ -27,7 +29,7 @@ class ReducerEccentricActor(vtk.vtkActor):
         transform.RotateZ(-np.degrees(rz))
         transform.RotateY(-np.degrees(ry))
         transform.RotateX(-np.degrees(rx))
-        transform.Translate(0, length/2, 0)
+        transform.Translate(0, length / 2, 0)
         transform.Update()
 
         transform_filter = vtk.vtkTransformFilter()

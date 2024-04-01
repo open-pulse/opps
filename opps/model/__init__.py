@@ -1,2 +1,2 @@
-from .structures import *
 from .pipeline import Pipeline
+from .structures import *

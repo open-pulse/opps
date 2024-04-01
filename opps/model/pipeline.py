@@ -1,20 +1,19 @@
 from itertools import chain
-from typing import TypeVar, Generator
+from typing import Generator, TypeVar
 
 import numpy as np
 
+from opps.model.editors.main_editor import MainEditor
+from opps.model.editors.points_editor import PointsEditor
+from opps.model.editors.selection_editor import SelectionEditor
+
+from .structures.beam import Beam
 from .structures.bend import Bend
 from .structures.elbow import Elbow
 from .structures.flange import Flange
 from .structures.pipe import Pipe
 from .structures.point import Point
 from .structures.structure import Structure
-from .structures.beam import Beam
-
-from opps.model.editors.main_editor import MainEditor
-from opps.model.editors.selection_editor import SelectionEditor
-from opps.model.editors.points_editor import PointsEditor
-
 
 # only to help the editor, ignore it
 generic_type = TypeVar("generic_type")
@@ -49,7 +48,9 @@ class Pipeline(Structure):
     def all_structures(self):
         return chain(self.structures, self.staged_structures)
 
-    def structures_of_type(self, structure_type: generic_type) -> Generator[generic_type, None, None]:
+    def structures_of_type(
+        self, structure_type: generic_type
+    ) -> Generator[generic_type, None, None]:
         for structure in self.all_structures():
             if isinstance(structure, structure_type):
                 yield structure
@@ -115,17 +116,17 @@ class Pipeline(Structure):
 
         for i in self.get_structure_indexes(structure):
             self.structures.pop(i)
-        
+
         if rejoin and isinstance(structure, Bend | Elbow):
-            self.attatch_point(structure.corner)            
-    
+            self.attatch_point(structure.corner)
+
     def delete_selection(self):
         for structure in self.selected_structures:
             self.remove_structure(structure, rejoin=True)
-        
+
         for point in self.selected_points:
             self.remove_point(point, rejoin=False)
-        
+
         self.clear_selection()
 
     # Essential functions plural
@@ -167,7 +168,7 @@ class Pipeline(Structure):
 
     def add_bend(self, curvature_radius):
         return self.main_editor.add_bend(curvature_radius)
-    
+
     def add_flange(self):
         return self.main_editor.add_flange()
 
@@ -177,7 +178,7 @@ class Pipeline(Structure):
     def recalculate_curvatures(self):
         self.main_editor.recalculate_curvatures()
 
-    # Points Editor 
+    # Points Editor
     def attatch_point(self, point: Point):
         self.points_editor.attatch_point(point)
 
@@ -199,7 +200,7 @@ class Pipeline(Structure):
 
     def clear_selection(self):
         self.selection_editor.clear_selection()
-    
+
     # Common
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipeline_actor import (
@@ -210,11 +211,6 @@ class Pipeline(Structure):
 
     def __hash__(self) -> int:
         return id(self)
-
-
-
-
-
 
     def _update_flanges(self):
         return
@@ -318,4 +314,3 @@ class Pipeline(Structure):
                 oposite_points.append(pipe.start)
 
         return oposite_points
-

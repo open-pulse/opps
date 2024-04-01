@@ -1,7 +1,7 @@
 import vtk
 
-from opps.model import Bend
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
+from opps.model import Bend
 
 
 class BendActor(vtk.vtkActor):
