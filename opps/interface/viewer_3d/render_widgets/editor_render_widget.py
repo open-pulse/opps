@@ -1,5 +1,8 @@
 from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from opps.model import Pipeline
+
 import numpy as np
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication
@@ -12,9 +15,6 @@ from opps.interface.viewer_3d.actors import (
     PassivePointsActor,
     SelectedPointsActor,
 )
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
 
 
 class EditorRenderWidget(CommonRenderWidget):

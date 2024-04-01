@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from opps.model import Pipeline
+
 import numpy as np
 
 from opps.model import Bend, Flange, Pipe, Point
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
 
 
 class MainEditor:
