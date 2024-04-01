@@ -32,17 +32,31 @@ class MainEditor:
 
     def add_bend(self, curvature_radius: float, allow_dangling=False, **kwargs) -> list[Bend]:
         bends = list()
+
+        if curvature_radius <= 0:
+            return bends
+
         for point in self.pipeline.selected_points:
             vec_a, vec_b, dangling = self._get_bend_vectors(point)
             if dangling and not allow_dangling:
-                return []
+                continue
 
             angle_between_pipes = np.arccos(np.dot(vec_a, vec_b))
             if angle_between_pipes == 0:
-                return []
+                continue
 
             if angle_between_pipes == np.pi:  # 180º
-                return []
+                continue
+
+            bend_exists = False
+            for bend in self.pipeline.structures_of_type(Bend):
+                if point in bend.get_points():
+                    bend_exists = True
+                    break
+
+            # Do not put a bend over another
+            if bend_exists:
+                continue
 
             start = point
             corner = point.copy()
