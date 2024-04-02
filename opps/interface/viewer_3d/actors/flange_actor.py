@@ -2,6 +2,7 @@ import numpy as np
 import vtk
 
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
+from opps.interface.viewer_3d.utils.cross_section_sources import flange_data
 from opps.model import Flange
 
 
@@ -12,41 +13,7 @@ class FlangeActor(vtk.vtkActor):
 
     def create_geometry(self):
         width = 0.15 * self.flange.diameter
-        y_vector = np.array((0, 1, 0))
-
-        disk_source = vtk.vtkDiskSource()
-        disk_source.SetCenter((0, 0, 0) - y_vector * width / 2)
-        disk_source.SetNormal(y_vector)
-        disk_source.SetInnerRadius(self.flange.diameter / 2)
-        disk_source.SetOuterRadius(self.flange.diameter / 2 + width)
-        disk_source.SetCircumferentialResolution(50)
-        disk_source.Update()
-
-        extrusion_filter = vtk.vtkLinearExtrusionFilter()
-        extrusion_filter.SetInputData(disk_source.GetOutput())
-        extrusion_filter.SetExtrusionTypeToNormalExtrusion()
-        extrusion_filter.SetVector(y_vector)
-        extrusion_filter.SetScaleFactor(width)
-        extrusion_filter.Update()
-
-        append_polydata = vtk.vtkAppendPolyData()
-        append_polydata.AddInputData(extrusion_filter.GetOutput())
-
-        number_of_bolts = 8
-        for i in range(number_of_bolts):
-            angle = i * 2 * np.pi / number_of_bolts
-            nut = vtk.vtkCylinderSource()
-            nut.SetHeight(width * 3 / 2)
-            nut.SetRadius(width / 3)
-            nut.SetCenter(
-                (self.flange.diameter / 2 + width / 2) * np.sin(angle),
-                0,
-                (self.flange.diameter / 2 + width / 2) * np.cos(angle),
-            )
-            nut.Update()
-            append_polydata.AddInputData(nut.GetOutput())
-        append_polydata.Update()
-
+        source = flange_data(width, self.flange.diameter, width)
         unit_normal = self.flange.normal / np.linalg.norm(self.flange.normal)
 
         proj_xz = self.flange.normal.copy()
@@ -68,7 +35,7 @@ class FlangeActor(vtk.vtkActor):
         transform.Update()
 
         transform_filter = vtk.vtkTransformFilter()
-        transform_filter.SetInputData(append_polydata.GetOutput())
+        transform_filter.SetInputData(source)
         transform_filter.SetTransform(transform)
         transform_filter.Update()
 

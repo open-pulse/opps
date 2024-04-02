@@ -1,4 +1,5 @@
 import vtk
+import numpy as np
 
 
 def closed_pipe_data(length, outside_diameter):
@@ -227,3 +228,25 @@ def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offse
     tube_filter.Update()
 
     return tube_filter.GetOutput()
+
+
+def flange_data(length, inside_diameter, thickness, bolts=8):
+    pipe = pipe_data(length, inside_diameter + thickness * 2, thickness)
+    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata.AddInputData(pipe)
+
+    for i in range(bolts):
+        angle = i * 2 * np.pi / bolts
+        nut = vtk.vtkCylinderSource()
+        nut.SetHeight(thickness * 3 / 2)
+        nut.SetRadius(thickness / 3)
+        nut.SetCenter(
+            (inside_diameter / 2 + thickness / 2) * np.sin(angle),
+            0,
+            (inside_diameter / 2 + thickness / 2) * np.cos(angle),
+        )
+        nut.Update()
+        append_polydata.AddInputData(nut.GetOutput())
+
+    append_polydata.Update()
+    return append_polydata.GetOutput()
