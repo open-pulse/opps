@@ -40,6 +40,10 @@ class PCFHandler:
                 pipe = self.create_pipe(group)
                 objects.append(pipe)
 
+            elif group[0].strip() == "ELBOW":
+                elbow = self.create_elbow(group)
+                objects.append(elbow)
+
             elif group[0].strip() == "BEND":
                 bend = self.create_bend(group)
                 objects.append(bend)
@@ -48,26 +52,27 @@ class PCFHandler:
                 flange = self.create_flange(group)
                 objects.append(flange)
 
-            elif group[0].strip() == "ELBOW":
-                elbow = self.create_elbow(group)
-                objects.append(elbow)
-
         return objects
 
-    def create_pipe(self, group):
-        _, x0, y0, z0, r0 = group[1].split()
-        _, x1, y1, z1, r1 = group[2].split()
+
+    def create_pipe(self,group):
+        x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence=0)
+        x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence=1)
+        thickness = self.load_parameter("R2_WALL_THK", group)
 
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
         end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
-        radius = float(r0) / 1000
+        start_diameter = float(d0) / 1000 
+        end_diameter = float(d1) / 1000 
 
-        return Pipe(start, end, radius, radius)
+        return Pipe(start, end, start_diameter, end_diameter, thickness)
 
-    def create_bend(self, group):
-        _, x0, y0, z0, d0 = group[1].split()
-        _, x1, y1, z1, d1 = group[2].split()
-        _, x2, y2, z2 = group[3].split()
+
+    def create_bend(self,group):
+        x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence= 0)
+        x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence= 1)
+        x2, y2, z2 = self.load_parameter("CENTRE-POINT", group)
+        thickness = self.load_parameter("R2_WALL_THK", group)
 
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
         end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
@@ -100,16 +105,18 @@ class PCFHandler:
         return Bend(
             start,
             end,
-            corner,
-            curvature=radius,
-            start_diameter=start_radius,
-            end_diameter=end_radius,
-            auto=False,
+            corner,  
+            curvature = radius,
+            start_diameter = start_radius,
+            end_diameter = end_radius,
+            thickness = thickness,
+            auto = False,
         )
 
-    def create_flange(self, group):
-        _, x0, y0, z0, r0 = group[1].split()
-        _, x1, y1, z1, r1 = group[2].split()
+    def create_flange(self,group):
+        x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence= 0)
+        x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence= 1)
+        thickness = self.load_parameter("R2_WALL_THK", group)
 
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
         end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
@@ -117,12 +124,14 @@ class PCFHandler:
         normal = start.coords() - end.coords()
         start_radius = float(r0) / 1000
 
-        return Flange(position, normal, start_radius)
+        return Flange(position, normal, start_radius, thickness)
 
-    def create_elbow(self, group):
-        _, x0, y0, z0, r0 = group[1].split()
-        _, x1, y1, z1, r1 = group[2].split()
-        _, x2, y2, z2 = group[3].split()
+
+    def create_elbow(self,group):
+        x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence= 0)
+        x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence= 1)
+        x2, y2, z2 = self.load_parameter("CENTRE-POINT", group)
+        thickness = self.load_parameter("R2_WALL_THK", group)
 
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
         end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
@@ -159,5 +168,23 @@ class PCFHandler:
             curvature=radius,
             start_diameter=start_radius,
             end_diameter=end_radius,
+            thickness = thickness,
             auto=False,
         )
+
+    def load_parameter(self, parameter_name: str, group: list[str], occurence: int = 0) -> list[str]:
+        
+        current_occurrence = 0
+    
+        for line in group:
+            if parameter_name not in line:
+                continue
+            parts = line.split()
+            if parts[0] != parameter_name:
+                continue
+            if current_occurrence == occurence:                    
+                return parts[1:]
+                
+            current_occurrence += 1
+                    
+        return []
