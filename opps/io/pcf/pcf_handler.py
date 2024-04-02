@@ -58,15 +58,17 @@ class PCFHandler:
 
 
     def create_pipe(self,group):
-        x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
-        x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence=1)
+        x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence=0)
+        x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence=1)
         thickness = self.load_parameter("R2_WALL_THK", group)
 
         start = Point(float(x0), float(y0), float(z0))
         end = Point(float(x1), float(y1), float(z1))
-        radius = float(r0) 
+        start_diameter = float(d0) 
+        end_diameter = float(d1) 
 
-        return Pipe(start, end, radius, radius, thickness)
+
+        return Pipe(start, end, start_diameter, end_diameter, thickness)
 
     def create_bend(self,group):
         x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence= 0)
