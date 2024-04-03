@@ -27,6 +27,13 @@ class Pipe(Structure):
             self.end,
         ]
 
+    def replace_point(self, old, new):
+        if self.start == old:
+            self.start = new
+
+        elif self.end == old:
+            self.end = new
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 
@@ -34,10 +41,3 @@ class Pipe(Structure):
 
     def __hash__(self) -> int:
         return id(self)
-
-    def replace_point(self, old, new):
-        if self.start == old:
-            self.start = new
-
-        elif self.end == old:
-            self.end = new

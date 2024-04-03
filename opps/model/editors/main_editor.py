@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 
-from opps.model import ReducerEccentric, Bend, Flange, Pipe, Point
+from opps.model import ReducerEccentric, Bend, Flange, Pipe, ExpansionJoint, Point
 
 
 class MainEditor:
@@ -93,6 +93,20 @@ class MainEditor:
         pipes  = self.add_pipe(deltas, **kwargs)
         bends  = self.add_bend(curvature_radius, **kwargs)
         return bends + pipes
+
+    def add_expansion_joint(self, deltas: tuple[float, float, float], **kwargs) -> list[ExpansionJoint]:
+        expansion_joints = []
+
+        for point in self.pipeline.selected_points:
+            next_point = Point(*(point.coords() + deltas))
+            self.next_border.append(next_point)
+            expansion_joint = ExpansionJoint(point, next_point, **kwargs)
+            self.pipeline.add_structure(expansion_joint)
+            expansion_joints.append(expansion_joint)
+
+        self._colapse_overloaded_bends()
+
+        return expansion_joints
 
     def add_reducer_eccentric(self, deltas: tuple[float, float, float], **kwargs) -> list[ReducerEccentric]:
         reducers = []

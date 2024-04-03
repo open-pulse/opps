@@ -180,6 +180,9 @@ class Pipeline(Structure):
     def add_bent_pipe(self, deltas, curvature_radius, **kwargs):
         return self.main_editor.add_bent_pipe(deltas, curvature_radius, **kwargs)
 
+    def add_expansion_joint(self, deltas, **kwargs):
+        return self.main_editor.add_expansion_joint(deltas, **kwargs)
+
     def add_reducer_eccentric(self, deltas, **kwargs):
         return self.main_editor.add_reducer_eccentric(deltas, **kwargs)
 

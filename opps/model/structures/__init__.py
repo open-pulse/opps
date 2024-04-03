@@ -6,3 +6,4 @@ from .pipe import Pipe
 from .point import Point
 from .reducer_eccentric import ReducerEccentric
 from .structure import Structure
+from .expansion_joint import ExpansionJoint
