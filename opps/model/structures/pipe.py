@@ -12,6 +12,7 @@ class Pipe(Structure):
     end: Point
     start_diameter: float = 0.1
     end_diameter: float = 0.1
+    thickness: float = 0
 
     def set_diameter(self, start_diameter, final_diameter, *args):
         self.start_diameter = start_diameter

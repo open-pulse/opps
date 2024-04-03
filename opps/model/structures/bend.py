@@ -18,6 +18,7 @@ class Bend(Structure):
     curvature: float
     start_diameter: float = 0.1
     end_diameter: float = 0.1
+    thickness: float = 0
     auto: bool = True
 
     @property
