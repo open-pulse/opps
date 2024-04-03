@@ -2,8 +2,9 @@ from itertools import pairwise
 
 import numpy as np
 
-from opps.io.pcf.pcf_handler import *
+from opps.model.point import Point
 from opps.model.bend import Bend
+from opps.model.elbow import Elbow
 from opps.model.flange import Flange
 from opps.model.pipe import Pipe
 from opps.model.structure import Structure

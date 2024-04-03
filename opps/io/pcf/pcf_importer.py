@@ -10,7 +10,7 @@ from opps.model.pipe import Pipe
 from opps.model.point import Point
 
 
-class PCFHandler:
+class PCFImporter:
     def __init__(self):
         pass
 

@@ -7,7 +7,7 @@ from opps.interface import main_window
 from opps.io.cad_file.cad_handler import *
 from opps.io.cad_file.step_handler import StepHandler
 from opps.io.pcf.pcf_exporter import PCFExporter
-from opps.io.pcf.pcf_handler import PCFHandler
+from opps.io.pcf.pcf_importer import PCFImporter
 from opps.model import Pipeline
 from opps.model.pipeline_editor import PipelineEditor
 from opps.model.point import Point
@@ -54,11 +54,12 @@ class GeometryToolbox(QObject):
             self._save_cad(path)
 
     def _open_cad(self, path):
-        StepHandler().open(path, self.editor)
+        step_handler = StepHandler()
+        step_handler.open(path, self.editor)
         self.update()
 
     def _open_pcf(self, path):
-        self.pcf_handler = PCFHandler()
+        self.pcf_handler = PCFImporter()
         self.pcf_handler.load(path, self.pipeline)
         self.update()
 
