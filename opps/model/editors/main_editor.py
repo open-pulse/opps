@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 
-from opps.model import ReducerEccentric, Bend, Flange, Pipe, ExpansionJoint, Point
+from opps.model import ReducerEccentric, Bend, Flange, Pipe, ExpansionJoint, Valve, Point
 
 
 class MainEditor:
@@ -107,6 +107,20 @@ class MainEditor:
         self._colapse_overloaded_bends()
 
         return expansion_joints
+    
+    def add_valve(self, deltas: tuple[float, float, float], **kwargs) -> list[Valve]:
+        valves = []
+
+        for point in self.pipeline.selected_points:
+            next_point = Point(*(point.coords() + deltas))
+            self.next_border.append(next_point)
+            valve = Valve(point, next_point, **kwargs)
+            self.pipeline.add_structure(valve)
+            valves.append(valve)
+
+        self._colapse_overloaded_bends()
+
+        return valves
 
     def add_reducer_eccentric(self, deltas: tuple[float, float, float], **kwargs) -> list[ReducerEccentric]:
         reducers = []

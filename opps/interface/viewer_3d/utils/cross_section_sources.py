@@ -319,3 +319,28 @@ def expansion_joint_data(length, outside_diameter, thickness):
 
     append_polydata.Update()
     return append_polydata.GetOutput()
+
+def valve_data(length, outside_diameter, thickness):
+    append_polydata = vtk.vtkAppendPolyData()
+
+    width = 0.15 * outside_diameter
+    pipe = pipe_data(length, outside_diameter, thickness)
+    start_flange = flange_data(width, outside_diameter, width)
+
+    # I just wanted to move the flange to the end of the structure
+    # but that is the only way vtk let me do it.
+    transform = vtk.vtkTransform()
+    transform.Translate(0, length - width, 0)
+    transform.Update()
+    transform_filter = vtk.vtkTransformFilter()
+    transform_filter.SetInputData(flange_data(width, outside_diameter, width))
+    transform_filter.SetTransform(transform)
+    transform_filter.Update()
+    end_flange = transform_filter.GetOutput()
+
+    append_polydata.AddInputData(pipe)
+    append_polydata.AddInputData(start_flange)
+    append_polydata.AddInputData(end_flange)
+
+    append_polydata.Update()
+    return append_polydata.GetOutput()

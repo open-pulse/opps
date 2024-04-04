@@ -183,6 +183,9 @@ class Pipeline(Structure):
     def add_expansion_joint(self, deltas, **kwargs):
         return self.main_editor.add_expansion_joint(deltas, **kwargs)
 
+    def add_valve(self, deltas, **kwargs):
+        return self.main_editor.add_valve(deltas, **kwargs)
+
     def add_reducer_eccentric(self, deltas, **kwargs):
         return self.main_editor.add_reducer_eccentric(deltas, **kwargs)
 
