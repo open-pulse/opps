@@ -155,10 +155,18 @@ class MainEditor:
         return reducers
 
     def recalculate_curvatures(self):
-        # collapse all curvatures
+        # collapse all curvatures that are in between pipes
         for bend in self.pipeline.structures_of_type(Bend):
-            if bend.auto:
-                bend.colapse()
+            a_vectors = self._get_point_vectors(bend.start)
+            b_vectors = self._get_point_vectors(bend.end)
+
+            if (not a_vectors) or (not b_vectors):
+                continue
+
+            if not bend.auto:
+                continue
+
+            bend.colapse()
 
         for flange in self.pipeline.structures_of_type(Flange):
             if not flange.auto:

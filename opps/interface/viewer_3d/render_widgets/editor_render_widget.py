@@ -206,7 +206,8 @@ class EditorRenderWidget(CommonRenderWidget):
     def update_selection(self):
         # Only dismiss structure creation if something was actually selected
         something_selected = self.pipeline.selected_points or self.pipeline.selected_structures
-        if something_selected:
+        something_staged = self.pipeline.staged_points or self.pipeline.staged_structures
+        if something_selected and something_staged:
             self.pipeline.dismiss()
 
         self.selection_changed.emit()
