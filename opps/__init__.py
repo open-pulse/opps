@@ -7,9 +7,7 @@ from PyQt5.QtWidgets import QApplication
 
 ROOT_DIR = Path(__file__).parent
 UI_DIR = ROOT_DIR / "interface/ui_files"
-
-ROOT_DIR = Path(__file__).parent
-UI_DIR = ROOT_DIR / "interface/ui_files"
+SYMBOLS_DIR = ROOT_DIR / "interface/symbol_files"
 
 
 def app() -> "Application":

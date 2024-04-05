@@ -1,6 +1,18 @@
 import vtk
 import numpy as np
 
+from opps import SYMBOLS_DIR
+
+
+def load_symbol(path):
+    reader = vtk.vtkOBJReader()
+    reader.SetFileName(str(path))
+    reader.Update()
+    return reader.GetOutput()
+
+
+VALVE_WHEEL = load_symbol(SYMBOLS_DIR / "valve_wheel.obj")
+
 
 def closed_pipe_data(length, outside_diameter):
     cilinder = vtk.vtkCylinderSource()
@@ -323,7 +335,11 @@ def expansion_joint_data(length, outside_diameter, thickness):
 def valve_data(length, outside_diameter, thickness):
     append_polydata = vtk.vtkAppendPolyData()
 
-    width = 0.15 * outside_diameter
+    if length == 0:
+        # empty poly data
+        return vtk.vtkPolyData()
+
+    width = 0.20 * outside_diameter
     pipe = pipe_data(length, outside_diameter, thickness)
     start_flange = flange_data(width, outside_diameter, width)
 
@@ -338,9 +354,71 @@ def valve_data(length, outside_diameter, thickness):
     transform_filter.Update()
     end_flange = transform_filter.GetOutput()
 
+    center_sphere = vtk.vtkSphereSource()
+    center_sphere.SetPhiResolution(20)
+    center_sphere.SetThetaResolution(20)
+    center_sphere.SetRadius(outside_diameter)
+    center_sphere.SetCenter(0, length / 2, 0)
+    center_sphere.Update()
+
+    transform = vtk.vtkTransform()
+    transform.Translate(0, length / 2, 0)
+    transform.RotateZ(90)
+    transform.Translate(0, outside_diameter / 3, 0)
+    transform.Update()
+    transform_filter = vtk.vtkTransformFilter()
+    transform_filter.SetInputData(valve_handle(outside_diameter, length / 4, width))
+    transform_filter.SetTransform(transform)
+    transform_filter.Update()
+    handle = transform_filter.GetOutput()
+
+
+
+
+
+
+
+
+
+
     append_polydata.AddInputData(pipe)
     append_polydata.AddInputData(start_flange)
     append_polydata.AddInputData(end_flange)
+    append_polydata.AddInputData(center_sphere.GetOutput())
+    append_polydata.AddInputData(handle)
 
+    append_polydata.Update()
+    return append_polydata.GetOutput()
+
+def valve_handle(outside_diameter, height, axis_diameter):
+    append_polydata = vtk.vtkAppendPolyData()
+
+    # I just wanted to move the flange to the end of the structure
+    # but that is the only way vtk let me do it.
+    transform = vtk.vtkTransform()
+    transform.Translate(0, (height - axis_diameter), 0)
+    transform.Update()
+    transform_filter = vtk.vtkTransformFilter()
+    transform_filter.SetInputData(flange_data(axis_diameter, outside_diameter, axis_diameter))
+    transform_filter.SetTransform(transform)
+    transform_filter.Update()
+    end_flange = transform_filter.GetOutput()
+
+    pipe = pipe_data(height, outside_diameter, 0)
+
+    wheel_diameter = outside_diameter * 1.5
+    transform = vtk.vtkTransform()
+    transform.Translate(0, height, 0)
+    transform.Scale(wheel_diameter, wheel_diameter, wheel_diameter)
+    transform.Update()
+    transform_filter = vtk.vtkTransformFilter()
+    transform_filter.SetInputData(VALVE_WHEEL)
+    transform_filter.SetTransform(transform)
+    transform_filter.Update()
+    wheel = transform_filter.GetOutput()
+
+    append_polydata.AddInputData(end_flange)
+    append_polydata.AddInputData(pipe)
+    append_polydata.AddInputData(wheel)
     append_polydata.Update()
     return append_polydata.GetOutput()
