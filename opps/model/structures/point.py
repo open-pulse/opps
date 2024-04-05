@@ -10,7 +10,7 @@ class Point:
     z: float
 
     def coords(self):
-        return np.array([self.x, self.y, self.z])
+        return np.array(tuple(self))
 
     def set_coords(self, x, y, z):
         self.x = x
@@ -19,6 +19,27 @@ class Point:
 
     def copy(self):
         return Point(self.x, self.y, self.z)
+
+    def __add__(self, other):
+        a = self.coords()
+        b = np.array(tuple(other))
+        return Point(*(a + b))
+
+    def __sub__(self, other):
+        a = self.coords()
+        b = np.array(tuple(other))
+        return Point(*(a - b))
+    
+    def __iadd__(self, other):
+        a = self.coords()
+        b = np.array(tuple(other))
+        self.set_coords(*(a + b))
+        return self
+
+    def __isub__(self, other):
+        a = self.coords
+        b = np.array(tuple(other))
+        self.set_coords(*(a - b))
 
     def __iter__(self):
         yield self.x
