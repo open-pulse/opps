@@ -43,23 +43,38 @@ class PCFExporter:
         return string
 
     def encoder_header(self, pipeline):
-        string = """ISOGEN-FILES            ISOGEN.FLS
-UNITS-BORE              MM 
-UNITS-CO-ORDS           MM
-UNITS-BOLT-LENGTH       MM
-UNITS-BOLT-DIA          MM
-UNITS-WEIGHT            KGS
-PIPELINE-REFERENCE      CFG1
-PIPING-SPEC         CS150
-START-CO-ORDS       0.0000       0.0000      0.0000 """
+        string = (
+            "ISOGEN-FILES            ISOGEN.FLS                  \n"
+            "UNITS-BORE              MM                          \n"
+            "UNITS-CO-ORDS           MM                          \n"
+            "UNITS-BOLT-LENGTH       MM                          \n"
+            "UNITS-BOLT-DIA          MM                          \n"
+            "UNITS-WEIGHT            KGS                         \n"
+            "PIPELINE-REFERENCE      CFG1                        \n"
+            "PIPING-SPEC         CS150                           \n"
+            "START-CO-ORDS       0.0000       0.0000      0.0000 \n"
+        )
 
         return string
 
     def encoder_pipe(self, pipe):
-        string = f"""PIPE
-    END-POINT{round(1000*pipe.start.x):>14.4f}{round(1000*pipe.start.y):>13.4f}{round(1000*pipe.start.z):>13.4f}{round(1000*pipe.start_diameter):>15.4f}  
-    END-POINT{round(1000*pipe.end.x):>14.4f}{round(1000*pipe.end.y):>13.4f}{round(1000*pipe.end.z):>13.4f}{round(1000*pipe.end_diameter):>15.4f}"""
+        start_x = round(pipe.start.x * 1_000, 5)
+        start_y = round(pipe.start.y * 1_000, 5)
+        start_z = round(pipe.start.z * 1_000, 5)
+        start_diameter = round(pipe.start_diameter * 1_000, 5)
 
+        end_x = round(pipe.end.x * 1_000, 5)
+        end_y = round(pipe.end.y * 1_000, 5)
+        end_z = round(pipe.end.z * 1_000, 5)
+        end_diameter = round(pipe.end_diameter * 1_000, 5)
+
+        # The format specifier >14 reserves 14 spaces to show the data
+        # and align it to the right
+        string = (
+            "PIPE \n"
+            f"    END-POINT {start_x:abacaxi}, {start_y:>14} {start_z:>14} {start_diameter:>14} \n"
+            f"    END-POINT {end_x:>14}, {end_y:>14} {end_z:>14} {end_diameter:>14} \n"
+        )
         return string
 
     def encoder_bend(self, bend):
