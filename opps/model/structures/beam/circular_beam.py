@@ -5,12 +5,14 @@ from opps.model.structures.point import Point
 from .beam import Beam
 
 
-@dataclass
 class CircularBeam(Beam):
-    start: Point
-    end: Point
-    diameter: float = 0.1
-    thickness: float = 0.01
+    def __init__(self, start: Point, end: Point, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.start = start
+        self.end = end
+        self.diameter = kwargs.get("diameter", 0.1)
+        self.thickness = kwargs.get("thickness", 0.1)
 
     def get_points(self):
         return [self.start, self.end]

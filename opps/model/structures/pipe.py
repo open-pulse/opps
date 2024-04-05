@@ -6,12 +6,14 @@ from .point import Point
 from .structure import Structure
 
 
-@dataclass
 class Pipe(Structure):
-    start: Point
-    end: Point
-    diameter: float = 0.1
-    thickness: float = 0
+    def __init__(self, start: Point, end: Point, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.start = start
+        self.end = end
+        self.diameter = kwargs.get("diameter", 0.1)
+        self.thickness = kwargs.get("thickness", 0.01)
 
     def set_diameter(self, diameter, *args):
         self.diameter = diameter

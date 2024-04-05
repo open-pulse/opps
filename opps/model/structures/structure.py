@@ -12,6 +12,12 @@ class Structure:
 
     __extra_info: dict = None
 
+    def __init__(self, **kwargs) -> None:
+        self.color = kwargs.get("color", (255, 255, 255))
+        self.selected = kwargs.get("selected", False)
+        self.staged = kwargs.get("staged", False)
+        self.tag = kwargs.get("tag", -1)
+
     @property
     def extra_info(self):
         if self.__extra_info is None:

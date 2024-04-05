@@ -245,7 +245,7 @@ def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offse
 
 
 def flange_data(length, inside_diameter, thickness, bolts=8):
-    pipe = pipe_data(length, inside_diameter + thickness * 2, thickness)
+    pipe = pipe_data(length, inside_diameter + thickness * 2, thickness * 2)
     append_polydata = vtk.vtkAppendPolyData()
     append_polydata.AddInputData(pipe)
 
@@ -264,6 +264,7 @@ def flange_data(length, inside_diameter, thickness, bolts=8):
 
     append_polydata.Update()
     return append_polydata.GetOutput()
+
 
 def expansion_joint_data(length, outside_diameter, thickness):
     append_polydata = vtk.vtkAppendPolyData()
@@ -331,6 +332,7 @@ def expansion_joint_data(length, outside_diameter, thickness):
     append_polydata.Update()
     return append_polydata.GetOutput()
 
+
 def valve_data(length, outside_diameter, thickness):
     append_polydata = vtk.vtkAppendPolyData()
 
@@ -371,15 +373,6 @@ def valve_data(length, outside_diameter, thickness):
     transform_filter.Update()
     handle = transform_filter.GetOutput()
 
-
-
-
-
-
-
-
-
-
     append_polydata.AddInputData(pipe)
     append_polydata.AddInputData(start_flange)
     append_polydata.AddInputData(end_flange)
@@ -388,6 +381,7 @@ def valve_data(length, outside_diameter, thickness):
 
     append_polydata.Update()
     return append_polydata.GetOutput()
+
 
 def valve_handle(outside_diameter, height, axis_diameter):
     append_polydata = vtk.vtkAppendPolyData()

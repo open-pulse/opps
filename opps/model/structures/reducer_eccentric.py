@@ -6,13 +6,16 @@ from .structure import Structure
 
 @dataclass
 class ReducerEccentric(Structure):
-    start: Point
-    end: Point
-    offset_y: float = 0
-    offset_z: float = 0
-    start_diameter: float = 0.1
-    end_diameter: float = 0.1
-    thickness: float = 0.01
+    def __init__(self, start: Point, end: Point, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.start = start
+        self.end = end
+        self.offset_y = kwargs.get("offset_y", 0)
+        self.offset_z = kwargs.get("offset_z", 0)
+        self.start_diameter = kwargs.get("start_diameter", 0.1)
+        self.end_diameter = kwargs.get("end_diameter", 0.1)
+        self.thickness = kwargs.get("thickness", 0.01)
 
     def get_points(self):
         return [self.start, self.end]

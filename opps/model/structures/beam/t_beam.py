@@ -7,13 +7,15 @@ from .beam import Beam
 
 @dataclass
 class TBeam(Beam):
-    start: Point
-    end: Point
-    _: KW_ONLY
-    height: float = 0.1
-    width: float = 0.1
-    thickness_1: float = 0.01
-    thickness_2: float = 0.01
+    def __init__(self, start: Point, end: Point, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.start = start
+        self.end = end
+        self.width = kwargs.get("width", 0.1)
+        self.height = kwargs.get("height", 0.1)
+        self.thickness_1 = kwargs.get("thickness_1", 0.01)
+        self.thickness_2 = kwargs.get("thickness_2", 0.01)
 
     def get_points(self):
         return [self.start, self.end]

@@ -7,11 +7,14 @@ from .beam import Beam
 
 @dataclass
 class RectangularBeam(Beam):
-    start: Point
-    end: Point
-    width: float = 0.1
-    height: float = 0.1
-    thickness: float = 0.01
+    def __init__(self, start: Point, end: Point, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.start = start
+        self.end = end
+        self.width = kwargs.get("width", 0.1)
+        self.height = kwargs.get("height", 0.1)
+        self.thickness = kwargs.get("thickness", 0.01)
 
     def get_points(self):
         return [self.start, self.end]

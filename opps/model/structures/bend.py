@@ -10,15 +10,17 @@ def normalize(vector):
     return vector / np.linalg.norm(vector)
 
 
-@dataclass
 class Bend(Structure):
-    start: Point
-    end: Point
-    corner: Point
-    curvature: float
-    diameter: float = 0.1
-    thickness: float = 0
-    auto: bool = True
+    def __init__(self, start: Point, end: Point, corner: Point, curvature: float, **kwargs):
+        super().__init__(**kwargs)
+
+        self.start = start
+        self.end = end
+        self.corner = corner
+        self.curvature = curvature
+        self.diameter = kwargs.get("diameter", 0.1)
+        self.thickness = kwargs.get("thickness", 0.01)
+        self.auto = True
 
     @property
     def center(self):

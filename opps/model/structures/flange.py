@@ -6,13 +6,15 @@ from .point import Point
 from .structure import Structure
 
 
-@dataclass
 class Flange(Structure):
-    position: Point
-    normal: np.ndarray
-    diameter: float = 0.1
-    thickness: float = 0 
-    auto: bool = True
+    def __init__(self, position: Point, normal: np.ndarray, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.position = position
+        self.normal = normal
+        self.diameter = kwargs.get("diameter", 0.1)
+        self.thickness = kwargs.get("thickness", 0.01)
+        self.auto = kwargs.get("auto", True)
 
     def get_points(self):
         return [self.position]
