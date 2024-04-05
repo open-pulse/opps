@@ -16,8 +16,7 @@ class Bend(Structure):
     end: Point
     corner: Point
     curvature: float
-    start_diameter: float = 0.1
-    end_diameter: float = 0.1
+    diameter: float = 0.1
     thickness: float = 0
     auto: bool = True
 

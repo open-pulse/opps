@@ -30,7 +30,7 @@ def pipe_data(length, outside_diameter, thickness):
         return closed_pipe_data(length, outside_diameter)
 
     outer_radius = outside_diameter / 2
-    inner_radius = outer_radius - thickness
+    inner_radius = (outside_diameter - thickness) / 2
 
     outer_cilinder = vtk.vtkCylinderSource()
     outer_cilinder.SetResolution(20)
@@ -52,7 +52,6 @@ def pipe_data(length, outside_diameter, thickness):
     ring_bottom.SetCircumferentialResolution(20)
     ring_bottom.SetOuterRadius(outer_radius)
     ring_bottom.SetInnerRadius(inner_radius)
-    # ring_bottom.SetCenter(0, -length / 2, 0)
     ring_bottom.SetNormal(0, 1, 0)
     ring_bottom.Update()
 
