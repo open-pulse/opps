@@ -10,16 +10,14 @@ from .structure import Structure
 class Pipe(Structure):
     start: Point
     end: Point
-    start_diameter: float = 0.1
-    end_diameter: float = 0.1
+    diameter: float = 0.1
     thickness: float = 0
 
-    def set_diameter(self, start_diameter, final_diameter, *args):
-        self.start_diameter = start_diameter
-        self.end_diameter = final_diameter
+    def set_diameter(self, diameter, *args):
+        self.diameter = diameter
 
     def get_diameters(self):
-        return [self.start_diameter, self.end_diameter]
+        return [self.diameter]
 
     def get_points(self):
         return [

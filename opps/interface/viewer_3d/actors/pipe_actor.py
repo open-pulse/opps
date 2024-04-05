@@ -1,6 +1,9 @@
 import vtk
+import numpy as np
 
+from opps.interface.viewer_3d.utils.cross_section_sources import pipe_data
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
+from opps.interface.viewer_3d.utils.rotations import align_y_rotations
 from opps.model import Pipe
 
 
@@ -10,37 +13,30 @@ class PipeActor(vtk.vtkActor):
         self.create_geometry()
 
     def create_geometry(self):
-        radius = vtk.vtkDoubleArray()
-        radius.SetName("TubeRadius")
-        radius.SetNumberOfTuples(2)
-        radius.SetTuple1(0, self.pipe.start_diameter / 2)
+        vector = self.pipe.end.coords() - self.pipe.start.coords()
+        length = np.linalg.norm(vector)
+        source = pipe_data(length, self.pipe.diameter, self.pipe.thickness)
 
-        if self.pipe.end_diameter == 0:
-            radius.SetTuple1(1, self.pipe.start_diameter / 2)
-        else:
-            radius.SetTuple1(1, self.pipe.end_diameter / 2)
+        x, y, z = self.pipe.start.coords()
+        rx, ry, rz = align_y_rotations(vector)
 
-        line_source = vtk.vtkLineSource()
-        line_source.SetPoint1(self.pipe.start.coords())
-        line_source.SetPoint2(self.pipe.end.coords())
-        line_source.Update()
+        transform = vtk.vtkTransform()
+        transform.Translate(x, y, z)
+        transform.RotateZ(-np.degrees(rz))
+        transform.RotateY(-np.degrees(ry))
+        transform.RotateX(-np.degrees(rx))
+        transform.Update()
 
-        polydata = line_source.GetOutput()
-        polydata.GetPointData().AddArray(radius)
-        polydata.GetPointData().SetActiveScalars(radius.GetName())
+        transform_filter = vtk.vtkTransformFilter()
+        transform_filter.SetInputData(source)
+        transform_filter.SetTransform(transform)
+        transform_filter.Update()
 
-        tube_filter = vtk.vtkTubeFilter()
-        tube_filter.SetInputData(polydata)
-        tube_filter.SetNumberOfSides(30)
-        tube_filter.SetVaryRadiusToVaryRadiusByAbsoluteScalar()
-        tube_filter.CappingOn()
-        tube_filter.Update()
-
-        data = tube_filter.GetOutput()
+        data = transform_filter.GetOutput()
         color = self.pipe.color
         paint_data(data, color)
 
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(data)
-        mapper.ScalarVisibilityOff()
+        mapper.SetScalarModeToUseCellData()
         self.SetMapper(mapper)
