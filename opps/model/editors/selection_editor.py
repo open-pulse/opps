@@ -10,6 +10,14 @@ class SelectionEditor:
     def __init__(self, pipeline: "Pipeline") -> None:
         self.pipeline = pipeline
 
+    def select_last_point(self):
+        point, *_ = self.pipeline.points
+        self.pipeline.select_points([point])
+
+    def select_last_structure(self):
+        structure, *_ = self.pipeline.structures
+        self.pipeline.select_structures([structure])
+
     def select_points(self, points, join=False, remove=False):
         points = set(points)
 

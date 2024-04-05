@@ -19,6 +19,9 @@ class MainEditor:
 
         pipes = list()
 
+        if not self.pipeline.selected_points:
+            self.pipeline.select_last_point()
+
         for point in self.pipeline.selected_points:
             next_point = Point(*(point.coords() + deltas))
             self.next_border.append(next_point)
@@ -35,6 +38,9 @@ class MainEditor:
 
         if curvature_radius <= 0:
             return bends
+
+        if not self.pipeline.selected_points:
+            self.pipeline.select_last_point()
 
         for point in self.pipeline.selected_points:
             vec_a, vec_b, dangling = self._get_bend_vectors(point)
@@ -78,6 +84,9 @@ class MainEditor:
     def add_flange(self, **kwargs) -> list[Flange]:
         flanges = list()
 
+        if not self.pipeline.selected_points:
+            self.pipeline.select_last_point()
+
         for point in self.pipeline.selected_points:
             vectors = self._get_point_vectors(point)
             vectors.append(np.array([1, 0, 0]))  # the default flange points to the right
@@ -97,6 +106,9 @@ class MainEditor:
     def add_expansion_joint(self, deltas: tuple[float, float, float], **kwargs) -> list[ExpansionJoint]:
         expansion_joints = []
 
+        if not self.pipeline.selected_points:
+            self.pipeline.select_last_point()
+
         for point in self.pipeline.selected_points:
             next_point = Point(*(point.coords() + deltas))
             self.next_border.append(next_point)
@@ -111,6 +123,9 @@ class MainEditor:
     def add_valve(self, deltas: tuple[float, float, float], **kwargs) -> list[Valve]:
         valves = []
 
+        if not self.pipeline.selected_points:
+            self.pipeline.select_last_point()
+
         for point in self.pipeline.selected_points:
             next_point = Point(*(point.coords() + deltas))
             self.next_border.append(next_point)
@@ -124,6 +139,9 @@ class MainEditor:
 
     def add_reducer_eccentric(self, deltas: tuple[float, float, float], **kwargs) -> list[ReducerEccentric]:
         reducers = []
+
+        if not self.pipeline.selected_points:
+            self.pipeline.select_last_point()
 
         for point in self.pipeline.selected_points:
             next_point = Point(*(point.coords() + deltas))

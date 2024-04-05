@@ -227,6 +227,12 @@ class Pipeline(Structure):
 
     def select_structures(self, structures, join=False, remove=False):
         self.selection_editor.select_structures(structures, join, remove)
+    
+    def select_last_point(self):
+        self.selection_editor.select_last_point()
+
+    def select_last_structure(self):
+        self.selection_editor.select_last_structure()
 
     def clear_selection(self):
         self.selection_editor.clear_selection()
