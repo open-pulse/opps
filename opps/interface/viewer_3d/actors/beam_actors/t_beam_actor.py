@@ -1,9 +1,9 @@
 import numpy as np
 import vtk
 
+from opps.interface.viewer_3d.utils.cell_utils import paint_data
 from opps.interface.viewer_3d.utils.cross_section_sources import t_beam_data
 from opps.interface.viewer_3d.utils.rotations import align_y_rotations
-from opps.interface.viewer_3d.utils.cell_utils import paint_data
 from opps.model import TBeam
 
 

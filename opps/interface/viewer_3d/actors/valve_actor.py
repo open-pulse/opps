@@ -13,7 +13,7 @@ from opps.interface.viewer_3d.utils.rotations import align_y_rotations
 
 
 class ValveActor(vtk.vtkActor):
-    def __init__(self, expansion_joint: 'Valve'):
+    def __init__(self, expansion_joint: "Valve"):
         self.expansion_joint = expansion_joint
         self.create_geometry()
 

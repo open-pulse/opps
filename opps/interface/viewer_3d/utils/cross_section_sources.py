@@ -1,5 +1,5 @@
-import vtk
 import numpy as np
+import vtk
 
 from opps import SYMBOLS_DIR
 

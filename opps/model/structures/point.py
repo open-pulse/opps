@@ -29,7 +29,7 @@ class Point:
         a = self.coords()
         b = np.array(tuple(other))
         return Point(*(a - b))
-    
+
     def __iadd__(self, other):
         a = self.coords()
         b = np.array(tuple(other))

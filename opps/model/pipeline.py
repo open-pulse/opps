@@ -209,9 +209,10 @@ class Pipeline(Structure):
             self.add_structure(pipe)
             pipes.append(pipe)
         return pipes
-    
+
     def connect_i_beams(self, **kwargs):
         from .structures.beam import IBeam
+
         beams = []
         for point_a, point_b in pairwise(self.selected_points):
             beam = IBeam(point_a, point_b, **kwargs)
@@ -238,7 +239,7 @@ class Pipeline(Structure):
 
     def select_structures(self, structures, join=False, remove=False):
         self.selection_editor.select_structures(structures, join, remove)
-    
+
     def select_last_point(self):
         self.selection_editor.select_last_point()
 

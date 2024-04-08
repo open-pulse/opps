@@ -1,8 +1,8 @@
-import vtk
 import numpy as np
+import vtk
 
-from opps.interface.viewer_3d.utils.cross_section_sources import pipe_data
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
+from opps.interface.viewer_3d.utils.cross_section_sources import pipe_data
 from opps.interface.viewer_3d.utils.rotations import align_y_rotations
 from opps.model import Pipe
 

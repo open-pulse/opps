@@ -5,7 +5,20 @@ if TYPE_CHECKING:
 
 import numpy as np
 
-from opps.model import Point, Pipe, Bend, Flange, ReducerEccentric, ExpansionJoint, Valve, CircularBeam, RectangularBeam, CBeam, TBeam, IBeam
+from opps.model import (
+    Bend,
+    CBeam,
+    CircularBeam,
+    ExpansionJoint,
+    Flange,
+    IBeam,
+    Pipe,
+    Point,
+    RectangularBeam,
+    ReducerEccentric,
+    TBeam,
+    Valve,
+)
 
 
 class MainEditor:
@@ -98,12 +111,16 @@ class MainEditor:
 
         return flanges
 
-    def add_bent_pipe(self, deltas: tuple[float, float, float], curvature_radius: float, **kwargs) -> list[Pipe | Bend]:
-        pipes  = self.add_pipe(deltas, **kwargs)
-        bends  = self.add_bend(curvature_radius, **kwargs)
+    def add_bent_pipe(
+        self, deltas: tuple[float, float, float], curvature_radius: float, **kwargs
+    ) -> list[Pipe | Bend]:
+        pipes = self.add_pipe(deltas, **kwargs)
+        bends = self.add_bend(curvature_radius, **kwargs)
         return bends + pipes
 
-    def add_expansion_joint(self, deltas: tuple[float, float, float], **kwargs) -> list[ExpansionJoint]:
+    def add_expansion_joint(
+        self, deltas: tuple[float, float, float], **kwargs
+    ) -> list[ExpansionJoint]:
         expansion_joints = []
 
         if not self.pipeline.selected_points:
@@ -119,7 +136,7 @@ class MainEditor:
         self._colapse_overloaded_bends()
 
         return expansion_joints
-    
+
     def add_valve(self, deltas: tuple[float, float, float], **kwargs) -> list[Valve]:
         valves = []
 
@@ -137,7 +154,9 @@ class MainEditor:
 
         return valves
 
-    def add_reducer_eccentric(self, deltas: tuple[float, float, float], **kwargs) -> list[ReducerEccentric]:
+    def add_reducer_eccentric(
+        self, deltas: tuple[float, float, float], **kwargs
+    ) -> list[ReducerEccentric]:
         reducers = []
 
         if not self.pipeline.selected_points:
@@ -153,7 +172,6 @@ class MainEditor:
         self._colapse_overloaded_bends()
 
         return reducers
-
 
     def add_circular_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[CircularBeam]:
         if not np.array(deltas).any():  # all zeros
@@ -172,7 +190,9 @@ class MainEditor:
 
         return beams
 
-    def add_rectangular_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[RectangularBeam]:
+    def add_rectangular_beam(
+        self, deltas: tuple[float, float, float], **kwargs
+    ) -> list[RectangularBeam]:
         if not np.array(deltas).any():  # all zeros
             return []
 

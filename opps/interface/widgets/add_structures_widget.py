@@ -3,8 +3,8 @@ from pathlib import Path
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
-    QCheckBox,
     QAction,
+    QCheckBox,
     QFrame,
     QGridLayout,
     QHBoxLayout,
@@ -16,7 +16,9 @@ from PyQt5.QtWidgets import (
 )
 
 from opps import UI_DIR, app
-from opps.interface.viewer_3d.render_widgets.editor_render_widget import EditorRenderWidget
+from opps.interface.viewer_3d.render_widgets.editor_render_widget import (
+    EditorRenderWidget,
+)
 
 
 class AddStructuresWidget(QWidget):

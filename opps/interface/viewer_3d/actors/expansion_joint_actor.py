@@ -2,7 +2,9 @@ import numpy as np
 import vtk
 
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
-from opps.interface.viewer_3d.utils.cross_section_sources import expansion_joint_data
+from opps.interface.viewer_3d.utils.cross_section_sources import (
+    expansion_joint_data,
+)
 from opps.interface.viewer_3d.utils.rotations import align_y_rotations
 from opps.model import ExpansionJoint
 
@@ -15,7 +17,9 @@ class ExpansionJointActor(vtk.vtkActor):
     def create_geometry(self):
         vector = self.expansion_joint.end.coords() - self.expansion_joint.start.coords()
         length = np.linalg.norm(vector)
-        source = expansion_joint_data(length, self.expansion_joint.diameter, self.expansion_joint.thickness)
+        source = expansion_joint_data(
+            length, self.expansion_joint.diameter, self.expansion_joint.thickness
+        )
 
         x, y, z = self.expansion_joint.start.coords()
         rx, ry, rz = align_y_rotations(vector)
