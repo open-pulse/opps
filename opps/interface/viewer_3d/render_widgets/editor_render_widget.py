@@ -26,7 +26,6 @@ class EditorRenderWidget(CommonRenderWidget):
         self.render_interactor.SetInteractorStyle(self.interactor_style)
 
         self.pipeline = pipeline
-        self.selected_structure = None
         self.pipeline_actor = None
         self.control_points_actor = None
         self.passive_points_actor = None
@@ -55,41 +54,6 @@ class EditorRenderWidget(CommonRenderWidget):
         if reset_camera:
             self.renderer.ResetCamera()
         self.update()
-
-    def change_anchor(self, point):
-        self.pipeline.dismiss()
-        self.pipeline.set_anchor(point)
-        self.coords = point.coords()
-        self.update_plot(reset_camera=False)
-
-    def stage_pipe_deltas(self, dx, dy, dz, radius=0.3):
-        self.pipeline.dismiss()
-        self.pipeline.clear_selection()
-        self.pipeline.add_bent_pipe((dx, dy, dz), radius)
-        self.update_plot()
-
-    def update_default_diameter(self, initial_diameter, final_diameter=0):
-        if final_diameter == 0:
-            final_diameter = initial_diameter
-
-        self.pipeline.change_diameter(initial_diameter, final_diameter)
-        for structure in self.pipeline.staged_structures:
-            structure.set_diameter(initial_diameter, final_diameter)
-        self.update_plot()
-
-    def add_flange(self):
-        self.pipeline.dismiss()
-        self.pipeline.add_flange()
-        self.pipeline.add_bent_pipe()
-        self.update()
-
-    def commit_structure(self):
-        self.coords = self.pipeline.anchor.coords()
-        self.pipeline.commit()
-        self.update_plot()
-
-    def unstage_structure(self):
-        self.update_plot()
 
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
@@ -130,24 +94,19 @@ class EditorRenderWidget(CommonRenderWidget):
         if picked_structures:
             self.pipeline.select_structures(picked_structures, join=join, remove=remove)
 
+        # Only dismiss structure creation if something was actually selected
+        something_selected = self.pipeline.selected_points or self.pipeline.selected_structures
+        something_staged = self.pipeline.staged_points or self.pipeline.staged_structures
+        if something_selected and something_staged:
+            self.pipeline.dismiss()
+
         self.update_selection()
 
     def _pick_points(self, x, y):
-        x0, y0 = self.mouse_click
-        mouse_moved = (abs(x0 - x) > 10) or (abs(y0 - y) > 10)
-
         picked = self._pick_actor(x, y, self.control_points_actor)
         indexes = picked.get(self.control_points_actor, [])
         control_points = [self.pipeline.points[i] for i in indexes]
 
-        # passive_points = list()
-        # if not control_points or mouse_moved:
-        #     picked = self._pick_actor(x, y, self.passive_points_actor)
-        #     indexes = picked.get(self.passive_points_actor, [])
-        #     passive_points = [self.pipeline.points[i] for i in indexes]
-
-        # combined_points = set(control_points + passive_points)
-        # return list(combined_points)
         return control_points
 
     def _pick_structures(self, x, y):
@@ -204,11 +163,5 @@ class EditorRenderWidget(CommonRenderWidget):
         return selection_picker.get_picked()
 
     def update_selection(self):
-        # Only dismiss structure creation if something was actually selected
-        something_selected = self.pipeline.selected_points or self.pipeline.selected_structures
-        something_staged = self.pipeline.staged_points or self.pipeline.staged_structures
-        if something_selected and something_staged:
-            self.pipeline.dismiss()
-
         self.selection_changed.emit()
         self.update_plot(reset_camera=False)

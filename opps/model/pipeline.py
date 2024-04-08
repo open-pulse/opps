@@ -3,10 +3,10 @@ from typing import Generator, TypeVar
 
 import numpy as np
 
+from opps.model.editors.connection_editor import ConnectionEditor
 from opps.model.editors.main_editor import MainEditor
 from opps.model.editors.points_editor import PointsEditor
 from opps.model.editors.selection_editor import SelectionEditor
-from opps.model.editors.connection_editor import ConnectionEditor
 
 from .structures.beam import Beam
 from .structures.bend import Bend
