@@ -27,24 +27,7 @@ class MainEditor:
         self.next_border = list()
 
     def add_pipe(self, deltas: tuple[float, float, float], **kwargs) -> list[Pipe]:
-        if not np.array(deltas).any():  # all zeros
-            return []
-
-        pipes = list()
-
-        if not self.pipeline.selected_points:
-            self.pipeline.select_last_point()
-
-        for point in self.pipeline.selected_points:
-            next_point = Point(*(point.coords() + deltas))
-            self.next_border.append(next_point)
-            pipe = Pipe(point, next_point, **kwargs)
-            self.pipeline.add_structure(pipe)
-            pipes.append(pipe)
-
-        self._colapse_overloaded_bends()
-
-        return pipes
+        return self._add_generic_line_structure(Pipe, deltas, **kwargs)
 
     def add_bend(self, curvature_radius: float, allow_dangling=False, **kwargs) -> list[Bend]:
         bends = list()
@@ -121,144 +104,32 @@ class MainEditor:
     def add_expansion_joint(
         self, deltas: tuple[float, float, float], **kwargs
     ) -> list[ExpansionJoint]:
-        expansion_joints = []
-
-        if not self.pipeline.selected_points:
-            self.pipeline.select_last_point()
-
-        for point in self.pipeline.selected_points:
-            next_point = Point(*(point.coords() + deltas))
-            self.next_border.append(next_point)
-            expansion_joint = ExpansionJoint(point, next_point, **kwargs)
-            self.pipeline.add_structure(expansion_joint)
-            expansion_joints.append(expansion_joint)
-
-        self._colapse_overloaded_bends()
-
-        return expansion_joints
+        return self._add_generic_line_structure(ExpansionJoint, deltas, **kwargs)
 
     def add_valve(self, deltas: tuple[float, float, float], **kwargs) -> list[Valve]:
-        valves = []
-
-        if not self.pipeline.selected_points:
-            self.pipeline.select_last_point()
-
-        for point in self.pipeline.selected_points:
-            next_point = Point(*(point.coords() + deltas))
-            self.next_border.append(next_point)
-            valve = Valve(point, next_point, **kwargs)
-            self.pipeline.add_structure(valve)
-            valves.append(valve)
-
-        self._colapse_overloaded_bends()
-
-        return valves
+        return self._add_generic_line_structure(Valve, deltas, **kwargs)
 
     def add_reducer_eccentric(
         self, deltas: tuple[float, float, float], **kwargs
     ) -> list[ReducerEccentric]:
-        reducers = []
-
-        if not self.pipeline.selected_points:
-            self.pipeline.select_last_point()
-
-        for point in self.pipeline.selected_points:
-            next_point = Point(*(point.coords() + deltas))
-            self.next_border.append(next_point)
-            reducer = ReducerEccentric(point, next_point, **kwargs)
-            self.pipeline.add_structure(reducer)
-            reducers.append(reducer)
-
-        self._colapse_overloaded_bends()
-
-        return reducers
+        return self._add_generic_line_structure(IBeam, deltas, **kwargs)
 
     def add_circular_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[CircularBeam]:
-        if not np.array(deltas).any():  # all zeros
-            return []
-
-        beams = list()
-
-        for point in self.pipeline.selected_points:
-            next_point = Point(*(point.coords() + deltas))
-            self.next_border.append(next_point)
-            beam = CircularBeam(point, next_point, **kwargs)
-            self.pipeline.add_structure(beam)
-            beams.append(beam)
-
-        self.pipeline.main_editor._colapse_overloaded_bends()
-
-        return beams
+        return self._add_generic_line_structure(CircularBeam, deltas, **kwargs)
 
     def add_rectangular_beam(
         self, deltas: tuple[float, float, float], **kwargs
     ) -> list[RectangularBeam]:
-        if not np.array(deltas).any():  # all zeros
-            return []
-
-        beams = list()
-
-        for point in self.pipeline.selected_points:
-            next_point = Point(*(point.coords() + deltas))
-            self.next_border.append(next_point)
-            beam = RectangularBeam(point, next_point, **kwargs)
-            self.pipeline.add_structure(beam)
-            beams.append(beam)
-
-        self.pipeline.main_editor._colapse_overloaded_bends()
-
-        return beams
+        return self._add_generic_line_structure(RectangularBeam, deltas, **kwargs)
 
     def add_i_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[IBeam]:
-        if not np.array(deltas).any():  # all zeros
-            return []
-
-        beams = list()
-
-        for point in self.pipeline.selected_points:
-            next_point = Point(*(point.coords() + deltas))
-            self.next_border.append(next_point)
-            beam = IBeam(point, next_point, **kwargs)
-            self.pipeline.add_structure(beam)
-            beams.append(beam)
-
-        self.pipeline.main_editor._colapse_overloaded_bends()
-
-        return beams
+        return self._add_generic_line_structure(IBeam, deltas, **kwargs)
 
     def add_c_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[CBeam]:
-        if not np.array(deltas).any():  # all zeros
-            return []
-
-        beams = list()
-
-        for point in self.pipeline.selected_points:
-            next_point = Point(*(point.coords() + deltas))
-            self.next_border.append(next_point)
-            beam = CBeam(point, next_point, **kwargs)
-            self.pipeline.add_structure(beam)
-            beams.append(beam)
-
-        self.pipeline.main_editor._colapse_overloaded_bends()
-
-        return beams
+        return self._add_generic_line_structure(CBeam, deltas, **kwargs)
 
     def add_t_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[TBeam]:
-        if not np.array(deltas).any():  # all zeros
-            return []
-
-        beams = list()
-
-        for point in self.pipeline.selected_points:
-            next_point = Point(*(point.coords() + deltas))
-            self.next_border.append(next_point)
-            beam = TBeam(point, next_point, **kwargs)
-            self.pipeline.add_structure(beam)
-            beams.append(beam)
-
-        self.pipeline.main_editor._colapse_overloaded_bends()
-
-        return beams
+        return self._add_generic_line_structure(TBeam, deltas, **kwargs)
 
     def recalculate_curvatures(self):
         # collapse all curvatures that are in between pipes
@@ -318,6 +189,25 @@ class MainEditor:
         self.pipeline.remove_structures(to_remove)
         return to_remove
 
+    def _add_generic_line_structure(
+        self, structure_type, deltas: tuple[float, float, float], **kwargs
+    ):
+        if not np.array(deltas).any():  # all zeros
+            return []
+
+        if not self.pipeline.selected_points:
+            self.pipeline.select_last_point()
+
+        structures = list()
+        for point in self.pipeline.selected_points:
+            next_point = Point(*(point.coords() + deltas))
+            self.next_border.append(next_point)
+            structure = structure_type(point, next_point, **kwargs)
+            self.pipeline.add_structure(structure)
+            structures.append(structure)
+        self.pipeline.main_editor._colapse_overloaded_bends()
+        return structures
+
     def _colapse_overloaded_bends(self):
         """
         If a bend, that should connect only two pipes, has a third connection
@@ -355,25 +245,20 @@ class MainEditor:
     def _get_point_vectors(self, point: Point):
         directions = list()
 
-        for pipe in self.pipeline.structures_of_type(Pipe):
-            if not point in pipe.get_points():
+        straight_structure = Pipe | ReducerEccentric | ExpansionJoint | Valve
+        for structure in self.pipeline.structures_of_type(straight_structure):
+            if not point in structure.get_points():
                 continue
 
-            if id(pipe.start) == id(point):
-                vector = pipe.end.coords() - point.coords()
+            if id(structure.start) == id(point):
+                vector = structure.end.coords() - point.coords()
                 size = np.linalg.norm(vector)
-            elif id(pipe.end) == id(point):
-                vector = pipe.start.coords() - point.coords()
+            elif id(structure.end) == id(point):
+                vector = structure.start.coords() - point.coords()
                 size = np.linalg.norm(vector)
             else:
                 continue
 
             directions.append(vector / size)
-
-        # for structure in self.pipeline.structures_of_type(Bend):
-        #     if (id(structure.start) == id(point)) or (id(structure.end) == id(point)) :
-        #         vector = structure.corner.coords() - point.coords()
-        #         size = np.linalg.norm(vector)
-        #     directions.append(vector / size)
 
         return directions
