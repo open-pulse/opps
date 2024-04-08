@@ -74,7 +74,13 @@ def pipe_data(length, outside_diameter, thickness):
 
 
 def circular_beam_data(length, outside_diameter, thickness):
-    return pipe_data(length, outside_diameter, thickness)
+    cilinder = vtk.vtkCylinderSource()
+    cilinder.SetResolution(12)
+    cilinder.SetRadius(outside_diameter / 2)
+    cilinder.SetHeight(length)
+    cilinder.CappingOn()
+    cilinder.Update()
+    return cilinder.GetOutput()
 
 
 def closed_rectangular_beam_data(length, b, h):

@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from functools import partial
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -9,6 +10,7 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QComboBox,
     QLineEdit,
     QPushButton,
     QVBoxLayout,
@@ -38,38 +40,82 @@ class AddStructuresWidget(QWidget):
         self._define_qt_variables()
         self._create_connections()
 
-    def _define_qt_variables(self):
-        self.teste = QAction("Connect", self)
-        self.teste.setShortcut("ctrl+n")
-        self.teste.triggered.connect(self.test_callback)
-        self.addAction(self.teste)
+        self.structure_combobox_callback(self.structure_combobox.currentText())
 
+    def _define_qt_variables(self):
         self.dx_box: QLineEdit
         self.dy_box: QLineEdit
         self.dz_box: QLineEdit
 
-        self.bend_checkbox: QCheckBox
+        self.structure_combobox: QComboBox
+        self.connect_button: QPushButton
 
         self.section_button: QPushButton
         self.material_button: QPushButton
         self.apply_button: QPushButton
 
-    def test_callback(self):
-        pipeline = self.render_widget.pipeline
-
-        pipeline.dismiss()
-        pipes = pipeline.connect_i_beams()
-        pipeline.commit()
-        self.render_widget.update_plot()
-
     def _create_connections(self):
         self.dx_box.textEdited.connect(self.coords_modified_callback)
         self.dy_box.textEdited.connect(self.coords_modified_callback)
         self.dz_box.textEdited.connect(self.coords_modified_callback)
+        self.structure_combobox.currentTextChanged.connect(self.structure_combobox_callback)
+        self.connect_button.clicked.connect(self.connect_selection_callback)
         self.section_button.clicked.connect(self.section_callback)
-        self.bend_checkbox.stateChanged.connect(self.auto_bend_callback)
         self.apply_button.clicked.connect(self.apply_callback)
         self.render_widget.selection_changed.connect(self.selection_callback)
+
+    def structure_combobox_callback(self, text: str):
+        pipeline = self.render_widget.pipeline
+
+        text = text.lower().strip()
+
+        if text == "pipe":
+            self.current_add_function = pipeline.add_pipe
+            self.current_connect_function = pipeline.connect_pipes
+
+        elif text == "pipe + bend":
+            self.current_add_function = partial(
+                pipeline.add_bent_pipe, curvature_radius=0.3)
+            self.current_connect_function = pipeline.connect_pipes
+
+        elif text == "valve":
+            self.current_add_function = pipeline.add_valve
+            self.current_connect_function = pipeline.connect_valves
+        
+        elif text == "expansion joint":
+            self.current_add_function = pipeline.add_expansion_joint
+            self.current_connect_function = pipeline.connect_expansion_joints
+        
+        elif text == "reducer":
+            self.current_add_function = pipeline.add_reducer_eccentric
+            self.current_connect_function = pipeline.connect_reducer_eccentrics
+
+        elif text == "circular beam":
+            self.current_add_function = pipeline.add_circular_beam
+            self.current_connect_function = pipeline.connect_circular_beams
+
+        elif text == "rectangular beam":
+            self.current_add_function = pipeline.add_rectangular_beam
+            self.current_connect_function = pipeline.connect_rectangular_beams
+
+        elif text == "i beam":
+            self.current_add_function = pipeline.add_i_beam
+            self.current_connect_function = pipeline.connect_i_beams
+
+        elif text == "t beam":
+            self.current_add_function = pipeline.add_t_beam
+            self.current_connect_function = pipeline.connect_t_beams
+
+        elif text == "c beam":
+            self.current_add_function = pipeline.add_c_beam
+            self.current_connect_function = pipeline.connect_c_beams
+
+        else:
+            self.current_add_function = None
+            self.current_connect_function = None
+
+        if pipeline.staged_structures:
+            self.coords_modified_callback()        
 
     def get_displacement(self):
         dx = self.dx_box.text() or 0
@@ -86,12 +132,20 @@ class AddStructuresWidget(QWidget):
         except ValueError:
             return
 
-        auto_bend = self.bend_checkbox.isChecked()
-        radius = 0.3 if auto_bend else 0
         pipeline = self.render_widget.pipeline
-
         pipeline.dismiss()
-        pipeline.add_bent_pipe((dx, dy, dz), radius)
+
+        if callable(self.current_add_function):
+            self.current_add_function((dx, dy, dz))
+
+        self.render_widget.update_plot()
+
+    def connect_selection_callback(self):
+        pipeline = self.render_widget.pipeline
+        pipeline.dismiss()
+        if callable(self.current_connect_function):
+            self.current_connect_function()
+        pipeline.commit()
         self.render_widget.update_plot()
 
     def add_flange_callback(self):
@@ -99,11 +153,6 @@ class AddStructuresWidget(QWidget):
 
     def section_callback(self):
         return
-
-    def auto_bend_callback(self, checked):
-        pipeline = self.render_widget.pipeline
-        pipeline.dismiss()
-        self.coords_modified_callback()
 
     def apply_callback(self):
         try:
