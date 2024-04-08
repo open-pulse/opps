@@ -4,6 +4,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QCheckBox,
+    QAction,
     QFrame,
     QGridLayout,
     QHBoxLayout,
@@ -36,6 +37,11 @@ class AddStructuresWidget(QWidget):
         self._create_connections()
 
     def _define_qt_variables(self):
+        self.teste = QAction("Connect", self)
+        self.teste.setShortcut("ctrl+n")
+        self.teste.triggered.connect(self.test_callback)
+        self.addAction(self.teste)
+
         self.dx_box: QLineEdit
         self.dy_box: QLineEdit
         self.dz_box: QLineEdit
@@ -45,6 +51,18 @@ class AddStructuresWidget(QWidget):
         self.section_button: QPushButton
         self.material_button: QPushButton
         self.apply_button: QPushButton
+
+    def test_callback(self):
+        pipeline = self.render_widget.pipeline
+
+        pipeline.dismiss()
+        pipes = pipeline.connect_i_beams()
+        print(pipes)
+
+        # pipeline.dismiss()
+        # pipeline.add_valve((0.5, 0, 0))
+        pipeline.commit()
+        self.render_widget.update_plot()
 
     def _create_connections(self):
         self.dx_box.textEdited.connect(self.coords_modified_callback)

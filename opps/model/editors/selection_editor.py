@@ -4,6 +4,7 @@ if TYPE_CHECKING:
     from opps.model import Pipeline
 
 import numpy as np
+from ordered_set import OrderedSet
 
 
 class SelectionEditor:
@@ -19,12 +20,12 @@ class SelectionEditor:
         self.pipeline.select_structures([structure])
 
     def select_points(self, points, join=False, remove=False):
-        points = set(points)
+        points = OrderedSet(points)
 
         if not points:
             return
 
-        current_selection = set(self.pipeline.selected_points)
+        current_selection = OrderedSet(self.pipeline.selected_points)
 
         if join and remove:
             current_selection ^= points
@@ -38,12 +39,12 @@ class SelectionEditor:
         self.pipeline.selected_points = list(current_selection)
 
     def select_structures(self, structures, join=False, remove=False):
-        structures = set(structures)
+        structures = OrderedSet(structures)
 
         if not structures:
             return
 
-        current_selection = set(self.pipeline.selected_structures)
+        current_selection = OrderedSet(self.pipeline.selected_structures)
 
         # clear all the selected flags
         for structure in self.pipeline.structures:

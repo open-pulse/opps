@@ -5,7 +5,6 @@ from opps.model.structures.point import Point
 from .beam import Beam
 
 
-@dataclass
 class TBeam(Beam):
     def __init__(self, start: Point, end: Point, **kwargs) -> None:
         super().__init__(**kwargs)

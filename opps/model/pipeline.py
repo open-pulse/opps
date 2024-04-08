@@ -1,4 +1,4 @@
-from itertools import chain
+from itertools import chain, pairwise
 from typing import Generator, TypeVar
 
 import numpy as np
@@ -31,10 +31,8 @@ class Pipeline(Structure):
         self.selected_points: list[Point] = list()
         self.selected_structures: list[Structure] = list()
 
-        # tmp
-        p = Point(0, 0, 0)
-        self.points.append(p)
-        self.selected_points.append(p)
+        # origin
+        self.points.append(Point(0, 0, 0))
 
         # Instead of placing incountable lines of code here,
         # most of the functions are a facade, and their actual
@@ -207,6 +205,24 @@ class Pipeline(Structure):
 
     def add_i_beam(self, deltas):
         return self.beam_editor.add_i_beam(deltas)
+
+    # Connection Editor
+    def connect_pipes(self, **kwargs):
+        pipes = []
+        for point_a, point_b in pairwise(self.selected_points):
+            pipe = Pipe(point_a, point_b, **kwargs)
+            self.add_structure(pipe)
+            pipes.append(pipe)
+        return pipes
+    
+    def connect_i_beams(self, **kwargs):
+        from .structures.beam import IBeam
+        beams = []
+        for point_a, point_b in pairwise(self.selected_points):
+            beam = IBeam(point_a, point_b, **kwargs)
+            self.add_structure(beam)
+            beams.append(beam)
+        return beams
 
     # Points Editor
     def attatch_point(self, point: Point):
