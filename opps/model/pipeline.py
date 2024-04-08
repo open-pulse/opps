@@ -6,6 +6,7 @@ import numpy as np
 from opps.model.editors.main_editor import MainEditor
 from opps.model.editors.points_editor import PointsEditor
 from opps.model.editors.selection_editor import SelectionEditor
+from opps.model.editors.connection_editor import ConnectionEditor
 
 from .structures.beam import Beam
 from .structures.bend import Bend
@@ -39,6 +40,7 @@ class Pipeline(Structure):
         self.main_editor = MainEditor(self)
         self.points_editor = PointsEditor(self)
         self.selection_editor = SelectionEditor(self)
+        self.connection_editor = ConnectionEditor(self)
 
     def all_points(self):
         return chain(self.points, self.staged_points)
@@ -202,6 +204,33 @@ class Pipeline(Structure):
         self.main_editor.recalculate_curvatures()
 
     # Connection Editor
+    def connect_pipes(self, **kwargs):
+        self.connection_editor.connect_pipes(**kwargs)
+
+    def connect_expansion_joints(self, **kwargs):
+        self.connection_editor.connect_expansion_joints(**kwargs)
+
+    def connect_valves(self, **kwargs):
+        self.connection_editor.connect_valves(**kwargs)
+
+    def connect_reducer_eccentrics(self, **kwargs):
+        self.connection_editor.connect_reducer_eccentrics(**kwargs)
+
+    def connect_circular_beams(self, **kwargs):
+        self.connection_editor.connect_circular_beams(**kwargs)
+
+    def connect_rectangular_beams(self, **kwargs):
+        self.connection_editor.connect_rectangular_beams(**kwargs)
+
+    def connect_i_beams(self, **kwargs):
+        self.connection_editor.connect_i_beams(**kwargs)
+
+    def connect_c_beams(self, **kwargs):
+        self.connection_editor.connect_c_beams(**kwargs)
+
+    def connect_t_beams(self, **kwargs):
+        self.connection_editor.connect_t_beams(**kwargs)
+
     def connect_pipes(self, **kwargs):
         pipes = []
         for point_a, point_b in pairwise(self.selected_points):

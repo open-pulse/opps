@@ -59,10 +59,6 @@ class AddStructuresWidget(QWidget):
 
         pipeline.dismiss()
         pipes = pipeline.connect_i_beams()
-        print(pipes)
-
-        # pipeline.dismiss()
-        # pipeline.add_valve((0.5, 0, 0))
         pipeline.commit()
         self.render_widget.update_plot()
 
