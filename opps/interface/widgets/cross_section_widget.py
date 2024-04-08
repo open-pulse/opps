@@ -7,20 +7,18 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
 )
 
-from opps.properties import PipeCrossSection
-
 from .filtrable_table import FiltrableTableWidget
 
 # tmp structure
 project_sections = [
-    PipeCrossSection(0.1, 0.005),
-    PipeCrossSection(0.2, 0.005),
-    PipeCrossSection(0.5, 0.01),
-    PipeCrossSection(1, 0.5),
-    PipeCrossSection(2, 0.5),
-    PipeCrossSection(5, 1),
-    PipeCrossSection(10, 1),
-    PipeCrossSection(20, 1),
+    (0.1, 0.005),
+    (0.2, 0.005),
+    (0.5, 0.01),
+    (1, 0.5),
+    (2, 0.5),
+    (5, 1),
+    (10, 1),
+    (20, 1),
 ]
 
 
@@ -43,8 +41,8 @@ class CrossSectionWidget(QDialog):
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.set_header(self.header)
 
-        for i, section in enumerate(project_sections):
-            self.table.add_row([i, section.name(), section.diameter, section.thickness])
+        for i, (diameter, thickness) in enumerate(project_sections):
+            self.table.add_row([i, "Pipe", diameter, thickness])
         self.table.update()
 
         self.apply_button = QPushButton("Apply")
