@@ -17,6 +17,9 @@ def align_y_rotations(vector):
 
     if vector_length:
         rx = -np.arccos(xy_length / vector_length)
+    
+    if z < 0:
+        rx = -rx
 
     return rx, ry, rz
 
