@@ -13,6 +13,7 @@ from opps.model import (
     ExpansionJoint,
     IBeam,
     Pipe,
+    Flange,
     RectangularBeam,
     ReducerEccentric,
     TBeam,
@@ -29,6 +30,9 @@ class ConnectionEditor:
 
     def connect_expansion_joints(self, **kwargs):
         self._generic_structure_connection(ExpansionJoint, **kwargs)
+
+    def connect_flanges(self, **kwargs):
+        self._generic_structure_connection(Flange, **kwargs)
 
     def connect_valves(self, **kwargs):
         self._generic_structure_connection(Valve, **kwargs)

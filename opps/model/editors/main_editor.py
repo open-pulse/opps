@@ -18,6 +18,7 @@ from opps.model import (
     ReducerEccentric,
     TBeam,
     Valve,
+    Structure,
 )
 
 
@@ -26,7 +27,7 @@ class MainEditor:
         self.pipeline = pipeline
         self.next_border = list()
 
-    def add_pipe(self, deltas: tuple[float, float, float], **kwargs) -> list[Pipe]:
+    def add_pipe(self, deltas, **kwargs) -> list[Pipe]:
         return self._add_generic_line_structure(Pipe, deltas, **kwargs)
 
     def add_bend(self, curvature_radius: float, allow_dangling=False, **kwargs) -> list[Bend]:
@@ -77,7 +78,9 @@ class MainEditor:
 
         return bends
 
-    def add_flange(self, **kwargs) -> list[Flange]:
+    def add_flange(self, deltas, **kwargs) -> list[Flange]:
+        return self._add_generic_line_structure(Flange, deltas, **kwargs)
+
         flanges = list()
 
         if not self.pipeline.selected_points:
@@ -95,40 +98,40 @@ class MainEditor:
         return flanges
 
     def add_bent_pipe(
-        self, deltas: tuple[float, float, float], curvature_radius: float, **kwargs
+        self, deltas, curvature_radius: float, **kwargs
     ) -> list[Pipe | Bend]:
         pipes = self.add_pipe(deltas, **kwargs)
         bends = self.add_bend(curvature_radius, **kwargs)
         return bends + pipes
 
     def add_expansion_joint(
-        self, deltas: tuple[float, float, float], **kwargs
+        self, deltas, **kwargs
     ) -> list[ExpansionJoint]:
         return self._add_generic_line_structure(ExpansionJoint, deltas, **kwargs)
 
-    def add_valve(self, deltas: tuple[float, float, float], **kwargs) -> list[Valve]:
+    def add_valve(self, deltas, **kwargs) -> list[Valve]:
         return self._add_generic_line_structure(Valve, deltas, **kwargs)
 
     def add_reducer_eccentric(
-        self, deltas: tuple[float, float, float], **kwargs
+        self, deltas, **kwargs
     ) -> list[ReducerEccentric]:
         return self._add_generic_line_structure(IBeam, deltas, **kwargs)
 
-    def add_circular_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[CircularBeam]:
+    def add_circular_beam(self, deltas, **kwargs) -> list[CircularBeam]:
         return self._add_generic_line_structure(CircularBeam, deltas, **kwargs)
 
     def add_rectangular_beam(
-        self, deltas: tuple[float, float, float], **kwargs
+        self, deltas, **kwargs
     ) -> list[RectangularBeam]:
         return self._add_generic_line_structure(RectangularBeam, deltas, **kwargs)
 
-    def add_i_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[IBeam]:
+    def add_i_beam(self, deltas, **kwargs) -> list[IBeam]:
         return self._add_generic_line_structure(IBeam, deltas, **kwargs)
 
-    def add_c_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[CBeam]:
+    def add_c_beam(self, deltas, **kwargs) -> list[CBeam]:
         return self._add_generic_line_structure(CBeam, deltas, **kwargs)
 
-    def add_t_beam(self, deltas: tuple[float, float, float], **kwargs) -> list[TBeam]:
+    def add_t_beam(self, deltas, **kwargs) -> list[TBeam]:
         return self._add_generic_line_structure(TBeam, deltas, **kwargs)
 
     def recalculate_curvatures(self):
@@ -190,7 +193,10 @@ class MainEditor:
         return to_remove
 
     def _add_generic_line_structure(
-        self, structure_type, deltas: tuple[float, float, float], **kwargs
+        self,
+        structure_type: type[Structure], 
+        deltas: tuple[float, float, float],
+        **kwargs
     ):
         if not np.array(deltas).any():  # all zeros
             return []
@@ -245,8 +251,8 @@ class MainEditor:
     def _get_point_vectors(self, point: Point):
         directions = list()
 
-        straight_structure = Pipe | ReducerEccentric | ExpansionJoint | Valve
-        for structure in self.pipeline.structures_of_type(straight_structure):
+        pipe_like_structure = Pipe | Flange | ReducerEccentric | ExpansionJoint | Valve
+        for structure in self.pipeline.structures_of_type(pipe_like_structure):
             if not point in structure.get_points():
                 continue
 

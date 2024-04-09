@@ -73,6 +73,11 @@
        </item>
        <item>
         <property name="text">
+         <string>Flange</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>Valve</string>
         </property>
        </item>

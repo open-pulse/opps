@@ -170,8 +170,8 @@ class Pipeline(Structure):
     def add_bend(self, curvature_radius, **kwargs):
         return self.main_editor.add_bend(curvature_radius, **kwargs)
 
-    def add_flange(self, **kwargs):
-        return self.main_editor.add_flange(**kwargs)
+    def add_flange(self, deltas, **kwargs):
+        return self.main_editor.add_flange(deltas, **kwargs)
 
     def add_bent_pipe(self, deltas, curvature_radius, **kwargs):
         return self.main_editor.add_bent_pipe(deltas, curvature_radius, **kwargs)
@@ -206,6 +206,9 @@ class Pipeline(Structure):
     # Connection Editor
     def connect_pipes(self, **kwargs):
         self.connection_editor.connect_pipes(**kwargs)
+
+    def connect_flanges(self, **kwargs):
+        self.connection_editor.connect_flanges(**kwargs)
 
     def connect_expansion_joints(self, **kwargs):
         self.connection_editor.connect_expansion_joints(**kwargs)

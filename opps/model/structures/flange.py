@@ -7,17 +7,16 @@ from .structure import Structure
 
 
 class Flange(Structure):
-    def __init__(self, position: Point, normal: np.ndarray, **kwargs) -> None:
+    def __init__(self, start: Point, end: Point, **kwargs) -> None:
         super().__init__(**kwargs)
 
-        self.position = position
-        self.normal = normal
+        self.start = start
+        self.end = end
         self.diameter = kwargs.get("diameter", 0.1)
         self.thickness = kwargs.get("thickness", 0.01)
-        self.auto = kwargs.get("auto", True)
 
     def get_points(self):
-        return [self.position]
+        return [self.start, self.end]
 
     def set_diameter(self, diameter, *args):
         self.diameter = diameter

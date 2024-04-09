@@ -78,6 +78,10 @@ class AddStructuresWidget(QWidget):
                 pipeline.add_bent_pipe, curvature_radius=0.3)
             self.current_connect_function = pipeline.connect_pipes
 
+        elif text == "flange":
+            self.current_add_function = pipeline.add_flange
+            self.current_connect_function = pipeline.connect_flanges
+
         elif text == "valve":
             self.current_add_function = pipeline.add_valve
             self.current_connect_function = pipeline.connect_valves

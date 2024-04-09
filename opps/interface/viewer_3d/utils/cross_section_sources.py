@@ -274,11 +274,11 @@ def flange_data(length, inside_diameter, thickness, bolts=8):
     for i in range(bolts):
         angle = i * 2 * np.pi / bolts
         nut = vtk.vtkCylinderSource()
-        nut.SetHeight(thickness * 3 / 2)
+        nut.SetHeight(length + thickness)
         nut.SetRadius(thickness / 3)
         nut.SetCenter(
             (inside_diameter / 2 + thickness / 2) * np.sin(angle),
-            thickness / 2,
+            length / 2,
             (inside_diameter / 2 + thickness / 2) * np.cos(angle),
         )
         nut.Update()
