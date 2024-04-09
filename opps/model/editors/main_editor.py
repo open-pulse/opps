@@ -244,6 +244,7 @@ class MainEditor:
             else:
                 continue
 
-            directions.append(vector / size)
+            if size:
+                directions.append(vector / size)
 
         return directions
