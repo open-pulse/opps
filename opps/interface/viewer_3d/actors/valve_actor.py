@@ -9,38 +9,21 @@ import vtk
 
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
 from opps.interface.viewer_3d.utils.cross_section_sources import valve_data
-from opps.interface.viewer_3d.utils.rotations import align_y_rotations
+from opps.interface.viewer_3d.utils.rotations import align_vtk_geometry
 
 
 class ValveActor(vtk.vtkActor):
-    def __init__(self, expansion_joint: "Valve"):
-        self.expansion_joint = expansion_joint
+    def __init__(self, valve: "Valve"):
+        self.valve = valve
         self.create_geometry()
 
     def create_geometry(self):
-        vector = self.expansion_joint.end.coords() - self.expansion_joint.start.coords()
+        vector = self.valve.end.coords() - self.valve.start.coords()
         length = np.linalg.norm(vector)
-        source = valve_data(length, self.expansion_joint.diameter, self.expansion_joint.thickness)
+        source = valve_data(length, self.valve.diameter, self.valve.thickness)
 
-        x, y, z = self.expansion_joint.start.coords()
-        rx, ry, rz = align_y_rotations(vector)
-
-        transform = vtk.vtkTransform()
-        transform.Translate(x, y, z)
-        transform.RotateZ(-np.degrees(rz))
-        transform.RotateY(-np.degrees(ry))
-        transform.RotateX(-np.degrees(rx))
-        # transform.Translate(0, length / 2, 0)
-        transform.Update()
-
-        transform_filter = vtk.vtkTransformFilter()
-        transform_filter.SetInputData(source)
-        transform_filter.SetTransform(transform)
-        transform_filter.Update()
-
-        data = transform_filter.GetOutput()
-        color = self.expansion_joint.color
-        paint_data(data, color)
+        data = align_vtk_geometry(source, self.valve.start.coords(), vector)
+        paint_data(data, self.valve.color)
 
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(data)
