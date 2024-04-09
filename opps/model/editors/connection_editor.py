@@ -28,6 +28,11 @@ class ConnectionEditor:
     def connect_pipes(self, **kwargs):
         return self._generic_structure_connection(Pipe, **kwargs)
 
+    def connect_bent_pipes(self, curvature_radius: float, **kwargs):
+        pipes = self.connect_pipes(**kwargs)
+        bends = self.pipeline.add_bend(curvature_radius, **kwargs)
+        return pipes + bends
+
     def connect_expansion_joints(self, **kwargs):
         return self._generic_structure_connection(ExpansionJoint, **kwargs)
 

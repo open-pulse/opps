@@ -75,7 +75,7 @@ class AddStructuresWidget(QWidget):
 
         elif text == "pipe + bend":
             self.current_add_function = partial(pipeline.add_bent_pipe, curvature_radius=0.3)
-            self.current_connect_function = pipeline.connect_pipes
+            self.current_connect_function = partial(pipeline.connect_bent_pipes, curvature_radius=0.3)
 
         elif text == "flange":
             self.current_add_function = pipeline.add_flange

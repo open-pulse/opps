@@ -207,6 +207,9 @@ class Pipeline(Structure):
     def connect_pipes(self, **kwargs):
         return self.connection_editor.connect_pipes(**kwargs)
 
+    def connect_bent_pipes(self, **kwargs):
+        return self.connection_editor.connect_bent_pipes(**kwargs)
+
     def connect_flanges(self, **kwargs):
         return self.connection_editor.connect_flanges(**kwargs)
 
