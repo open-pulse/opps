@@ -1,6 +1,7 @@
+from itertools import chain
+
 import numpy as np
 import vtk
-from itertools import chain
 
 from opps import SYMBOLS_DIR
 
@@ -147,29 +148,17 @@ def c_beam_data(length, h, w1, w2, t1, t2, tw):
     rectangular_top.SetYLength(length)
     rectangular_top.SetZLength(t1)
     rectangular_top.SetXLength(w1)
-    rectangular_top.SetCenter(
-        w1 / 2 - max(w1, w2) / 2,
-        length / 2,
-        -h / 2 + t1 / 2
-    )
+    rectangular_top.SetCenter(w1 / 2 - max(w1, w2) / 2, length / 2, -h / 2 + t1 / 2)
 
     rectangular_left.SetYLength(length)
     rectangular_left.SetZLength(h)
     rectangular_left.SetXLength(tw)
-    rectangular_left.SetCenter(
-        -max(w1, w2) / 2 + tw / 2,
-        length / 2,
-        0
-    )
+    rectangular_left.SetCenter(-max(w1, w2) / 2 + tw / 2, length / 2, 0)
 
     rectangular_bottom.SetYLength(length)
     rectangular_bottom.SetZLength(t2)
     rectangular_bottom.SetXLength(w2)
-    rectangular_bottom.SetCenter(
-        w2 / 2 - max(w1, w2) / 2,
-        length / 2,
-        h / 2 - t2 / 2
-    )
+    rectangular_bottom.SetCenter(w2 / 2 - max(w1, w2) / 2, length / 2, h / 2 - t2 / 2)
 
     rectangular_top.Update()
     rectangular_left.Update()
@@ -265,18 +254,8 @@ def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offse
     final_points = final_ring.GetOutput().GetPoints()
 
     points = vtk.vtkPoints()
-    points.InsertPoints(
-        0, 
-        sides,
-        0,
-        initial_points
-    )
-    points.InsertPoints(
-        sides,
-        sides,
-        0,
-        final_points
-    )
+    points.InsertPoints(0, sides, 0, initial_points)
+    points.InsertPoints(sides, sides, 0, final_points)
 
     external_face = vtk.vtkPolyData()
     external_face.Allocate()
@@ -286,12 +265,12 @@ def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offse
     for i in range(sides):
         external_face.InsertNextCell(
             vtk.VTK_TRIANGLE,
-            3, 
+            3,
             [i, (i + 1) % total, (i + sides) % total],
         )
         external_face.InsertNextCell(
             vtk.VTK_TRIANGLE,
-            3, 
+            3,
             [i, (i + sides) % total, (i + sides - 1) % total],
         )
 
@@ -302,6 +281,7 @@ def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offse
     append_polydata.Update()
 
     return append_polydata.GetOutput()
+
 
 def flange_data(length, outside_diameter, thickness, bolts=8):
     pipe = pipe_data(length, outside_diameter, thickness)
@@ -452,7 +432,9 @@ def valve_handle(outside_diameter, height, axis_diameter):
     transform.Translate(0, (height - axis_diameter), 0)
     transform.Update()
     transform_filter = vtk.vtkTransformFilter()
-    transform_filter.SetInputData(flange_data(axis_diameter, outside_diameter + width, axis_diameter))
+    transform_filter.SetInputData(
+        flange_data(axis_diameter, outside_diameter + width, axis_diameter)
+    )
     transform_filter.SetTransform(transform)
     transform_filter.Update()
     end_flange = transform_filter.GetOutput()

@@ -1,16 +1,16 @@
+from functools import partial
 from pathlib import Path
 
-from functools import partial
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QAction,
     QCheckBox,
+    QComboBox,
     QFrame,
     QGridLayout,
     QHBoxLayout,
     QLabel,
-    QComboBox,
     QLineEdit,
     QPushButton,
     QVBoxLayout,
@@ -74,8 +74,7 @@ class AddStructuresWidget(QWidget):
             self.current_connect_function = pipeline.connect_pipes
 
         elif text == "pipe + bend":
-            self.current_add_function = partial(
-                pipeline.add_bent_pipe, curvature_radius=0.3)
+            self.current_add_function = partial(pipeline.add_bent_pipe, curvature_radius=0.3)
             self.current_connect_function = pipeline.connect_pipes
 
         elif text == "flange":
@@ -85,11 +84,11 @@ class AddStructuresWidget(QWidget):
         elif text == "valve":
             self.current_add_function = pipeline.add_valve
             self.current_connect_function = pipeline.connect_valves
-        
+
         elif text == "expansion joint":
             self.current_add_function = pipeline.add_expansion_joint
             self.current_connect_function = pipeline.connect_expansion_joints
-        
+
         elif text == "reducer":
             self.current_add_function = pipeline.add_reducer_eccentric
             self.current_connect_function = pipeline.connect_reducer_eccentrics
@@ -119,7 +118,7 @@ class AddStructuresWidget(QWidget):
             self.current_connect_function = None
 
         if pipeline.staged_structures:
-            self.coords_modified_callback()        
+            self.coords_modified_callback()
 
     def get_displacement(self):
         dx = self.dx_box.text() or 0

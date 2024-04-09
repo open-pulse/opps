@@ -20,7 +20,7 @@ class RectangularBeamActor(vtk.vtkActor):
         source = rectangular_beam_data(
             length, self.beam.width, self.beam.height, self.beam.thickness
         )
-        
+
         data = align_vtk_geometry(source, self.beam.start.coords(), vector)
         paint_data(data, self.beam.color)
 

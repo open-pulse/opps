@@ -16,9 +16,9 @@ from opps.model import (
     Point,
     RectangularBeam,
     ReducerEccentric,
+    Structure,
     TBeam,
     Valve,
-    Structure,
 )
 
 
@@ -97,32 +97,24 @@ class MainEditor:
 
         return flanges
 
-    def add_bent_pipe(
-        self, deltas, curvature_radius: float, **kwargs
-    ) -> list[Pipe | Bend]:
+    def add_bent_pipe(self, deltas, curvature_radius: float, **kwargs) -> list[Pipe | Bend]:
         pipes = self.add_pipe(deltas, **kwargs)
         bends = self.add_bend(curvature_radius, **kwargs)
         return bends + pipes
 
-    def add_expansion_joint(
-        self, deltas, **kwargs
-    ) -> list[ExpansionJoint]:
+    def add_expansion_joint(self, deltas, **kwargs) -> list[ExpansionJoint]:
         return self._add_generic_line_structure(ExpansionJoint, deltas, **kwargs)
 
     def add_valve(self, deltas, **kwargs) -> list[Valve]:
         return self._add_generic_line_structure(Valve, deltas, **kwargs)
 
-    def add_reducer_eccentric(
-        self, deltas, **kwargs
-    ) -> list[ReducerEccentric]:
+    def add_reducer_eccentric(self, deltas, **kwargs) -> list[ReducerEccentric]:
         return self._add_generic_line_structure(ReducerEccentric, deltas, **kwargs)
 
     def add_circular_beam(self, deltas, **kwargs) -> list[CircularBeam]:
         return self._add_generic_line_structure(CircularBeam, deltas, **kwargs)
 
-    def add_rectangular_beam(
-        self, deltas, **kwargs
-    ) -> list[RectangularBeam]:
+    def add_rectangular_beam(self, deltas, **kwargs) -> list[RectangularBeam]:
         return self._add_generic_line_structure(RectangularBeam, deltas, **kwargs)
 
     def add_i_beam(self, deltas, **kwargs) -> list[IBeam]:
@@ -183,10 +175,7 @@ class MainEditor:
         return to_remove
 
     def _add_generic_line_structure(
-        self,
-        structure_type: type[Structure], 
-        deltas: tuple[float, float, float],
-        **kwargs
+        self, structure_type: type[Structure], deltas: tuple[float, float, float], **kwargs
     ):
         if not np.array(deltas).any():  # all zeros
             return []
