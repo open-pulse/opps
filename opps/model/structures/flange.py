@@ -12,8 +12,10 @@ class Flange(Structure):
 
         self.start = start
         self.end = end
-        self.diameter = kwargs.get("diameter", 0.1)
-        self.thickness = kwargs.get("thickness", 0.01)
+        # I am adding 0.02 to the diameter just to appear nicer as
+        # a default thickness in the presentation
+        self.diameter = kwargs.get("diameter", 0.1 + 0.02)
+        self.thickness = kwargs.get("thickness", 0.01 + 0.02)
 
     def get_points(self):
         return [self.start, self.end]

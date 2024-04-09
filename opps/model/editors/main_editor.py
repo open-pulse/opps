@@ -148,16 +148,6 @@ class MainEditor:
 
             bend.colapse()
 
-        for flange in self.pipeline.structures_of_type(Flange):
-            if not flange.auto:
-                continue
-
-            vectors = self._get_point_vectors(flange.position)
-            if not vectors:
-                continue
-
-            flange.normal = vectors[0]
-
         for bend in self.pipeline.structures_of_type(Bend):
             if not bend.auto:
                 continue

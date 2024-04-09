@@ -266,20 +266,20 @@ def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offse
     return tube_filter.GetOutput()
 
 
-def flange_data(length, inside_diameter, thickness, bolts=8):
-    pipe = pipe_data(length, inside_diameter + thickness * 2, thickness * 2)
+def flange_data(length, outside_diameter, thickness, bolts=8):
+    pipe = pipe_data(length, outside_diameter, thickness)
     append_polydata = vtk.vtkAppendPolyData()
     append_polydata.AddInputData(pipe)
 
     for i in range(bolts):
         angle = i * 2 * np.pi / bolts
         nut = vtk.vtkCylinderSource()
-        nut.SetHeight(length + thickness)
-        nut.SetRadius(thickness / 3)
+        nut.SetHeight(length + thickness / 2)
+        nut.SetRadius(thickness / 4 / 2)
         nut.SetCenter(
-            (inside_diameter / 2 + thickness / 2) * np.sin(angle),
+            (outside_diameter - thickness / 3) * np.sin(angle) / 2,
             length / 2,
-            (inside_diameter / 2 + thickness / 2) * np.cos(angle),
+            (outside_diameter - thickness / 3) * np.cos(angle) / 2,
         )
         nut.Update()
         append_polydata.AddInputData(nut.GetOutput())
