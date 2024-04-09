@@ -205,52 +205,34 @@ class Pipeline(Structure):
 
     # Connection Editor
     def connect_pipes(self, **kwargs):
-        self.connection_editor.connect_pipes(**kwargs)
+        return self.connection_editor.connect_pipes(**kwargs)
 
     def connect_flanges(self, **kwargs):
-        self.connection_editor.connect_flanges(**kwargs)
+        return self.connection_editor.connect_flanges(**kwargs)
 
     def connect_expansion_joints(self, **kwargs):
-        self.connection_editor.connect_expansion_joints(**kwargs)
+        return self.connection_editor.connect_expansion_joints(**kwargs)
 
     def connect_valves(self, **kwargs):
-        self.connection_editor.connect_valves(**kwargs)
+        return self.connection_editor.connect_valves(**kwargs)
 
     def connect_reducer_eccentrics(self, **kwargs):
-        self.connection_editor.connect_reducer_eccentrics(**kwargs)
+        return self.connection_editor.connect_reducer_eccentrics(**kwargs)
 
     def connect_circular_beams(self, **kwargs):
-        self.connection_editor.connect_circular_beams(**kwargs)
+        return self.connection_editor.connect_circular_beams(**kwargs)
 
     def connect_rectangular_beams(self, **kwargs):
-        self.connection_editor.connect_rectangular_beams(**kwargs)
+        return self.connection_editor.connect_rectangular_beams(**kwargs)
 
     def connect_i_beams(self, **kwargs):
-        self.connection_editor.connect_i_beams(**kwargs)
+        return self.connection_editor.connect_i_beams(**kwargs)
 
     def connect_c_beams(self, **kwargs):
-        self.connection_editor.connect_c_beams(**kwargs)
+        return self.connection_editor.connect_c_beams(**kwargs)
 
     def connect_t_beams(self, **kwargs):
-        self.connection_editor.connect_t_beams(**kwargs)
-
-    def connect_pipes(self, **kwargs):
-        pipes = []
-        for point_a, point_b in pairwise(self.selected_points):
-            pipe = Pipe(point_a, point_b, **kwargs)
-            self.add_structure(pipe)
-            pipes.append(pipe)
-        return pipes
-
-    def connect_i_beams(self, **kwargs):
-        from .structures.beam import IBeam
-
-        beams = []
-        for point_a, point_b in pairwise(self.selected_points):
-            beam = IBeam(point_a, point_b, **kwargs)
-            self.add_structure(beam)
-            beams.append(beam)
-        return beams
+        return self.connection_editor.connect_t_beams(**kwargs)
 
     # Points Editor
     def attatch_point(self, point: Point):

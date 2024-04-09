@@ -26,34 +26,34 @@ class ConnectionEditor:
         self.pipeline = pipeline
 
     def connect_pipes(self, **kwargs):
-        self._generic_structure_connection(Pipe, **kwargs)
+        return self._generic_structure_connection(Pipe, **kwargs)
 
     def connect_expansion_joints(self, **kwargs):
-        self._generic_structure_connection(ExpansionJoint, **kwargs)
+        return self._generic_structure_connection(ExpansionJoint, **kwargs)
 
     def connect_flanges(self, **kwargs):
-        self._generic_structure_connection(Flange, **kwargs)
+        return self._generic_structure_connection(Flange, **kwargs)
 
     def connect_valves(self, **kwargs):
-        self._generic_structure_connection(Valve, **kwargs)
+        return self._generic_structure_connection(Valve, **kwargs)
 
     def connect_reducer_eccentrics(self, **kwargs):
-        self._generic_structure_connection(ReducerEccentric, **kwargs)
+        return self._generic_structure_connection(ReducerEccentric, **kwargs)
 
     def connect_circular_beams(self, **kwargs):
-        self._generic_structure_connection(CircularBeam, **kwargs)
+        return self._generic_structure_connection(CircularBeam, **kwargs)
 
     def connect_rectangular_beams(self, **kwargs):
-        self._generic_structure_connection(RectangularBeam, **kwargs)
+        return self._generic_structure_connection(RectangularBeam, **kwargs)
 
     def connect_i_beams(self, **kwargs):
-        self._generic_structure_connection(IBeam, **kwargs)
+        return self._generic_structure_connection(IBeam, **kwargs)
 
     def connect_c_beams(self, **kwargs):
-        self._generic_structure_connection(CBeam, **kwargs)
+        return self._generic_structure_connection(CBeam, **kwargs)
 
     def connect_t_beams(self, **kwargs):
-        self._generic_structure_connection(TBeam, **kwargs)
+        return self._generic_structure_connection(TBeam, **kwargs)
 
     def _generic_structure_connection(self, structure_type, **kwargs):
         structures = []
