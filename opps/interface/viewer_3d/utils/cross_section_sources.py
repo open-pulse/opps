@@ -1,5 +1,6 @@
 import numpy as np
 import vtk
+from itertools import chain
 
 from opps import SYMBOLS_DIR
 
@@ -323,7 +324,7 @@ def expansion_joint_data(length, outside_diameter, thickness):
 
     width = 0.15 * outside_diameter
     pipe = pipe_data(length, outside_diameter, thickness)
-    start_flange = flange_data(width, outside_diameter, width)
+    start_flange = flange_data(width, outside_diameter + width, width)
 
     # I just wanted to move the flange to the end of the structure
     # but that is the only way vtk let me do it.
@@ -331,7 +332,7 @@ def expansion_joint_data(length, outside_diameter, thickness):
     transform.Translate(0, length - width, 0)
     transform.Update()
     transform_filter = vtk.vtkTransformFilter()
-    transform_filter.SetInputData(flange_data(width, outside_diameter, width))
+    transform_filter.SetInputData(flange_data(width, outside_diameter + width, width))
     transform_filter.SetTransform(transform)
     transform_filter.Update()
     end_flange = transform_filter.GetOutput()
@@ -394,7 +395,7 @@ def valve_data(length, outside_diameter, thickness):
 
     width = 0.20 * outside_diameter
     pipe = pipe_data(length, outside_diameter, thickness)
-    start_flange = flange_data(width, outside_diameter, width)
+    start_flange = flange_data(width, outside_diameter + width, width)
 
     # I just wanted to move the flange to the end of the structure
     # but that is the only way vtk let me do it.
@@ -402,7 +403,7 @@ def valve_data(length, outside_diameter, thickness):
     transform.Translate(0, length - width, 0)
     transform.Update()
     transform_filter = vtk.vtkTransformFilter()
-    transform_filter.SetInputData(flange_data(width, outside_diameter, width))
+    transform_filter.SetInputData(flange_data(width, outside_diameter + width, width))
     transform_filter.SetTransform(transform)
     transform_filter.Update()
     end_flange = transform_filter.GetOutput()
@@ -437,6 +438,7 @@ def valve_data(length, outside_diameter, thickness):
 
 def valve_handle(outside_diameter, height, axis_diameter):
     append_polydata = vtk.vtkAppendPolyData()
+    width = 0.20 * outside_diameter
 
     # I just wanted to move the flange to the end of the structure
     # but that is the only way vtk let me do it.
@@ -444,7 +446,7 @@ def valve_handle(outside_diameter, height, axis_diameter):
     transform.Translate(0, (height - axis_diameter), 0)
     transform.Update()
     transform_filter = vtk.vtkTransformFilter()
-    transform_filter.SetInputData(flange_data(axis_diameter, outside_diameter, axis_diameter))
+    transform_filter.SetInputData(flange_data(axis_diameter, outside_diameter + width, axis_diameter))
     transform_filter.SetTransform(transform)
     transform_filter.Update()
     end_flange = transform_filter.GetOutput()

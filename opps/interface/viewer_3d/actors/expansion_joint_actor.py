@@ -5,7 +5,7 @@ from opps.interface.viewer_3d.utils.cell_utils import paint_data
 from opps.interface.viewer_3d.utils.cross_section_sources import (
     expansion_joint_data,
 )
-from opps.interface.viewer_3d.utils.rotations import align_y_rotations
+from opps.interface.viewer_3d.utils.rotations import align_vtk_geometry
 from opps.model import ExpansionJoint
 
 
@@ -21,25 +21,8 @@ class ExpansionJointActor(vtk.vtkActor):
             length, self.expansion_joint.diameter, self.expansion_joint.thickness
         )
 
-        x, y, z = self.expansion_joint.start.coords()
-        rx, ry, rz = align_y_rotations(vector)
-
-        transform = vtk.vtkTransform()
-        transform.Translate(x, y, z)
-        transform.RotateZ(-np.degrees(rz))
-        transform.RotateY(-np.degrees(ry))
-        transform.RotateX(-np.degrees(rx))
-        # transform.Translate(0, length / 2, 0)
-        transform.Update()
-
-        transform_filter = vtk.vtkTransformFilter()
-        transform_filter.SetInputData(source)
-        transform_filter.SetTransform(transform)
-        transform_filter.Update()
-
-        data = transform_filter.GetOutput()
-        color = self.expansion_joint.color
-        paint_data(data, color)
+        data = align_vtk_geometry(source, self.expansion_joint.start.coords(), vector)
+        paint_data(data, self.expansion_joint.color)
 
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(data)
