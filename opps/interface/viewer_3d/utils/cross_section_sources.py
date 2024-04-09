@@ -278,16 +278,22 @@ def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offse
         final_points
     )
 
-    points_order = []
-    for i in range(sides):
-        points_order.append(i)
-        points_order.append(i + sides)
-    points_order.append(0)
-
     external_face = vtk.vtkPolyData()
     external_face.Allocate()
     external_face.SetPoints(points)
-    external_face.InsertNextCell(vtk.VTK_TRIANGLE_STRIP, len(points_order), points_order)
+
+    total = 2 * sides
+    for i in range(sides):
+        external_face.InsertNextCell(
+            vtk.VTK_TRIANGLE,
+            3, 
+            [i, (i + 1) % total, (i + sides) % total],
+        )
+        external_face.InsertNextCell(
+            vtk.VTK_TRIANGLE,
+            3, 
+            [i, (i + sides) % total, (i + sides - 1) % total],
+        )
 
     append_polydata = vtk.vtkAppendPolyData()
     append_polydata.AddInputData(initial_ring.GetOutput())
