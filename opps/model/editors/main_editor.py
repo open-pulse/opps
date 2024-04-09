@@ -115,7 +115,7 @@ class MainEditor:
     def add_reducer_eccentric(
         self, deltas, **kwargs
     ) -> list[ReducerEccentric]:
-        return self._add_generic_line_structure(IBeam, deltas, **kwargs)
+        return self._add_generic_line_structure(ReducerEccentric, deltas, **kwargs)
 
     def add_circular_beam(self, deltas, **kwargs) -> list[CircularBeam]:
         return self._add_generic_line_structure(CircularBeam, deltas, **kwargs)

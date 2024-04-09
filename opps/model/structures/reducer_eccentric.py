@@ -11,10 +11,10 @@ class ReducerEccentric(Structure):
 
         self.start = start
         self.end = end
-        self.offset_y = kwargs.get("offset_y", 0)
+        self.offset_y = kwargs.get("offset_y", 0.025)
         self.offset_z = kwargs.get("offset_z", 0)
         self.start_diameter = kwargs.get("start_diameter", 0.1)
-        self.end_diameter = kwargs.get("end_diameter", 0.1)
+        self.end_diameter = kwargs.get("end_diameter", 0.05)
         self.thickness = kwargs.get("thickness", 0.01)
 
     def get_points(self):

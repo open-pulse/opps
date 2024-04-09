@@ -242,29 +242,59 @@ def t_beam_data(length, h, w1, t1, tw):
 
 
 def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offset_z):
-    radius_array = vtk.vtkDoubleArray()
-    radius_array.SetName("TubeRadius")
-    radius_array.SetNumberOfTuples(2)
-    radius_array.SetTuple1(0, start_diameter / 2)
-    radius_array.SetTuple1(1, end_diameter / 2)
+    initial_radius = start_diameter / 2
+    final_radius = end_diameter / 2
 
-    line_source = vtk.vtkLineSource()
-    line_source.SetPoint1(0, -length / 2, 0)
-    line_source.SetPoint2((offset_y, length / 2, offset_z))
-    line_source.Update()
+    sides = 20
 
-    polydata = line_source.GetOutput()
-    polydata.GetPointData().AddArray(radius_array)
-    polydata.GetPointData().SetActiveScalars(radius_array.GetName())
+    initial_ring = vtk.vtkRegularPolygonSource()
+    initial_ring.SetRadius(initial_radius)
+    initial_ring.SetNumberOfSides(sides)
+    initial_ring.SetNormal(0, 1, 0)
+    initial_ring.Update()
 
-    tube_filter = vtk.vtkTubeFilter()
-    tube_filter.SetInputData(polydata)
-    tube_filter.SetNumberOfSides(30)
-    tube_filter.SetVaryRadiusToVaryRadiusByAbsoluteScalar()
-    tube_filter.Update()
+    final_ring = vtk.vtkRegularPolygonSource()
+    final_ring.SetRadius(final_radius)
+    final_ring.SetNumberOfSides(sides)
+    final_ring.SetCenter(offset_y, length, offset_z)
+    final_ring.SetNormal(0, 1, 0)
+    final_ring.Update()
 
-    return tube_filter.GetOutput()
+    initial_points = initial_ring.GetOutput().GetPoints()
+    final_points = final_ring.GetOutput().GetPoints()
 
+    points = vtk.vtkPoints()
+    points.InsertPoints(
+        0, 
+        sides,
+        0,
+        initial_points
+    )
+    points.InsertPoints(
+        sides,
+        sides,
+        0,
+        final_points
+    )
+
+    points_order = []
+    for i in range(sides):
+        points_order.append(i)
+        points_order.append(i + sides)
+    points_order.append(0)
+
+    external_face = vtk.vtkPolyData()
+    external_face.Allocate()
+    external_face.SetPoints(points)
+    external_face.InsertNextCell(vtk.VTK_TRIANGLE_STRIP, len(points_order), points_order)
+
+    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata.AddInputData(initial_ring.GetOutput())
+    append_polydata.AddInputData(final_ring.GetOutput())
+    append_polydata.AddInputData(external_face)
+    append_polydata.Update()
+
+    return append_polydata.GetOutput()
 
 def flange_data(length, outside_diameter, thickness, bolts=8):
     pipe = pipe_data(length, outside_diameter, thickness)

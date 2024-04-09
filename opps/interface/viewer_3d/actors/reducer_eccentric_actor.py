@@ -5,7 +5,7 @@ from opps.interface.viewer_3d.utils.cell_utils import paint_data
 from opps.interface.viewer_3d.utils.cross_section_sources import (
     eccentric_reducer_data,
 )
-from opps.interface.viewer_3d.utils.rotations import align_y_rotations
+from opps.interface.viewer_3d.utils.rotations import align_vtk_geometry
 from opps.model import ReducerEccentric
 
 
@@ -25,25 +25,8 @@ class ReducerEccentricActor(vtk.vtkActor):
             self.reducer.offset_z,
         )
 
-        x, y, z = self.reducer.start.coords()
-        rx, ry, rz = align_y_rotations(vector)
-
-        transform = vtk.vtkTransform()
-        transform.Translate(x, y, z)
-        transform.RotateZ(-np.degrees(rz))
-        transform.RotateY(-np.degrees(ry))
-        transform.RotateX(-np.degrees(rx))
-        transform.Translate(0, length / 2, 0)
-        transform.Update()
-
-        transform_filter = vtk.vtkTransformFilter()
-        transform_filter.SetInputData(source)
-        transform_filter.SetTransform(transform)
-        transform_filter.Update()
-
-        data = transform_filter.GetOutput()
-        color = self.reducer.color
-        paint_data(data, color)
+        data = align_vtk_geometry(source, self.reducer.start.coords(), vector)
+        paint_data(data, self.reducer.color)
 
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(data)
