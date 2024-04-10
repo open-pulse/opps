@@ -19,6 +19,16 @@ class TBeam(Beam):
     def get_points(self):
         return [self.start, self.end]
 
+    def as_dict(self) -> dict:
+        return super().as_dict() | {
+            "start": self.start,
+            "end": self.end,
+            "width": self.width,
+            "height": self.height,
+            "thickness_1": self.thickness_1,
+            "thickness_2": self.thickness_2,
+        }
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors import TBeamActor
 

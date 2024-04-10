@@ -20,6 +20,13 @@ class Point:
     def copy(self):
         return Point(self.x, self.y, self.z)
 
+    def as_dict(self) -> dict:
+        return {
+            "x": float(self.x),
+            "y": float(self.y),
+            "z": float(self.z),
+        }
+
     def __add__(self, other):
         a = self.coords()
         b = np.array(tuple(other))

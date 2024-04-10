@@ -110,6 +110,17 @@ class Bend(Structure):
             self.corner,
         ]
 
+    def as_dict(self) -> dict:
+        return super().as_dict() | {
+            "start": self.start,
+            "end": self.end,
+            "corner": self.corner,
+            "curvature": self.curvature,
+            "diameter": self.diameter,
+            "thickness": self.thickness,
+            "auto": self.auto,
+        }
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.bend_actor import BendActor
 

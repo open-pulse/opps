@@ -14,6 +14,14 @@ class Valve(Structure):
     def get_points(self) -> list[Point]:
         return [self.start, self.end]
 
+    def as_dict(self) -> dict:
+        return super().as_dict() | {
+            "start": self.start,
+            "end": self.end,
+            "diameter": self.diameter,
+            "thickness": self.thickness,
+        }
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors import ValveActor
 

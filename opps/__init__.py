@@ -4,10 +4,15 @@ from pathlib import Path
 
 import vtk
 from PyQt5.QtWidgets import QApplication
+from opps.io.yaml_file.configuration import configure_custom_yaml
 
 ROOT_DIR = Path(__file__).parent
 UI_DIR = ROOT_DIR / "interface/ui_files"
 SYMBOLS_DIR = ROOT_DIR / "interface/symbol_files"
+
+# Handle automatically complex numbers
+# and opps Structures
+configure_custom_yaml()
 
 
 def app() -> "Application":

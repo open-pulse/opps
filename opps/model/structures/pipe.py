@@ -34,6 +34,14 @@ class Pipe(Structure):
         elif self.end == old:
             self.end = new
 
+    def as_dict(self) -> dict:
+        return super().as_dict() | {
+            "start": self.start,
+            "end": self.end,
+            "diameter": self.diameter,
+            "thickness": self.thickness,
+        }
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
 

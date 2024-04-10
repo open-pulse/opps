@@ -2,6 +2,7 @@ from itertools import chain, pairwise
 from typing import Generator, TypeVar
 
 import numpy as np
+import yaml
 
 from opps.model.editors.connection_editor import ConnectionEditor
 from opps.model.editors.main_editor import MainEditor
@@ -32,7 +33,8 @@ class Pipeline(Structure):
         self.selected_structures: list[Structure] = list()
 
         # origin
-        self.points.append(Point(0, 0, 0))
+        if not self.points:
+            self.points.append(Point(0, 0, 0))
 
         # Instead of placing incountable lines of code here,
         # most of the functions are a facade, and their actual
@@ -41,6 +43,21 @@ class Pipeline(Structure):
         self.points_editor = PointsEditor(self)
         self.selection_editor = SelectionEditor(self)
         self.connection_editor = ConnectionEditor(self)
+
+    def copy_from(self, pipeline: 'Pipeline'):
+        self.points = pipeline.points
+        self.structures = pipeline.structures
+
+    def load_file(self, path):
+        with open(path, "r") as file:
+            pipeline = yaml.safe_load(file)
+
+        if pipeline is not None:
+            self.copy_from(pipeline)
+
+    def save_file(self, path):
+        with open(path, "w") as file:
+            yaml.safe_dump(self, file, sort_keys=False)
 
     def all_points(self):
         return chain(self.points, self.staged_points)
@@ -72,6 +89,8 @@ class Pipeline(Structure):
         self.staged_points.clear()
         self.staged_structures.clear()
         self.main_editor.next_border.clear()
+
+        self.save_file("bla.yaml")
 
     def dismiss(self):
         for structure in self.staged_structures:
@@ -267,6 +286,12 @@ class Pipeline(Structure):
         self.selection_editor.clear_selection()
 
     # Common
+    def as_dict(self) -> dict:
+        return {
+            "structures": self.structures,
+            "points": self.points
+        }
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipeline_actor import (
             PipelineActor,

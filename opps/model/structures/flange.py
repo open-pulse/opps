@@ -23,6 +23,18 @@ class Flange(Structure):
     def set_diameter(self, diameter, *args):
         self.diameter = diameter
 
+    def replace_point(self, old, new):
+        if self.position == old:
+            self.start = new
+
+    def as_dict(self) -> dict:
+        return super().as_dict() | {
+            "start": self.start,
+            "end": self.end,
+            "diameter": self.diameter,
+            "thickness": self.thickness,
+        }
+
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.flange_actor import FlangeActor
 
@@ -30,7 +42,3 @@ class Flange(Structure):
 
     def __hash__(self) -> int:
         return id(self)
-
-    def replace_point(self, old, new):
-        if self.position == old:
-            self.start = new
