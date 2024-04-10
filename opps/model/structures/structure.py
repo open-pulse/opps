@@ -5,24 +5,12 @@ if TYPE_CHECKING:
 
 
 class Structure:
-    color: tuple[int, int, int] = (255, 255, 255)
-    selected: bool = False
-    staged: bool = False
-    tag: int = -1
-
-    __extra_info: dict = None
-
     def __init__(self, **kwargs) -> None:
         self.color = kwargs.get("color", (255, 255, 255))
         self.selected = kwargs.get("selected", False)
         self.staged = kwargs.get("staged", False)
         self.tag = kwargs.get("tag", -1)
-
-    @property
-    def extra_info(self):
-        if self.__extra_info is None:
-            self.__extra_info = dict()
-        return self.__extra_info
+        self.extra_info = kwargs.get("extra_info", dict())
 
     def get_points(self) -> list["Point"]:
         raise NotImplementedError()

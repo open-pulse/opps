@@ -24,7 +24,7 @@ def align_y_rotations(vector):
     return rx, ry, rz
 
 
-def align_vtk_geometry(geometry: vtk.vtkPolyData, start: np.ndarray, vector):
+def align_vtk_geometry(geometry: vtk.vtkPolyData, start: np.ndarray, vector: np.ndarray):
     x, y, z = start
     rx, ry, rz = align_y_rotations(vector)
 
