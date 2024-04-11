@@ -104,14 +104,24 @@ class Bend(Structure):
 
     def get_diameters(self):
         return [self.start_diameter, self.end_diameter]
+    
+    def alpha_func(self, alpha):
+        pass
+        
+    def update_middle_points(self):
+        # aphkha
+        pass
 
     def get_points(self):
+        self.alpha_func(alpha)
         points = list(self.extra_points.values())
         return [
             self.start,
             self.end,
             self.corner,
         ] + points
+        
+    
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.bend_actor import BendActor
