@@ -21,7 +21,7 @@ from .structures.structure import Structure
 generic_type = TypeVar("generic_type")
 
 
-class Pipeline(Structure):
+class Pipeline:
     def __init__(self):
         self.points: list[Point] = list()
         self.structures: list[Structure] = list()
@@ -44,20 +44,17 @@ class Pipeline(Structure):
         self.selection_editor = SelectionEditor(self)
         self.connection_editor = ConnectionEditor(self)
 
-    def copy_from(self, pipeline: 'Pipeline'):
-        self.points = pipeline.points
-        self.structures = pipeline.structures
-
     def load_file(self, path):
         with open(path, "r") as file:
-            pipeline = yaml.safe_load(file)
+            data = yaml.safe_load(file)
 
-        if pipeline is not None:
-            self.copy_from(pipeline)
+        if data is not None:
+            self.points = data["points"]
+            self.structures = data["structures"]
 
     def save_file(self, path):
         with open(path, "w") as file:
-            yaml.safe_dump(self, file, sort_keys=False)
+            yaml.safe_dump(self.as_dict(), file, sort_keys=False)
 
     def all_points(self):
         return chain(self.points, self.staged_points)

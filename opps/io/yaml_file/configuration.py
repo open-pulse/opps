@@ -18,27 +18,20 @@ class SafeDumperWithBlankLines(yaml.SafeDumper):
 
 
 # Constructors
-def _complex_constructor(loader: yaml.SafeLoader, node: yaml.nodes.MappingNode) -> complex:
+def _complex_number_constructor(loader: yaml.SafeLoader, node: yaml.nodes.MappingNode) -> complex:
     return complex(**loader.construct_mapping(node))
 
 def _point_constructor(loader: yaml.SafeLoader, node: yaml.nodes.MappingNode) -> opps.model.Point:
     return opps.model.Point(*loader.construct_sequence(node))
 
-def _structure_multi_constructor(loader: yaml.SafeLoader, tag_suffix, node: yaml.nodes.MappingNode) -> opps.model.Structure:
+def _structure_multi_constructor(loader: yaml.SafeLoader, tag_suffix: str, node: yaml.nodes.MappingNode) -> opps.model.Structure:
     mapping = loader.construct_mapping(node)
-
-    if tag_suffix == "Pipeline":
-        p = opps.model.Pipeline()
-        for key, val in mapping.items():
-            setattr(p, key, val)
-        return p
-
     subclass_name = tag_suffix
     structure_subclass = getattr(opps.model, subclass_name)
     return structure_subclass(**mapping)
 
 # Representers
-def _complex_representer(dumper: yaml.SafeDumper, obj: complex) -> yaml.nodes.MappingNode:
+def _complex_number_representer(dumper: yaml.SafeDumper, obj: complex) -> yaml.nodes.MappingNode:
     return dumper.represent_mapping("!complex", {"real": obj.real, "imag": obj.imag})
 
 def _point_representer(dumper: yaml.SafeDumper, obj: opps.model.Point) -> yaml.nodes.MappingNode:
@@ -56,11 +49,11 @@ def configure_custom_yaml():
     yaml.SafeDumper = SafeDumperWithBlankLines
 
     dumper = yaml.SafeDumper
-    dumper.add_representer(complex, _complex_representer)
+    dumper.add_representer(complex, _complex_number_representer)
     dumper.add_representer(opps.model.Point, _point_representer)
     dumper.add_multi_representer(opps.model.Structure, _structure_multi_representer)
 
     loader = yaml.SafeLoader
-    loader.add_constructor("!complex", _complex_constructor)
+    loader.add_constructor("!complex", _complex_number_constructor)
     loader.add_constructor("!Point", _point_constructor)
     loader.add_multi_constructor("!Structure.", _structure_multi_constructor)
