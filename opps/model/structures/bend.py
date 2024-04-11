@@ -21,7 +21,9 @@ class Bend(Structure):
         self.diameter = kwargs.get("diameter", 0.1)
         self.thickness = kwargs.get("thickness", 0.01)
         self.auto = True
-
+        self.extra_points = {
+            0.3 : Point(2,2,0)
+        }
     @property
     def center(self):
         if self.is_colapsed():
@@ -104,11 +106,12 @@ class Bend(Structure):
         return [self.start_diameter, self.end_diameter]
 
     def get_points(self):
+        points = list(self.extra_points.values())
         return [
             self.start,
             self.end,
             self.corner,
-        ]
+        ] + points
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.bend_actor import BendActor
