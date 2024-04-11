@@ -4,6 +4,7 @@ from pathlib import Path
 
 import vtk
 from PyQt5.QtWidgets import QApplication
+
 from opps.io.yaml_file.configuration import configure_custom_yaml
 
 ROOT_DIR = Path(__file__).parent

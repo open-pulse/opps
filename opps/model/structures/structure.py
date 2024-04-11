@@ -4,7 +4,6 @@ if TYPE_CHECKING:
     from opps.model import Point
 
 
-
 class Structure:
     def __init__(self, **kwargs) -> None:
         self.color = kwargs.get("color", [255, 255, 255])

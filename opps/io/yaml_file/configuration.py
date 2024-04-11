@@ -1,5 +1,7 @@
-import yaml
 import sys
+
+import yaml
+
 import opps.model
 
 
@@ -11,40 +13,49 @@ class SafeDumperWithBlankLines(yaml.SafeDumper):
 
         if len(self.indents) <= 2:
             super().write_line_break()
-    
+
     def increase_indent(self, flow=False, *args, **kwargs):
         return super().increase_indent(flow=flow, indentless=False)
-
 
 
 # Constructors
 def _complex_number_constructor(loader: yaml.SafeLoader, node: yaml.nodes.MappingNode) -> complex:
     return complex(**loader.construct_mapping(node))
 
+
 def _point_constructor(loader: yaml.SafeLoader, node: yaml.nodes.MappingNode) -> opps.model.Point:
     return opps.model.Point(*loader.construct_sequence(node))
 
-def _structure_multi_constructor(loader: yaml.SafeLoader, tag_suffix: str, node: yaml.nodes.MappingNode) -> opps.model.Structure:
+
+def _structure_multi_constructor(
+    loader: yaml.SafeLoader, tag_suffix: str, node: yaml.nodes.MappingNode
+) -> opps.model.Structure:
     mapping = loader.construct_mapping(node)
     subclass_name = tag_suffix
     structure_subclass = getattr(opps.model, subclass_name)
     return structure_subclass(**mapping)
 
+
 # Representers
 def _complex_number_representer(dumper: yaml.SafeDumper, obj: complex) -> yaml.nodes.MappingNode:
     return dumper.represent_mapping("!complex", {"real": obj.real, "imag": obj.imag})
 
-def _point_representer(dumper: yaml.SafeDumper, obj: opps.model.Point) -> yaml.nodes.MappingNode:
-    return dumper.represent_sequence("!Point", [float(i) for i in obj], flow_style=True) 
 
-def _structure_multi_representer(dumper: yaml.SafeDumper, obj: opps.model.Structure) -> yaml.nodes.MappingNode:
+def _point_representer(dumper: yaml.SafeDumper, obj: opps.model.Point) -> yaml.nodes.MappingNode:
+    return dumper.represent_sequence("!Point", [float(i) for i in obj], flow_style=True)
+
+
+def _structure_multi_representer(
+    dumper: yaml.SafeDumper, obj: opps.model.Structure
+) -> yaml.nodes.MappingNode:
     subclass_name = type(obj).__name__
     a = dumper.represent_mapping(f"!Structure.{subclass_name}", obj.as_dict())
     return a
 
+
 def configure_custom_yaml():
     # Override library classes is not nice, but I think
-    # that separating the items with a blank line is the 
+    # that separating the items with a blank line is the
     # correct behaviour.
     yaml.SafeDumper = SafeDumperWithBlankLines
 

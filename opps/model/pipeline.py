@@ -284,10 +284,7 @@ class Pipeline:
 
     # Common
     def as_dict(self) -> dict:
-        return {
-            "structures": self.structures,
-            "points": self.points
-        }
+        return {"structures": self.structures, "points": self.points}
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors.pipeline_actor import (
