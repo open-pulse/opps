@@ -22,7 +22,6 @@ class Bend(Structure):
         self.thickness = kwargs.get("thickness", 0.01)
         self.auto = True
         self.extra_points = {
-            0.3 : Point(2,2,0)
         }
     @property
     def center(self):
@@ -105,15 +104,26 @@ class Bend(Structure):
     def get_diameters(self):
         return [self.start_diameter, self.end_diameter]
     
-    def alpha_func(self, alpha):
-        pass
+    def bend_coords(self, alpha):
+        # alpha is the percentage of the bend traveled
+        start = np.array(*self.start)
+        origin = np.array(*self.center())
+        radius = np.linalg.norm(start - origin)
+
+        guide_point = (1 - alpha) * self.start + alpha * self.end 
+        direction = guide_point - origin
+        vector = (direction / normalize(direction)) * radius
+        point = vector + origin
+        return point
         
     def update_middle_points(self):
-        # aphkha
-        pass
+        input = 0.3
+        middle_point = self.bend_coords(input)
+        self.extra_points[input] = middle_point
+        
 
     def get_points(self):
-        self.alpha_func(alpha)
+        self.update_middle_points(self)
         points = list(self.extra_points.values())
         return [
             self.start,
