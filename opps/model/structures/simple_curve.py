@@ -69,6 +69,18 @@ class SimpleCurve(Structure):
         b = np.allclose(self.corner.coords(), self.end.coords())
         return a and b
 
+    def interpolate(self, t):
+        # t is the percentage of the bend traveled
+        start = np.array(*self.start)
+        origin = np.array(*self.center())
+        radius = np.linalg.norm(start - origin)
+
+        guide_point = (1 - t) * self.start + t * self.end 
+        direction = guide_point - origin
+        vector = (direction / normalize(direction)) * radius
+        point = vector + origin
+        return point
+
     def as_dict(self) -> dict:
         return super().as_dict() | {
             "start": self.start,
