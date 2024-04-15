@@ -44,6 +44,14 @@ class Pipeline:
         self.selection_editor = SelectionEditor(self)
         self.connection_editor = ConnectionEditor(self)
 
+    def reset(self):
+        self.points.clear()
+        self.structures.clear()
+        self.staged_points.clear()
+        self.staged_structures.clear()
+        self.selected_points.clear()
+        self.selected_structures.clear()
+
     def load_file(self, path):
         with open(path, "r") as file:
             data = yaml.safe_load(file)
