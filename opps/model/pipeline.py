@@ -96,8 +96,6 @@ class Pipeline:
         self.staged_structures.clear()
         self.main_editor.next_border.clear()
 
-        self.save_file("bla.yaml")
-
     def dismiss(self):
         for structure in self.staged_structures:
             if isinstance(structure, Bend):
