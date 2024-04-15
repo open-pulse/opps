@@ -273,6 +273,9 @@ class Pipeline:
     def move_point(self, point, new_position):
         self.points_editor.move_point(point, new_position)
 
+    def merge_coincident_points(self):
+        self.points_editor.merge_coincident_points()
+
     # Selection Editor
     def select_points(self, points, join=False, remove=False):
         self.selection_editor.select_points(points, join, remove)

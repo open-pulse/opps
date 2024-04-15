@@ -51,3 +51,15 @@ class PointsEditor:
     def move_point(self, point: Point, new_position: tuple[float, float, float]):
         point.set_coords(*new_position)
         self.pipeline.recalculate_curvatures()
+
+    def merge_coincident_points(self):
+        found_points = dict()
+        for structure in self.pipeline.structures:
+            for point in structure.get_points():
+                x, y, z = np.round(point.coords(), 6)
+
+                if (x, y, z) in found_points:
+                    new = found_points[x, y, z]
+                    structure.replace_point(point, new)
+                else:
+                    found_points[x, y, z] = point
