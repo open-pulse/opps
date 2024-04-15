@@ -51,6 +51,7 @@ class Pipeline:
         self.staged_structures.clear()
         self.selected_points.clear()
         self.selected_structures.clear()
+        self.points.append(Point(0, 0, 0))
 
     def load_file(self, path):
         with open(path, "r") as file:
