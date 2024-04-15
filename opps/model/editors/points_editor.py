@@ -35,8 +35,8 @@ class PointsEditor:
             if point not in structure.get_points():
                 continue
 
-            # we still want to keep the currenc point in the
-            # pipeline so we only substitute the next ones.
+            # we still want to keep the current point in the
+            # pipeline so we only replace the next ones.
             if first_point:
                 first_point = False
                 continue
