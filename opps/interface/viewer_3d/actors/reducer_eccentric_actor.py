@@ -19,8 +19,8 @@ class ReducerEccentricActor(vtk.vtkActor):
         length = np.linalg.norm(vector)
         source = eccentric_reducer_data(
             length,
-            self.reducer.start_diameter,
-            self.reducer.end_diameter,
+            self.reducer.initial_diameter,
+            self.reducer.final_diameter,
             self.reducer.offset_y,
             self.reducer.offset_z,
         )
