@@ -208,20 +208,20 @@ class Pipeline:
     def add_reducer_eccentric(self, deltas, **kwargs):
         return self.main_editor.add_reducer_eccentric(deltas, **kwargs)
 
-    def add_circular_beam(self, deltas):
-        return self.main_editor.add_circular_beam(deltas)
+    def add_circular_beam(self, deltas, **kwargs):
+        return self.main_editor.add_circular_beam(deltas, **kwargs)
 
-    def add_rectangular_beam(self, deltas):
-        return self.main_editor.add_rectangular_beam(deltas)
+    def add_rectangular_beam(self, deltas, **kwargs):
+        return self.main_editor.add_rectangular_beam(deltas, **kwargs)
 
-    def add_c_beam(self, deltas):
-        return self.main_editor.add_c_beam(deltas)
+    def add_c_beam(self, deltas, **kwargs):
+        return self.main_editor.add_c_beam(deltas, **kwargs)
 
-    def add_t_beam(self, deltas):
-        return self.main_editor.add_t_beam(deltas)
+    def add_t_beam(self, deltas, **kwargs):
+        return self.main_editor.add_t_beam(deltas, **kwargs)
 
-    def add_i_beam(self, deltas):
-        return self.main_editor.add_i_beam(deltas)
+    def add_i_beam(self, deltas, **kwargs):
+        return self.main_editor.add_i_beam(deltas, **kwargs)
 
     def recalculate_curvatures(self):
         self.main_editor.recalculate_curvatures()
