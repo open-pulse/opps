@@ -1,4 +1,5 @@
-from opps.model.structures.structure import Structure, Point
+from opps.model.structures.structure import Structure
+from opps.model.structures.point import Point
 
 
 class Beam(Structure):
