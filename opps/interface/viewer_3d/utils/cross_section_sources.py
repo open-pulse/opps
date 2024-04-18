@@ -231,9 +231,9 @@ def t_beam_data(length, h, w1, t1, tw):
     return append_polydata.GetOutput()
 
 
-def eccentric_reducer_data(length, start_diameter, end_diameter, offset_y, offset_z):
-    initial_radius = start_diameter / 2
-    final_radius = end_diameter / 2
+def eccentric_reducer_data(length, initial_diameter, final_diameter, offset_y, offset_z):
+    initial_radius = initial_diameter / 2
+    final_radius = final_diameter / 2
 
     sides = 20
 

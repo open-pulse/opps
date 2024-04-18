@@ -96,13 +96,6 @@ class Bend(Structure):
         b = np.allclose(self.corner.coords(), self.end.coords())
         return a and b
 
-    def set_diameter(self, start_diameter, final_diameter, *args):
-        self.start_diameter = start_diameter
-        self.end_diameter = final_diameter
-
-    def get_diameters(self):
-        return [self.start_diameter, self.end_diameter]
-
     def get_points(self):
         return [
             self.start,
