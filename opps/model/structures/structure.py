@@ -13,10 +13,10 @@ class Structure:
         self.extra_info = kwargs.get("extra_info", dict())
 
     def get_points(self) -> list["Point"]:
-        raise NotImplementedError()
+        raise NotImplementedError("get_points method not implemented")
 
     def replace_point(self, old, new):
-        raise NotImplementedError()
+        raise NotImplementedError("replace_point method not implemented")
 
     def as_dict(self) -> dict:
         return {
