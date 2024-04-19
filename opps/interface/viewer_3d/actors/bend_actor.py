@@ -30,8 +30,11 @@ class BendActor(vtk.vtkActor):
         append_polydata = vtk.vtkAppendPolyData()
 
         if self.bend.thickness != 0:
+            data_copy = vtk.vtkPolyData()
+            data_copy.DeepCopy(arc_source.GetOutput())
+
             internal_faces = vtk.vtkTubeFilter()
-            internal_faces.SetInputData(arc_source.GetOutput())
+            internal_faces.SetInputData(data_copy)
             internal_faces.SetNumberOfSides(20)
             internal_faces.SetRadius(inner_radius)
             internal_faces.Update()
