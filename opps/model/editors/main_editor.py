@@ -165,6 +165,12 @@ class MainEditor:
         # If you still want this for some reason discomment
         # the following line:
         # self.remove_collapsed_bends()
+    
+    def add_isolated_point(self, coords: tuple[float, float, float], **kwargs):
+        point = Point(*coords, **kwargs)
+        self.pipeline.add_point(point)
+        self.next_border.append(point)
+        return point
 
     def remove_collapsed_bends(self):
         to_remove = []

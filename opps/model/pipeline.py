@@ -108,12 +108,10 @@ class Pipeline:
 
         self.main_editor.recalculate_curvatures()
 
-    def add_point(self, point: Point | tuple | list, **kwargs):
-        if not isinstance(point, Point):
-            point = Point(*point)
+    def add_point(self, point: Point):
         self.staged_points.append(point)
 
-    def add_structure(self, structure: Structure, **kwargs):
+    def add_structure(self, structure: Structure):
         structure.staged = True
         self.staged_structures.append(structure)
         self.add_points(structure.get_points())
@@ -224,6 +222,9 @@ class Pipeline:
 
     def add_i_beam(self, deltas, **kwargs):
         return self.main_editor.add_i_beam(deltas, **kwargs)
+
+    def add_isolated_point(self, coords, **kwargs):
+        return self.main_editor.add_isolated_point(coords, **kwargs)
 
     def recalculate_curvatures(self):
         self.main_editor.recalculate_curvatures()
