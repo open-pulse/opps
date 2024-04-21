@@ -108,7 +108,9 @@ class Pipeline:
 
         self.main_editor.recalculate_curvatures()
 
-    def add_point(self, point: Point):
+    def add_point(self, point: Point | tuple | list):
+        if not isinstance(point, Point):
+            point = Point(*point)
         self.staged_points.append(point)
 
     def add_structure(self, structure: Structure):
