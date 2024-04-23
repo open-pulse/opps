@@ -233,8 +233,8 @@ class Pipeline:
     def connect_pipes(self, **kwargs):
         return self.connection_editor.connect_pipes(**kwargs)
 
-    def connect_bent_pipes(self, **kwargs):
-        return self.connection_editor.connect_bent_pipes(**kwargs)
+    def connect_bent_pipes(self, curvature_radius, **kwargs):
+        return self.connection_editor.connect_bent_pipes(curvature_radius, **kwargs)
 
     def connect_flanges(self, **kwargs):
         return self.connection_editor.connect_flanges(**kwargs)
