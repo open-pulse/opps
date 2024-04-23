@@ -84,6 +84,13 @@ class MainEditor:
     def add_bent_pipe(self, deltas, curvature_radius: float, **kwargs) -> list[Pipe | Bend]:
         pipes = self.add_pipe(deltas, **kwargs)
         bends = self.add_bend(curvature_radius, **kwargs)
+
+        # force the last point added to be a pipe point instead of a bend point
+        if pipes:
+            *_, last_pipe = pipes
+            self.pipeline.staged_points.remove(last_pipe.end)
+            self.pipeline.add_point(last_pipe.end)
+
         return bends + pipes
 
     def add_expansion_joint(self, deltas, **kwargs) -> list[ExpansionJoint]:

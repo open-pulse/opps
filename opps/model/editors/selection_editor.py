@@ -12,11 +12,11 @@ class SelectionEditor:
         self.pipeline = pipeline
 
     def select_last_point(self):
-        point, *_ = self.pipeline.points
+        *_, point = self.pipeline.points
         self.pipeline.select_points([point])
 
     def select_last_structure(self):
-        structure, *_ = self.pipeline.structures
+        *_, structure = self.pipeline.structures
         self.pipeline.select_structures([structure])
 
     def select_points(self, points, join=False, remove=False):
