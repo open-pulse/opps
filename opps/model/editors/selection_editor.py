@@ -67,7 +67,13 @@ class SelectionEditor:
         self.pipeline.selected_structures = list(current_selection)
 
     def clear_selection(self):
+        self.clear_structure_selection()
+        self.clear_point_selection()
+
+    def clear_point_selection(self):
+        self.pipeline.selected_points.clear()
+
+    def clear_structure_selection(self):
         for structure in self.pipeline.structures:
             structure.selected = False
-        self.pipeline.selected_points.clear()
         self.pipeline.selected_structures.clear()

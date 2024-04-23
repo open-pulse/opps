@@ -295,6 +295,12 @@ class Pipeline:
     def clear_selection(self):
         self.selection_editor.clear_selection()
 
+    def clear_point_selection(self):
+        self.selection_editor.clear_point_selection()
+
+    def clear_structure_selection(self):
+        self.selection_editor.clear_structure_selection()
+
     # Common
     def as_dict(self) -> dict:
         return {"structures": self.structures, "points": self.points}
