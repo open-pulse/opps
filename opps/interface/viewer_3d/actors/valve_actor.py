@@ -18,11 +18,16 @@ class ValveActor(vtk.vtkActor):
         self.create_geometry()
 
     def create_geometry(self):
-        vector = self.valve.end.coords() - self.valve.start.coords()
+        a = self.valve.start.coords()
+        b = self.valve.end.coords()
+        if b[0] > a[0]:
+            a, b = b, a
+
+        vector = b - a
         length = np.linalg.norm(vector)
         source = valve_data(length, self.valve.diameter, self.valve.thickness)
 
-        data = align_vtk_geometry(source, self.valve.start.coords(), vector)
+        data = align_vtk_geometry(source, a, vector)
         paint_data(data, self.valve.color)
 
         mapper = vtk.vtkPolyDataMapper()
