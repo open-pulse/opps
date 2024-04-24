@@ -81,25 +81,16 @@ class MainEditor:
     def add_flange(self, deltas, **kwargs) -> list[Flange]:
         return self._add_generic_line_structure(Flange, deltas, **kwargs)
 
-        flanges = list()
-
-        if not self.pipeline.selected_points:
-            self.pipeline.select_last_point()
-
-        for point in self.pipeline.selected_points:
-            vectors = self._get_point_vectors(point)
-            vectors.append(np.array([1, 0, 0]))  # the default flange points to the right
-
-            normal, *_ = vectors
-            flange = Flange(point, normal=normal, **kwargs)
-            self.pipeline.add_structure(flange)
-            flanges.append(flange)
-
-        return flanges
-
     def add_bent_pipe(self, deltas, curvature_radius: float, **kwargs) -> list[Pipe | Bend]:
         pipes = self.add_pipe(deltas, **kwargs)
         bends = self.add_bend(curvature_radius, **kwargs)
+
+        # force the last point added to be a pipe point instead of a bend point
+        if pipes:
+            *_, last_pipe = pipes
+            self.pipeline.staged_points.remove(last_pipe.end)
+            self.pipeline.add_point(last_pipe.end)
+
         return bends + pipes
 
     def add_expansion_joint(self, deltas, **kwargs) -> list[ExpansionJoint]:

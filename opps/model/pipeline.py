@@ -233,8 +233,8 @@ class Pipeline:
     def connect_pipes(self, **kwargs):
         return self.connection_editor.connect_pipes(**kwargs)
 
-    def connect_bent_pipes(self, **kwargs):
-        return self.connection_editor.connect_bent_pipes(**kwargs)
+    def connect_bent_pipes(self, curvature_radius, **kwargs):
+        return self.connection_editor.connect_bent_pipes(curvature_radius, **kwargs)
 
     def connect_flanges(self, **kwargs):
         return self.connection_editor.connect_flanges(**kwargs)
@@ -294,6 +294,12 @@ class Pipeline:
 
     def clear_selection(self):
         self.selection_editor.clear_selection()
+
+    def clear_point_selection(self):
+        self.selection_editor.clear_point_selection()
+
+    def clear_structure_selection(self):
+        self.selection_editor.clear_structure_selection()
 
     # Common
     def as_dict(self) -> dict:

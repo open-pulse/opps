@@ -12,11 +12,11 @@ class SelectionEditor:
         self.pipeline = pipeline
 
     def select_last_point(self):
-        point, *_ = self.pipeline.points
+        *_, point = self.pipeline.points
         self.pipeline.select_points([point])
 
     def select_last_structure(self):
-        structure, *_ = self.pipeline.structures
+        *_, structure = self.pipeline.structures
         self.pipeline.select_structures([structure])
 
     def select_points(self, points, join=False, remove=False):
@@ -67,7 +67,13 @@ class SelectionEditor:
         self.pipeline.selected_structures = list(current_selection)
 
     def clear_selection(self):
+        self.clear_structure_selection()
+        self.clear_point_selection()
+
+    def clear_point_selection(self):
+        self.pipeline.selected_points.clear()
+
+    def clear_structure_selection(self):
         for structure in self.pipeline.structures:
             structure.selected = False
-        self.pipeline.selected_points.clear()
         self.pipeline.selected_structures.clear()
