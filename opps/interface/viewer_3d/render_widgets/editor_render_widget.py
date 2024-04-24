@@ -12,7 +12,7 @@ from vtkat.render_widgets import CommonRenderWidget
 
 from opps.interface.viewer_3d.actors import (
     ControlPointsActor,
-    PassivePointsActor,
+    StagedPointsActor,
     SelectedPointsActor,
 )
 
@@ -28,7 +28,7 @@ class EditorRenderWidget(CommonRenderWidget):
         self.pipeline = pipeline
         self.pipeline_actor = None
         self.control_points_actor = None
-        self.passive_points_actor = None
+        self.staged_points_actor = None
         self.selected_points_actor = None
 
         self.renderer.GetActiveCamera().SetParallelProjection(True)
@@ -42,12 +42,12 @@ class EditorRenderWidget(CommonRenderWidget):
 
         self.pipeline_actor = self.pipeline.as_vtk()
         self.control_points_actor = ControlPointsActor(self.pipeline.points)
-        self.passive_points_actor = PassivePointsActor(self.pipeline.points)
+        self.staged_points_actor = StagedPointsActor(self.pipeline.staged_points)
         self.selected_points_actor = SelectedPointsActor(self.pipeline.selected_points)
 
         # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
-        self.renderer.AddActor(self.passive_points_actor)
+        self.renderer.AddActor(self.staged_points_actor)
         self.renderer.AddActor(self.control_points_actor)
         self.renderer.AddActor(self.selected_points_actor)
 
@@ -58,12 +58,12 @@ class EditorRenderWidget(CommonRenderWidget):
     def remove_actors(self):
         self.renderer.RemoveActor(self.pipeline_actor)
         self.renderer.RemoveActor(self.control_points_actor)
-        self.renderer.RemoveActor(self.passive_points_actor)
+        self.renderer.RemoveActor(self.staged_points_actor)
         self.renderer.RemoveActor(self.selected_points_actor)
 
         self.pipeline_actor = None
         self.control_points_actor = None
-        self.passive_points_actor = None
+        self.staged_points_actor = None
         self.selected_points_actor = None
 
     def click_callback(self, x, y):
