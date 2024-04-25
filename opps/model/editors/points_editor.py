@@ -63,6 +63,7 @@ class PointsEditor:
                 else:
                     found_points[x, y, z] = point
 
+        self.pipeline.points.clear()
         for structure in self.pipeline.structures:
             for point in structure.get_points():
                 if point not in self.pipeline.points:
