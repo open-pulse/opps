@@ -61,5 +61,6 @@ class PointsEditor:
                 if (x, y, z) in found_points:
                     new = found_points[x, y, z]
                     structure.replace_point(point, new)
+                    self.pipeline.structures.remove(point)
                 else:
                     found_points[x, y, z] = point
