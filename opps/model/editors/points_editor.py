@@ -54,20 +54,16 @@ class PointsEditor:
 
     def merge_coincident_points(self):
         found_points = dict()
-        points_to_remove = []
         for structure in self.pipeline.structures:
             for point in structure.get_points():
                 x, y, z = np.round(point.coords(), 6)
-
                 if (x, y, z) in found_points:
                     new = found_points[x, y, z]
                     structure.replace_point(point, new)
-                    if id(point) != id(new):
-                        points_to_remove.append(point)
-
                 else:
                     found_points[x, y, z] = point
 
-        for point in points_to_remove:
-            while point in self.pipeline.points:
-                self.pipeline.points.remove(point)
+        for structure in self.pipeline.structures:
+            for point in structure.get_points():
+                if point not in self.pipeline.points:
+                    self.pipeline.add_point(point)
