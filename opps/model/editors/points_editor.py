@@ -67,4 +67,4 @@ class PointsEditor:
         for structure in self.pipeline.structures:
             for point in structure.get_points():
                 if point not in self.pipeline.points:
-                    self.pipeline.add_point(point)
+                    self.pipeline.points.append(point)
