@@ -4,6 +4,7 @@ if TYPE_CHECKING:
     from opps.model import Pipeline
 
 import numpy as np
+from opps.model import Point
 from ordered_set import OrderedSet
 
 
@@ -12,10 +13,18 @@ class SelectionEditor:
         self.pipeline = pipeline
 
     def select_last_point(self):
-        *_, point = self.pipeline.points
+        if self.pipeline.points:
+            *_, point = self.pipeline.points
+        else:
+            point = Point(0, 0, 0)
+            self.pipeline.staged_points.append(point)
+
         self.pipeline.select_points([point])
 
     def select_last_structure(self):
+        if not self.pipeline.structures:
+            return
+
         *_, structure = self.pipeline.structures
         self.pipeline.select_structures([structure])
 

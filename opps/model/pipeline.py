@@ -32,10 +32,6 @@ class Pipeline:
         self.selected_points: list[Point] = list()
         self.selected_structures: list[Structure] = list()
 
-        # origin
-        if not self.points:
-            self.points.append(Point(0, 0, 0))
-
         # Instead of placing incountable lines of code here,
         # most of the functions are a facade, and their actual
         # implementation is handled by one of the following editors.
