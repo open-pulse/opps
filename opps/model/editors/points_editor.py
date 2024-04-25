@@ -62,7 +62,9 @@ class PointsEditor:
                 if (x, y, z) in found_points:
                     new = found_points[x, y, z]
                     structure.replace_point(point, new)
-                    points_to_remove.append(point)
+                    if point != new:
+                        points_to_remove.append(point)
+
                 else:
                     found_points[x, y, z] = point
 
