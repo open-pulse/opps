@@ -47,8 +47,8 @@ class EditorRenderWidget(CommonRenderWidget):
 
         # The order matters. It defines wich points will appear first.
         self.renderer.AddActor(self.pipeline_actor)
-        self.renderer.AddActor(self.staged_points_actor)
         self.renderer.AddActor(self.control_points_actor)
+        self.renderer.AddActor(self.staged_points_actor)
         self.renderer.AddActor(self.selected_points_actor)
 
         if reset_camera:
