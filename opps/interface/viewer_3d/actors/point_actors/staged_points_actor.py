@@ -15,7 +15,7 @@ class StagedPointsActor(vtk.vtkActor):
         mapper.SetInputData(data)
         self.SetMapper(mapper)
 
-        self.GetProperty().SetPointSize(13)
+        self.GetProperty().SetPointSize(10)
         self.GetProperty().SetColor([1, 0, 0])
         self.GetProperty().LightingOff()
 
