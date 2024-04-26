@@ -15,7 +15,7 @@ from opps.model import (
     Pipe,
     Point,
     RectangularBeam,
-    ReducerEccentric,
+    Reducer,
     Structure,
     TBeam,
     Valve,
@@ -99,8 +99,8 @@ class MainEditor:
     def add_valve(self, deltas, **kwargs) -> list[Valve]:
         return self._add_generic_line_structure(Valve, deltas, **kwargs)
 
-    def add_reducer_eccentric(self, deltas, **kwargs) -> list[ReducerEccentric]:
-        return self._add_generic_line_structure(ReducerEccentric, deltas, **kwargs)
+    def add_reducer_eccentric(self, deltas, **kwargs) -> list[Reducer]:
+        return self._add_generic_line_structure(Reducer, deltas, **kwargs)
 
     def add_circular_beam(self, deltas, **kwargs) -> list[CircularBeam]:
         return self._add_generic_line_structure(CircularBeam, deltas, **kwargs)
@@ -227,7 +227,7 @@ class MainEditor:
     def _get_point_vectors(self, point: Point):
         directions = list()
 
-        pipe_like_structure = Pipe | Flange | ReducerEccentric | ExpansionJoint | Valve
+        pipe_like_structure = Pipe | Flange | Reducer | ExpansionJoint | Valve
         for structure in self.pipeline.structures_of_type(pipe_like_structure):
             if not point in structure.get_points():
                 continue

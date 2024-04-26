@@ -17,7 +17,7 @@ from opps.model import (
     IBeam,
     Pipe,
     RectangularBeam,
-    ReducerEccentric,
+    Reducer,
     TBeam,
     Valve,
     Structure,

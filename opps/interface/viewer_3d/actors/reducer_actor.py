@@ -6,11 +6,11 @@ from opps.interface.viewer_3d.utils.cross_section_sources import (
     eccentric_reducer_data,
 )
 from opps.interface.viewer_3d.utils.rotations import align_vtk_geometry
-from opps.model import ReducerEccentric
+from opps.model import Reducer
 
 
-class ReducerEccentricActor(vtk.vtkActor):
-    def __init__(self, reducer: ReducerEccentric):
+class ReducerActor(vtk.vtkActor):
+    def __init__(self, reducer: Reducer):
         self.reducer = reducer
         self.create_geometry()
 

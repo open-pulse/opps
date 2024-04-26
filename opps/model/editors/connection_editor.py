@@ -15,7 +15,7 @@ from opps.model import (
     IBeam,
     Pipe,
     RectangularBeam,
-    ReducerEccentric,
+    Reducer,
     TBeam,
     Valve,
 )
@@ -43,7 +43,7 @@ class ConnectionEditor:
         return self._generic_structure_connection(Valve, **kwargs)
 
     def connect_reducer_eccentrics(self, **kwargs):
-        return self._generic_structure_connection(ReducerEccentric, **kwargs)
+        return self._generic_structure_connection(Reducer, **kwargs)
 
     def connect_circular_beams(self, **kwargs):
         return self._generic_structure_connection(CircularBeam, **kwargs)

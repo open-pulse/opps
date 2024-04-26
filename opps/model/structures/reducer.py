@@ -5,7 +5,7 @@ from .structure import Structure
 
 
 @dataclass
-class ReducerEccentric(Structure):
+class Reducer(Structure):
     def __init__(self, start: Point, end: Point, **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -20,10 +20,17 @@ class ReducerEccentric(Structure):
     def get_points(self):
         return [self.start, self.end]
 
-    def as_vtk(self):
-        from opps.interface.viewer_3d.actors import ReducerEccentricActor
+    def replace_point(self, old, new):
+        if self.start == old:
+            self.start = new
 
-        return ReducerEccentricActor(self)
+        elif self.end == old:
+            self.end = new
+
+    def as_vtk(self):
+        from opps.interface.viewer_3d.actors import ReducerActor
+
+        return ReducerActor(self)
 
     def __hash__(self) -> int:
         return id(self)
