@@ -2,9 +2,7 @@ import numpy as np
 import vtk
 
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
-from opps.interface.viewer_3d.utils.cross_section_sources import (
-    eccentric_reducer_data,
-)
+from opps.interface.viewer_3d.utils.cross_section_sources import reducer_data
 from opps.interface.viewer_3d.utils.rotations import align_vtk_geometry
 from opps.model import Reducer
 
@@ -17,7 +15,7 @@ class ReducerActor(vtk.vtkActor):
     def create_geometry(self):
         vector = self.reducer.end.coords() - self.reducer.start.coords()
         length = np.linalg.norm(vector)
-        source = eccentric_reducer_data(
+        source = reducer_data(
             length,
             self.reducer.initial_diameter,
             self.reducer.final_diameter,

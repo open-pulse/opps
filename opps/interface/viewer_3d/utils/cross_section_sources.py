@@ -231,7 +231,7 @@ def t_beam_data(length, h, w1, t1, tw):
     return append_polydata.GetOutput()
 
 
-def eccentric_reducer_data(length, initial_diameter, final_diameter, 
+def reducer_data(length, initial_diameter, final_diameter, 
                            initial_offset_y, initial_offset_z, final_offset_y, final_offset_z):
 
     initial_radius = initial_diameter / 2
@@ -264,17 +264,16 @@ def eccentric_reducer_data(length, initial_diameter, final_diameter,
     external_face.Allocate()
     external_face.SetPoints(points)
 
-    total = 2 * sides
     for i in range(sides):
         external_face.InsertNextCell(
             vtk.VTK_TRIANGLE,
             3,
-            [i, (i + 1) % total, (i + sides) % total],
+            [i, i + sides, (i + 1) % sides],
         )
         external_face.InsertNextCell(
             vtk.VTK_TRIANGLE,
             3,
-            [i, (i + sides) % total, (i + sides - 1) % total],
+            [i + sides, (i + 1) % sides + sides, (i + 1) % sides],
         )
 
     append_polydata = vtk.vtkAppendPolyData()
