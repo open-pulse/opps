@@ -21,8 +21,10 @@ class ReducerActor(vtk.vtkActor):
             length,
             self.reducer.initial_diameter,
             self.reducer.final_diameter,
-            self.reducer.offset_y,
-            self.reducer.offset_z,
+            self.reducer.initial_offset_y,
+            self.reducer.initial_offset_z,
+            self.reducer.final_offset_y,
+            self.reducer.final_offset_z,
         )
 
         data = align_vtk_geometry(source, self.reducer.start.coords(), vector)

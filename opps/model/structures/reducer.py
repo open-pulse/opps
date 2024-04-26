@@ -11,10 +11,12 @@ class Reducer(Structure):
 
         self.start = start
         self.end = end
-        self.offset_y = kwargs.get("offset_y", 0.025)
-        self.offset_z = kwargs.get("offset_z", 0)
         self.initial_diameter = kwargs.get("initial_diameter", 0.1)
         self.final_diameter = kwargs.get("final_diameter", 0.05)
+        self.initial_offset_y = kwargs.get("offset_y", 0)
+        self.initial_offset_z = kwargs.get("offset_z", 0)
+        self.final_offset_y = kwargs.get("offset_y", 0)
+        self.final_offset_z = kwargs.get("offset_z", 0)
         self.thickness = kwargs.get("thickness", 0.01)
 
     def get_points(self):

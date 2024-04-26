@@ -231,7 +231,9 @@ def t_beam_data(length, h, w1, t1, tw):
     return append_polydata.GetOutput()
 
 
-def eccentric_reducer_data(length, initial_diameter, final_diameter, offset_y, offset_z):
+def eccentric_reducer_data(length, initial_diameter, final_diameter, 
+                           initial_offset_y, initial_offset_z, final_offset_y, final_offset_z):
+
     initial_radius = initial_diameter / 2
     final_radius = final_diameter / 2
 
@@ -240,13 +242,14 @@ def eccentric_reducer_data(length, initial_diameter, final_diameter, offset_y, o
     initial_ring = vtk.vtkRegularPolygonSource()
     initial_ring.SetRadius(initial_radius)
     initial_ring.SetNumberOfSides(sides)
+    initial_ring.SetCenter(initial_offset_y, 0, initial_offset_z)
     initial_ring.SetNormal(0, 1, 0)
     initial_ring.Update()
 
     final_ring = vtk.vtkRegularPolygonSource()
     final_ring.SetRadius(final_radius)
     final_ring.SetNumberOfSides(sides)
-    final_ring.SetCenter(offset_y, length, offset_z)
+    final_ring.SetCenter(final_offset_y, length, final_offset_z)
     final_ring.SetNormal(0, 1, 0)
     final_ring.Update()
 
