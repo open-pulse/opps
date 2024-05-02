@@ -13,10 +13,10 @@ class Structure:
         self.extra_info = kwargs.get("extra_info", dict())
 
     def get_points(self) -> list["Point"]:
-        raise NotImplementedError("get_points method not implemented")
+        raise NotImplementedError(f'get_points method not implemented in "{type(self).__name__}".')
 
     def replace_point(self, old, new):
-        raise NotImplementedError("replace_point method not implemented")
+        raise NotImplementedError(f'replace_point method not implemented in "{type(self).__name__}".')
 
     def as_dict(self) -> dict:
         return {
@@ -26,7 +26,7 @@ class Structure:
         }
 
     def as_vtk(self):
-        raise NotImplementedError("vtk actor creation not implemented.")
+        raise NotImplementedError(f'as_vtk method not implemented in "{type(self).__name__}".')
 
     def __hash__(self) -> int:
         return id(self)
