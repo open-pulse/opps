@@ -10,6 +10,8 @@ class Valve(Structure):
         self.end = end
         self.diameter = kwargs.get("diameter", 0.1)
         self.thickness = kwargs.get("thickness", 0.01)
+        self.flange_outer_diameter = kwargs.get("flange_outer_diameter", 0.2)
+        self.flange_length = kwargs.get("flange_length", 0.05)
 
     def get_points(self) -> list[Point]:
         return [self.start, self.end]
