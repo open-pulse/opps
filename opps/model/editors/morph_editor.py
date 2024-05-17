@@ -1,12 +1,4 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
-
-from itertools import pairwise
-
-import numpy as np
-
+from .editor import Editor
 from opps.model import (
     Bend, 
     Elbow,
@@ -25,10 +17,7 @@ from opps.model import (
 )
 
 
-class MorphEditor:
-    def __init__(self, pipeline: "Pipeline") -> None:
-        self.pipeline = pipeline
-
+class MorphEditor(Editor):
     def morph_into(self, structure, structure_class):
         if isinstance(structure, Pipe):
             return self.morph_pipe(structure, structure_class)

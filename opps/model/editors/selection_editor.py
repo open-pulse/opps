@@ -1,17 +1,10 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
-
 import numpy as np
-from opps.model import Point
 from ordered_set import OrderedSet
 
+from .editor import Editor
+from opps.model import Point
 
-class SelectionEditor:
-    def __init__(self, pipeline: "Pipeline") -> None:
-        self.pipeline = pipeline
-
+class SelectionEditor(Editor):
     def select_last_point(self):
         if self.pipeline.points:
             *_, point = self.pipeline.points

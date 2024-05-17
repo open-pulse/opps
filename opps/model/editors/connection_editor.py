@@ -1,12 +1,6 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
-
 from itertools import pairwise
 
-import numpy as np
-
+from .editor import Editor
 from opps.model import (
     CBeam,
     CircularBeam,
@@ -21,10 +15,7 @@ from opps.model import (
 )
 
 
-class ConnectionEditor:
-    def __init__(self, pipeline: "Pipeline") -> None:
-        self.pipeline = pipeline
-
+class ConnectionEditor(Editor):
     def connect_pipes(self, **kwargs):
         return self._generic_structure_connection(Pipe, **kwargs)
 

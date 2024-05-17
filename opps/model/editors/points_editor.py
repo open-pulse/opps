@@ -1,17 +1,10 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
-
 import numpy as np
 
+from .editor import Editor
 from opps.model import Bend, Point
 
 
-class PointsEditor:
-    def __init__(self, pipeline: "Pipeline") -> None:
-        self.pipeline = pipeline
-
+class PointsEditor(Editor):
     def attatch_point(self, point: Point):
         replaced_points = []
 

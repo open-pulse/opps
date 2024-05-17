@@ -1,10 +1,6 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
-
 import numpy as np
 
+from .editor import Editor
 from opps.model import (
     Bend,
     CBeam,
@@ -22,9 +18,10 @@ from opps.model import (
 )
 
 
-class MainEditor:
-    def __init__(self, pipeline: "Pipeline") -> None:
-        self.pipeline = pipeline
+class MainEditor(Editor):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
         self.next_border = list()
 
     def add_pipe(self, deltas, **kwargs) -> list[Pipe]:
