@@ -28,25 +28,44 @@ class Point:
         }
 
     def __add__(self, other):
-        a = self.coords()
-        b = np.array(tuple(other))
-        return Point(*(a + b))
+        point = self.copy()
+        point += other
+        return point
 
     def __sub__(self, other):
-        a = self.coords()
-        b = np.array(tuple(other))
-        return Point(*(a - b))
+        point = self.copy()
+        point -= other
+        return point
+    
+    def __mul__(self, other):
+        point = self.copy()
+        point *= other
+        return point
+
+    def __div__(self, other):
+        point = self.copy()
+        point /= other
+        return point
 
     def __iadd__(self, other):
-        a = self.coords()
-        b = np.array(tuple(other))
-        self.set_coords(*(a + b))
+        new_coords = self.coords() + other
+        self.set_coords(*new_coords)
         return self
 
     def __isub__(self, other):
-        a = self.coords
-        b = np.array(tuple(other))
-        self.set_coords(*(a - b))
+        new_coords = self.coords() - other
+        self.set_coords(*new_coords)
+        return self
+    
+    def __imul__(self, other):
+        new_coords = self.coords() * other
+        self.set_coords(*new_coords)
+        return self
+
+    def __idiv__(self, other):
+        new_coords = self.coords() / other
+        self.set_coords(*new_coords)
+        return self
 
     def __iter__(self):
         yield self.x
