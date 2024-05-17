@@ -1,14 +1,5 @@
-from opps.model.structures.structure import Structure
-from opps.model.structures.point import Point
+from ..linear_structure import LinearStructure
 
 
-class Beam(Structure):
-    def get_points(self) -> list[Point]:
-        return [self.start, self.end]
-
-    def replace_point(self, old, new):
-        if self.start == old:
-            self.start = new
-
-        elif self.end == old:
-            self.end = new
+class Beam(LinearStructure):
+    pass
