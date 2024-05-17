@@ -1,5 +1,6 @@
 from .editor import Editor
 from opps.model import (
+    LinearStructure,
     Bend, 
     Elbow,
     CBeam,
@@ -21,10 +22,7 @@ from opps.model import (
 
 class DivideEditor(Editor):
     def divide_on_point(self, structure: Structure, point: Point):        
-        if isinstance(structure, Bend | Elbow):
-            pass  # Problem for future us
-
-        else: # Straight structures
+        if isinstance(structure, LinearStructure):
             new_structure = structure.copy()
             structure.end = point
             new_structure.start = point

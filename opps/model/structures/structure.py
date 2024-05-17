@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from opps.model import Point
 
+from copy import deepcopy
+
 
 class Structure:
     def __init__(self, **kwargs) -> None:
@@ -24,6 +26,9 @@ class Structure:
             "tag": self.tag,
             "extra_info": self.extra_info,
         }
+
+    def copy(self):
+        return deepcopy(self)
 
     def as_vtk(self):
         raise NotImplementedError(f'as_vtk method not implemented in "{type(self).__name__}".')
