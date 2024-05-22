@@ -8,6 +8,7 @@ from opps.model.editors.connection_editor import ConnectionEditor
 from opps.model.editors.main_editor import MainEditor
 from opps.model.editors.points_editor import PointsEditor
 from opps.model.editors.selection_editor import SelectionEditor
+from opps.model.editors.divide_editor import DivideEditor
 
 from .structures.beam import Beam
 from .structures.bend import Bend
@@ -39,6 +40,7 @@ class Pipeline:
         self.points_editor = PointsEditor(self)
         self.selection_editor = SelectionEditor(self)
         self.connection_editor = ConnectionEditor(self)
+        self.divide_editor = DivideEditor(self)
 
     def reset(self):
         self.points.clear()
@@ -296,6 +298,13 @@ class Pipeline:
 
     def clear_structure_selection(self):
         self.selection_editor.clear_structure_selection()
+
+    # Divide editor
+    def divide_structure(self, t=0.5):
+        self.divide_editor.divide_structure(t)
+
+    def divide_structure_evenly(self, divisions=1):
+        self.divide_editor.divide_structure_evenly(divisions)
 
     # Common
     def as_dict(self) -> dict:

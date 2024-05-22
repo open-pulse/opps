@@ -157,7 +157,12 @@ class AddStructuresWidget(QWidget):
         pass
 
     def section_callback(self):
-        return
+        print("ESTOU USANDO O BOTÃO DAS SEÇÕES PARA TESTE =D")
+
+        pipeline = self.render_widget.pipeline
+        pipeline.divide_structure(0.5)
+        pipeline.clear_selection()
+        self.render_widget.update_plot()
 
     def apply_callback(self):
         try:

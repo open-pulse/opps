@@ -15,29 +15,41 @@ from opps.model import (
     Valve,
     Structure,
     Beam,
-    Pipeline,
     Point, 
 )
 
 
 class DivideEditor(Editor):
-    def divide_on_point(self, structure: Structure, point: Point):        
+    def divide_structure(self, t:float):
+        for structure in self.pipeline.selected_structures:
+            if isinstance(structure, LinearStructure):
+                point = self._interpolate(structure, t)
+                self._divide_on_point(structure, point)
+        self.pipeline.commit()
+
+    def divide_structure_evenly(self, divisions:int):
+        pass
+
+    def _divide_on_point(self, structure: Structure, point: Point):
         if isinstance(structure, LinearStructure):
             new_structure = structure.copy()
             structure.end = point
             new_structure.start = point
             self.pipeline.add_structure(new_structure)
 
-    def divide_evenly(self, strucutre: Structure, divisions: int):
+    def _divide_evenly(self, strucutre: Structure, divisions: int):
         pass
 
-    def interpolate_point(self, a: Point, b: Point, t: float) -> Point:
-        return a + t * (b - a)
+    def _interpolate(self, structure: Structure, t: float) -> Point:
+        if isinstance(structure, LinearStructure):
+            a = structure.start
+            b = structure.end
+            return a + t * (b - a)
 
-    def interpolate_evenly(self, a: Point, b: Point, divisions: int) -> list[Point]:
+    def _interpolate_evenly(self, structure: Structure, divisions: int) -> list[Point]:
         subdivisions = []
         for i in range(divisions):
             t = (i + 1) / (divisions + 1)
-            point = self.interpolate_point(a, b, t)
+            point = self._interpolate(structure, t)
             subdivisions.append(point)
         return subdivisions

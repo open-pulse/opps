@@ -1,3 +1,8 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from opps.model import Pipeline
+
 import vtk
 
 from opps.interface.viewer_3d.actors.pipe_actor import PipeActor
@@ -5,11 +10,11 @@ from opps.interface.viewer_3d.utils.cell_utils import (
     fill_cell_identifier,
     paint_data,
 )
-from opps.model import Pipe, Pipeline
+from opps.model import Pipe
 
 
 class PipelineActor(vtk.vtkActor):
-    def __init__(self, pipeline: Pipeline):
+    def __init__(self, pipeline: 'Pipeline'):
         super().__init__()
 
         self.pipeline = pipeline

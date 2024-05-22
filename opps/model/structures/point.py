@@ -47,6 +47,18 @@ class Point:
         point /= other
         return point
 
+    def __radd__(self, other):
+        return self + other
+
+    def __rsub__(self, other):
+        return self - other
+
+    def __rmul__(self, other):
+        return self * other
+
+    def __rdiv__(self, other):
+        return self / other
+
     def __iadd__(self, other):
         new_coords = self.coords() + other
         self.set_coords(*new_coords)
@@ -71,6 +83,9 @@ class Point:
         yield self.x
         yield self.y
         yield self.z
+
+    def __array__(self):
+        return np.array([self.x, self.y, self.z])
 
     def __hash__(self) -> int:
         return id(self)
