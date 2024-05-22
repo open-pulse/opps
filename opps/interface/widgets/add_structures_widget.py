@@ -158,7 +158,8 @@ class AddStructuresWidget(QWidget):
 
     def section_callback(self):
         pipeline = self.render_widget.pipeline
-        pipeline.divide_structure(0.1)
+        pipeline.dismiss()
+        pipeline.divide_structures_evenly(1)
         pipeline.clear_selection()
         self.render_widget.update_plot(reset_camera=False)
 

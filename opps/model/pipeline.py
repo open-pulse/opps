@@ -300,11 +300,17 @@ class Pipeline:
         self.selection_editor.clear_structure_selection()
 
     # Divide editor
-    def divide_structure(self, t=0.5):
-        self.divide_editor.divide_structure(t)
+    def divide_structures(self, t=0.5):
+        self.divide_editor.divide_structures(t)
 
-    def divide_structure_evenly(self, divisions=1):
-        self.divide_editor.divide_structure_evenly(divisions)
+    def divide_structures_evenly(self, divisions=1):
+        self.divide_editor.divide_structures_evenly(divisions)
+    
+    def preview_divide_structures(self, t=0.5):
+        self.divide_editor.preview_divide_structures(t)
+    
+    def preview_divide_structures_evenly(self, divisions=1):
+        self.divide_editor.preview_divide_structures_evenly(divisions)
 
     # Common
     def as_dict(self) -> dict:

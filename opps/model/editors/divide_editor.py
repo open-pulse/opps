@@ -21,16 +21,30 @@ from opps.model import (
 
 
 class DivideEditor(Editor):
-    def divide_structure(self, t:float):
+    def divide_structures(self, t: float):
         for structure in self.pipeline.selected_structures:
             point = self._interpolate(structure, t)
             self._divide_on_point(structure, point)
         self.pipeline.commit()
 
-    def divide_structure_evenly(self, divisions:int):
+    def divide_structures_evenly(self, divisions: int):
         for structure in self.pipeline.selected_structures:
             self._divide_evenly(structure, divisions)
         self.pipeline.commit()
+    
+    def preview_divide_structures(self, t: float):
+        all_points = []
+        for structure in self.pipeline.selected_structures:
+            point = self._interpolate(structure, t)
+            all_points.append(point)
+        self.pipeline.add_points(all_points)
+
+    def preview_divide_structures_evenly(self, divisions: int):
+        all_points = []
+        for structure in self.pipeline.selected_structures:
+            points = self._interpolate_evenly(structure, divisions)
+            all_points.extend(points)
+        self.pipeline.add_points(all_points)
 
     def _divide_on_point(self, structure: Structure, point: Point):
         if isinstance(structure, LinearStructure):
