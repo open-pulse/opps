@@ -3,6 +3,10 @@ from .structure import Structure
 
 
 class LinearStructure(Structure):
+    '''
+    Abstract class to handle common stuff to most structures.
+    '''
+
     def __init__(self, start: Point, end: Point, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
