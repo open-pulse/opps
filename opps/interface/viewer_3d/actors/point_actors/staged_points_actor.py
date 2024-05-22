@@ -16,7 +16,7 @@ class StagedPointsActor(vtk.vtkActor):
         self.SetMapper(mapper)
 
         self.GetProperty().SetPointSize(10)
-        self.GetProperty().SetColor([1, 0, 0])
+        self.GetProperty().SetColor([i/255 for i in (255, 94, 25)])
         self.GetProperty().LightingOff()
 
         offset = -66000
