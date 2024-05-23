@@ -37,10 +37,14 @@ class PCFExporter:
                 string = string + "\n" + stringer
 
             elif isinstance(structure, Flange):
+                if structure.is_colapsed():
+                    continue
                 stringer = self.encoder_flange(structure)
                 string = string + "\n" + stringer
 
             elif isinstance(structure, Valve):
+                if structure.is_colapsed():
+                    continue
                 stringer = self.encoder_valve(structure)
                 string = string + "\n" + stringer
 
@@ -73,11 +77,14 @@ class PCFExporter:
         end_z = round(pipe.end.z * 1_000, 5)
         end_diameter = round(pipe.diameter * 1_000, 5)
 
+        thk = round(pipe.thickness * 1_000, 5)
+
         string = (
             "PIPE \n"
             f"    END-POINT {start_x:>14}  {start_y:>14} {start_z:>14} {start_diameter:>14} \n"
-            f"    END-POINT {end_x:>14}  {end_y:>14} {end_z:>14} {end_diameter:>14}"
-        )
+            f"    END-POINT {end_x:>14}  {end_y:>14} {end_z:>14} {end_diameter:>14} \n"
+            f"    R2_WALL_THK {thk:>14} \n"
+            )
         return string
 
     def encoder_bend(self, bend):
@@ -96,11 +103,14 @@ class PCFExporter:
         centre_y = round(bend.corner.y *1_000, 5)
         centre_z = round(bend.corner.z *1_000, 5)
 
+        thk = round(bend.thickness *1_000, 5)
+
         string = (
             "BEND \n"
             f"    END-POINT {start_x:>14}  {start_y:>14} {start_z:>14} {start_diameter:>14} \n"
             f"    END-POINT {end_x:>14}  {end_y:>14} {end_z:>14} {end_diameter:>14} \n"
             f"    CENTRE-POINT {centre_x:>14}  {centre_y:>14} {centre_z:>14} \n"
+            f"    R2_WALL_THK {thk:>14} \n"
              "    SKY BEBW"
         )
         return string
@@ -117,10 +127,13 @@ class PCFExporter:
         end_z = round(flange.end.z * 1_000, 5)
         end_diameter = round(flange.diameter * 1_000, 5)
 
+        thk = round(flange.thickness *1_000, 5)
+
         string = (
             "FLANGE \n"
             f"    END-POINT {start_x:>14}  {start_y:>14} {start_z:>14} {start_diameter:>14} \n"
             f"    END-POINT {end_x:>14}  {end_y:>14} {end_z:>14} {end_diameter:>14} \n"
+            f"    R2_WALL_THK {thk:>14} \n"
              "    SKEY FLBL"
         )
         return string
@@ -137,10 +150,13 @@ class PCFExporter:
         end_z = round(valve.end.z * 1_000, 5)
         end_diameter = round(valve.diameter * 1_000, 5)
 
+        thk = round(valve.thickness *1_000, 5)
+
         string = (
             "VALVE \n"
             f"    END-POINT {start_x:>14}  {start_y:>14} {start_z:>14} {start_diameter:>14} \n"
             f"    END-POINT {end_x:>14}  {end_y:>14} {end_z:>14} {end_diameter:>14} \n"
+            f"    R2_WALL_THK {thk:>14} \n"
              "    SKEY VVBW"
         )
         return string
@@ -162,11 +178,14 @@ class PCFExporter:
         centre_y = round(bend.corner.y *1_000, 5)
         centre_z = round(bend.corner.z *1_000, 5)
 
+        thk = round(bend.thickness *1_000, 5)
+
         string = (
             "ELBOW \n"
             f"    END-POINT {start_x:>14}  {start_y:>14} {start_z:>14} {start_diameter:>14} \n"
             f"    END-POINT {end_x:>14}  {end_y:>14} {end_z:>14} {end_diameter:>14} \n"
             f"    CENTRE-POINT {centre_x:>14}  {centre_y:>14} {centre_z:>14} \n"
+            f"    R2_WALL_THK {thk:>14} \n"
              "    SKY EBSC"
         )
         return string

@@ -1,5 +1,6 @@
 from .point import Point
 from .structure import Structure
+import numpy as np
 
 
 class Valve(Structure):
@@ -22,6 +23,11 @@ class Valve(Structure):
             "thickness": self.thickness,
         }
 
+    def is_colapsed(self):
+        a = np.allclose(self.start.coords(), self.end.coords())
+        b = np.allclose(self.end.coords(), self.end.coords())
+        return a and b
+    
     def as_vtk(self):
         from opps.interface.viewer_3d.actors import ValveActor
 
