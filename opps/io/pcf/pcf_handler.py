@@ -32,7 +32,7 @@ class PCFHandler:
     def create_classes(self, groups):
         objects = []
         for group in groups:
-            if group[0].strip() == "PIPE":
+            if group[0].strip() in ["PIPE", "PIPE-FIXED", "PIPE-BLOCK-FIXED", "PIPE-BLOCK-VARIABLE"]:
                 pipe = self.create_pipe(group)
                 objects.append(pipe)
 
@@ -44,7 +44,7 @@ class PCFHandler:
                 bend = self.create_bend(group)
                 objects.append(bend)
 
-            elif group[0].strip() == "FLANGE":
+            elif group[0].strip() in ["FLANGE","FLANGE-BLIND"]:
                 flange = self.create_flange(group)
                 objects.append(flange)
 
@@ -52,9 +52,43 @@ class PCFHandler:
                 valve = self.create_valve(group)
                 objects.append(valve)
 
+            elif group[0].strip() == "REDUCER-CONCENTRIC":
+                reducer = self.create_reducer(group)
+                objects.append(reducer)
+
         return objects
+    
 
     def create_pipe(self, group):
+
+    
+        x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence=0)
+        x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence=1)
+        thickness, *_ = self.load_parameter("R2_WALL_THK", group, default=[0])
+        pressure_data = self.load_parameter("R2_DESIGN_PRESS", group)
+        temperature_data = self.load_parameter("R2_DESIGN_TEMP", group)
+
+        extra_info = dict()
+
+        if len(pressure_data) > 0:
+            extra_info["pressure"] = pressure_data[0]
+        if len(pressure_data) > 0:
+            extra_info["temperature"] = temperature_data[0]
+
+        print(extra_info)
+
+        start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
+        start_diameter = float(d0) / 1000
+        end_diameter = float(d1) / 1000
+        thickness = float(thickness)/1000 
+        
+        if start_diameter == end_diameter:
+            return Pipe(start, end, diameter=start_diameter, thickness=thickness, extra_info=extra_info )
+        else:
+            return ReducerEccentric(start, end, start_diameter=start_diameter, end_diameter=end_diameter, thickness=thickness)
+
+    def create_reducer(self, group):
 
     
         x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence=0)
@@ -67,11 +101,7 @@ class PCFHandler:
         end_diameter = float(d1) / 1000
         thickness = float(thickness)/1000 
         
-        if start_diameter == end_diameter:
-            return Pipe(start, end, diameter=start_diameter, thickness=thickness)
-        else:
-            return ReducerEccentric(start, end, start_diameter=start_diameter, end_diameter=end_diameter, thickness=thickness)
-
+        return ReducerEccentric(start, end, start_diameter=start_diameter, end_diameter=end_diameter, thickness=thickness, color = (251, 177, 60))
         
 
     def create_bend(self, group):
@@ -120,13 +150,14 @@ class PCFHandler:
             diameter=diameter,
             thickness=thickness,
             auto=False,
+            color = (227, 215, 255)
         )
 
     def create_flange(self, group):
+        
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
         x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence=1)
         thickness, *_ = self.load_parameter("R2_WALL_THK", group, default=[0])
-
 
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
         end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
@@ -135,7 +166,7 @@ class PCFHandler:
         start_radius = float(r0) / 1000
         thickness = float(thickness)/1000
 
-        return Flange(start, end , diameter = start_radius, thickness=thickness)
+        return Flange(start, end , diameter = start_radius, thickness=thickness, color = (50, 168, 82))
     
     def create_valve(self, group):
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
@@ -149,7 +180,7 @@ class PCFHandler:
         start_radius = float(r0) / 1000
         thickness = float(thickness)/1000
 
-        return Valve(start, end, diameter=start_radius, thickness = thickness )
+        return Valve(start, end, diameter=start_radius, thickness = thickness, color = (143, 45, 86) )
 
     def create_elbow(self, group):
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
@@ -192,10 +223,10 @@ class PCFHandler:
             end,
             corner,
             curvature=radius,
-            start_diameter=start_radius,
-            end_diameter=end_radius,
+            diameter = start_radius,
             thickness=thickness,
             auto=False,
+            color = (115, 210, 222)
         )
         # return Elbow(
         #     start,
@@ -228,5 +259,5 @@ class PCFHandler:
             return []
         else: 
             return default
-
+        
         

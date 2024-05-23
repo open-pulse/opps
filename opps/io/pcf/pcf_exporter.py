@@ -37,15 +37,15 @@ class PCFExporter:
                 string = string + "\n" + stringer
 
             elif isinstance(structure, Flange):
-                if structure.is_colapsed():
-                    continue
                 stringer = self.encoder_flange(structure)
                 string = string + "\n" + stringer
 
             elif isinstance(structure, Valve):
-                if structure.is_colapsed():
-                    continue
                 stringer = self.encoder_valve(structure)
+                string = string + "\n" + stringer
+
+            elif isinstance(structure, ReducerEccentric):
+                stringer = self.encoder_reducer(structure)
                 string = string + "\n" + stringer
 
 
@@ -85,6 +85,36 @@ class PCFExporter:
             f"    END-POINT {end_x:>14}  {end_y:>14} {end_z:>14} {end_diameter:>14} \n"
             f"    R2_WALL_THK {thk:>14} \n"
             )
+        return string
+    
+    def encoder_reducer(self, reducer):
+        start_x = round(reducer.start.x * 1_000, 5)
+        start_y = round(reducer.start.y * 1_000, 5)
+        start_z = round(reducer.start.z * 1_000, 5)
+        start_diameter = round(reducer.start_diameter * 1_000, 5)
+
+        end_x = round(reducer.end.x * 1_000, 5)
+        end_y = round(reducer.end.y * 1_000, 5)
+        end_z = round(reducer.end.z * 1_000, 5)
+        end_diameter = round(reducer.end_diameter * 1_000, 5)
+
+        thk = round(reducer.thickness * 1_000, 5)
+
+        if reducer.offset_y == 0 and reducer.offset_z ==0:
+            string = (
+                "REDUCER-CONCENTRIC \n"
+                f"    END-POINT {start_x:>14}  {start_y:>14} {start_z:>14} {start_diameter:>14} \n"
+                f"    END-POINT {end_x:>14}  {end_y:>14} {end_z:>14} {end_diameter:>14} \n"
+                f"    R2_WALL_THK {thk:>14} \n"
+                )
+        else:
+            string = (
+                "REDUCER-ECCENTRIC \n"
+                f"    END-POINT {start_x:>14}  {start_y:>14} {start_z:>14} {start_diameter:>14} \n"
+                f"    END-POINT {end_x:>14}  {end_y:>14} {end_z:>14} {end_diameter:>14} \n"
+                f"    R2_WALL_THK {thk:>14} \n"
+                )
+            
         return string
 
     def encoder_bend(self, bend):
