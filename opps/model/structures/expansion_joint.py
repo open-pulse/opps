@@ -20,6 +20,3 @@ class ExpansionJoint(LinearStructure):
         from opps.interface.viewer_3d.actors import ExpansionJointActor
 
         return ExpansionJointActor(self)
-
-    def __hash__(self) -> int:
-        return id(self)

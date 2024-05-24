@@ -17,6 +17,3 @@ class Reducer(LinearStructure):
         from opps.interface.viewer_3d.actors import ReducerActor
 
         return ReducerActor(self)
-
-    def __hash__(self) -> int:
-        return id(self)

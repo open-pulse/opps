@@ -21,6 +21,3 @@ class Bend(SimpleCurve):
         from opps.interface.viewer_3d.actors.bend_actor import BendActor
 
         return BendActor(self)
-
-    def __hash__(self) -> int:
-        return id(self)
