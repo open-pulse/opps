@@ -231,8 +231,15 @@ def t_beam_data(length, h, w1, t1, tw):
     return append_polydata.GetOutput()
 
 
-def reducer_data(length, initial_diameter, final_diameter, 
-                           initial_offset_y, initial_offset_z, final_offset_y, final_offset_z):
+def reducer_data(
+    length,
+    initial_diameter,
+    final_diameter,
+    initial_offset_y,
+    initial_offset_z,
+    final_offset_y,
+    final_offset_z,
+):
 
     initial_radius = initial_diameter / 2
     final_radius = final_diameter / 2

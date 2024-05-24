@@ -1,5 +1,5 @@
-from .point import Point
 from .linear_structure import LinearStructure
+from .point import Point
 
 
 class Valve(LinearStructure):

@@ -36,7 +36,7 @@ class Point:
         point = self.copy()
         point -= other
         return point
-    
+
     def __mul__(self, other):
         point = self.copy()
         point *= other
@@ -68,7 +68,7 @@ class Point:
         new_coords = self.coords() - other
         self.set_coords(*new_coords)
         return self
-    
+
     def __imul__(self, other):
         new_coords = self.coords() * other
         self.set_coords(*new_coords)

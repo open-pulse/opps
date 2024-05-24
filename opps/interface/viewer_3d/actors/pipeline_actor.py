@@ -14,7 +14,7 @@ from opps.model import Pipe
 
 
 class PipelineActor(vtk.vtkActor):
-    def __init__(self, pipeline: 'Pipeline'):
+    def __init__(self, pipeline: "Pipeline"):
         super().__init__()
 
         self.pipeline = pipeline

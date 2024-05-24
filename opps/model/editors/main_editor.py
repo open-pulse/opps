@@ -1,6 +1,5 @@
 import numpy as np
 
-from .editor import Editor
 from opps.model import (
     Bend,
     CBeam,
@@ -16,6 +15,8 @@ from opps.model import (
     TBeam,
     Valve,
 )
+
+from .editor import Editor
 
 
 class MainEditor(Editor):
@@ -153,7 +154,7 @@ class MainEditor(Editor):
         # If you still want this for some reason discomment
         # the following line:
         # self.remove_collapsed_bends()
-    
+
     def add_isolated_point(self, coords: tuple[float, float, float], **kwargs):
         point = Point(*coords, **kwargs)
         self.pipeline.add_point(point)

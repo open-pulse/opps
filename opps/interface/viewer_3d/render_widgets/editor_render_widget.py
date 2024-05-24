@@ -12,8 +12,8 @@ from vtkat.render_widgets import CommonRenderWidget
 
 from opps.interface.viewer_3d.actors import (
     ControlPointsActor,
-    StagedPointsActor,
     SelectedPointsActor,
+    StagedPointsActor,
 )
 
 

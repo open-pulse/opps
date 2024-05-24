@@ -1,8 +1,10 @@
 import numpy as np
 from ordered_set import OrderedSet
 
-from .editor import Editor
 from opps.model import Point
+
+from .editor import Editor
+
 
 class SelectionEditor(Editor):
     def select_last_point(self):

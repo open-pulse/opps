@@ -1,32 +1,33 @@
-from .editor import Editor
 from opps.model import (
-    Bend, 
-    Elbow,
+    Beam,
+    Bend,
     CBeam,
     CircularBeam,
+    Elbow,
     ExpansionJoint,
     Flange,
     IBeam,
     Pipe,
     RectangularBeam,
     Reducer,
+    Structure,
     TBeam,
     Valve,
-    Structure,
-    Beam,
 )
+
+from .editor import Editor
 
 
 class MorphEditor(Editor):
     def morph_into(self, structure, structure_class):
         if isinstance(structure, Pipe):
             return self.morph_pipe(structure, structure_class)
-    
+
         elif isinstance(structure, CircularBeam):
             return self.morph_circular_beam(structure, structure_class)
 
         elif isinstance(structure, RectangularBeam):
-            pass 
+            pass
 
         elif isinstance(structure, IBeam | CBeam):
             pass

@@ -1,7 +1,8 @@
 import numpy as np
 
-from .editor import Editor
 from opps.model import Bend, Point
+
+from .editor import Editor
 
 
 class PointsEditor(Editor):

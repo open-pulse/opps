@@ -18,7 +18,9 @@ class Structure:
         raise NotImplementedError(f'get_points method not implemented in "{type(self).__name__}".')
 
     def replace_point(self, old, new):
-        raise NotImplementedError(f'replace_point method not implemented in "{type(self).__name__}".')
+        raise NotImplementedError(
+            f'replace_point method not implemented in "{type(self).__name__}".'
+        )
 
     def as_dict(self) -> dict:
         return {

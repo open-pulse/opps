@@ -5,10 +5,10 @@ import numpy as np
 import yaml
 
 from opps.model.editors.connection_editor import ConnectionEditor
+from opps.model.editors.divide_editor import DivideEditor
 from opps.model.editors.main_editor import MainEditor
 from opps.model.editors.points_editor import PointsEditor
 from opps.model.editors.selection_editor import SelectionEditor
-from opps.model.editors.divide_editor import DivideEditor
 
 from .structures.beam import Beam
 from .structures.bend import Bend
@@ -305,10 +305,10 @@ class Pipeline:
 
     def divide_structures_evenly(self, divisions=1):
         self.divide_editor.divide_structures_evenly(divisions)
-    
+
     def preview_divide_structures(self, t=0.5):
         self.divide_editor.preview_divide_structures(t)
-    
+
     def preview_divide_structures_evenly(self, divisions=1):
         self.divide_editor.preview_divide_structures_evenly(divisions)
 

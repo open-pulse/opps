@@ -1,23 +1,25 @@
 from itertools import pairwise
-from .editor import Editor
+
 from opps.model import (
-    LinearStructure,
-    Bend, 
-    Elbow,
+    Beam,
+    Bend,
     CBeam,
     CircularBeam,
+    Elbow,
     ExpansionJoint,
     Flange,
     IBeam,
+    LinearStructure,
     Pipe,
+    Point,
     RectangularBeam,
     Reducer,
+    Structure,
     TBeam,
     Valve,
-    Structure,
-    Beam,
-    Point, 
 )
+
+from .editor import Editor
 
 
 class DivideEditor(Editor):
@@ -31,7 +33,7 @@ class DivideEditor(Editor):
         for structure in self.pipeline.selected_structures:
             self._divide_evenly(structure, divisions)
         self.pipeline.commit()
-    
+
     def preview_divide_structures(self, t: float):
         all_points = []
         for structure in self.pipeline.selected_structures:
@@ -66,7 +68,7 @@ class DivideEditor(Editor):
 
                 a.end = point
                 b.start = point
-        
+
         self.pipeline.add_structures(structures)
 
     def _interpolate(self, structure: Structure, t: float) -> Point | None:

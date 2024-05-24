@@ -1,6 +1,5 @@
 from itertools import pairwise
 
-from .editor import Editor
 from opps.model import (
     CBeam,
     CircularBeam,
@@ -13,6 +12,8 @@ from opps.model import (
     TBeam,
     Valve,
 )
+
+from .editor import Editor
 
 
 class ConnectionEditor(Editor):
