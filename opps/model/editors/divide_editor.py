@@ -36,7 +36,8 @@ class DivideEditor(Editor):
         all_points = []
         for structure in self.pipeline.selected_structures:
             point = self._interpolate(structure, t)
-            all_points.append(point)
+            if point is not None:
+                all_points.append(point)
         self.pipeline.add_points(all_points)
 
     def preview_divide_structures_evenly(self, divisions: int):
@@ -68,7 +69,7 @@ class DivideEditor(Editor):
         
         self.pipeline.add_structures(structures)
 
-    def _interpolate(self, structure: Structure, t: float) -> Point:
+    def _interpolate(self, structure: Structure, t: float) -> Point | None:
         if isinstance(structure, LinearStructure):
             a = structure.start
             b = structure.end
