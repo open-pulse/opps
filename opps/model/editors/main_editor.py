@@ -197,8 +197,13 @@ class MainEditor(Editor):
 
         for point in self.pipeline.selected_points:
             for bend in self.pipeline.structures_of_type(Bend):
-                if id(bend.corner) == id(point):
-                    bend.colapse()
+                if not bend.auto:
+                    continue
+
+                if id(bend.corner) != id(point):
+                    continue
+
+                bend.colapse()
 
     def _get_bend_vectors(self, point: Point):
         directions = self._get_point_vectors(point)
