@@ -84,8 +84,8 @@ class Point:
         yield self.y
         yield self.z
 
-    def __array__(self):
-        return np.array([self.x, self.y, self.z])
+    def __array__(self, *args, **kwargs):
+        return np.array([self.x, self.y, self.z], *args, **kwargs)
 
     def __hash__(self) -> int:
         return id(self)
