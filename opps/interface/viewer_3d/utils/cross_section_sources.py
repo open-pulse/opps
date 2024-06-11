@@ -18,7 +18,7 @@ VALVE_WHEEL = load_symbol(SYMBOLS_DIR / "valve_wheel.obj")
 
 def closed_pipe_data(length, outside_diameter):
     cilinder = vtk.vtkCylinderSource()
-    cilinder.SetResolution(20)
+    cilinder.SetResolution(40)
     cilinder.SetRadius(outside_diameter / 2)
     cilinder.SetCenter(0, length / 2, 0)
     cilinder.SetHeight(length)
@@ -43,7 +43,7 @@ def pipe_data(length, outside_diameter, thickness):
     outer_cilinder.Update()
 
     inner_cilinder = vtk.vtkCylinderSource()
-    inner_cilinder.SetResolution(20)
+    inner_cilinder.SetResolution(40)
     inner_cilinder.SetRadius(inner_radius)
     inner_cilinder.SetHeight(length)
     inner_cilinder.SetCenter(0, length / 2, 0)
@@ -51,14 +51,14 @@ def pipe_data(length, outside_diameter, thickness):
     inner_cilinder.Update()
 
     ring_bottom = vtk.vtkDiskSource()
-    ring_bottom.SetCircumferentialResolution(20)
+    ring_bottom.SetCircumferentialResolution(40)
     ring_bottom.SetOuterRadius(outer_radius)
     ring_bottom.SetInnerRadius(inner_radius)
     ring_bottom.SetNormal(0, 1, 0)
     ring_bottom.Update()
 
     ring_top = vtk.vtkDiskSource()
-    ring_top.SetCircumferentialResolution(20)
+    ring_top.SetCircumferentialResolution(40)
     ring_top.SetOuterRadius(outer_radius)
     ring_top.SetInnerRadius(inner_radius)
     ring_top.SetCenter(0, length, 0)
