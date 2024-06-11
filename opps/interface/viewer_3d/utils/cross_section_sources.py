@@ -32,10 +32,10 @@ def pipe_data(length, outside_diameter, thickness):
         return closed_pipe_data(length, outside_diameter)
 
     outer_radius = outside_diameter / 2
-    inner_radius = (outside_diameter - thickness) / 2
+    inner_radius = (outside_diameter) / 2 - thickness
 
     outer_cilinder = vtk.vtkCylinderSource()
-    outer_cilinder.SetResolution(20)
+    outer_cilinder.SetResolution(40)
     outer_cilinder.SetRadius(outer_radius)
     outer_cilinder.SetHeight(length)
     outer_cilinder.SetCenter(0, length / 2, 0)
