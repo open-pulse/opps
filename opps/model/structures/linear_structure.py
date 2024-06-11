@@ -26,6 +26,10 @@ class LinearStructure(Structure):
         elif self.end == old:
             self.end = new
 
+    def interpolate(self, t: float):
+        # t is the percentage of the structure traveled
+        return self.start + t * (self.end - self.start)
+
     def as_dict(self) -> dict:
         return super().as_dict() | {
             "start": self.start,

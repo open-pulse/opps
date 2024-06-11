@@ -39,6 +39,20 @@ class SimpleCurve(Structure):
         c_vector = normalize(a_vector + b_vector)
         return Point(*(self.corner.coords() + c_vector * center_distance))
 
+    def update_corner_from_center(self, center):
+        self.auto = False
+        a_vector = self.start - center
+        b_vector = self.end - center
+        a_vector_normalized = a_vector / np.linalg.norm(a_vector)
+        b_vector_normalized = b_vector / np.linalg.norm(b_vector)
+        c_vector = a_vector_normalized + b_vector_normalized
+        c_vector_normalized = c_vector / np.linalg.norm(c_vector)
+
+        magic = np.dot(a_vector, b_vector) + self.curvature ** 2
+        corner_distance = (self.curvature ** 2) * np.sqrt(2 / magic)
+        corner = center + c_vector_normalized * corner_distance
+        self.corner.set_coords(*corner)
+
     def get_points(self):
         return [
             self.start,
@@ -68,6 +82,12 @@ class SimpleCurve(Structure):
         a = np.allclose(self.start.coords(), self.corner.coords())
         b = np.allclose(self.corner.coords(), self.end.coords())
         return a and b
+
+    def interpolate(self, t: float):
+        # t is the percentage of the bend traveled
+        guide_point = self.start + t * (self.end - self.start)
+        direction = normalize(guide_point - self.center)
+        return self.center + direction * self.curvature
 
     def as_dict(self) -> dict:
         return super().as_dict() | {
