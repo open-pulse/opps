@@ -53,5 +53,5 @@ class PipelineActor(vtk.vtkActor):
         self.GetProperty().SetInterpolationToPhong()
         self.GetProperty().SetDiffuse(0.8)
         self.GetProperty().SetSpecular(1.5)
-        self.GetProperty().SetSpecularPower(60)
+        self.GetProperty().SetSpecularPower(80)
         self.GetProperty().SetSpecularColor(1, 1, 1)
