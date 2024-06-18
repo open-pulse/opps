@@ -36,10 +36,15 @@ class PipelineActor(vtk.vtkActor):
 
             fill_cell_identifier(shape_data, i)
             append_filter.AddInputData(shape_data)
-        append_filter.Update()
+
+        if len(list(self.pipeline.all_structures())):
+            append_filter.Update()
+            appended_data = append_filter.GetOutput()
+        else:
+            appended_data = vtk.vtkPolyData()
 
         normals_filter = vtk.vtkPolyDataNormals()
-        normals_filter.AddInputData(append_filter.GetOutput())
+        normals_filter.AddInputData(appended_data)
         normals_filter.Update()
 
         data = normals_filter.GetOutput()
