@@ -23,7 +23,7 @@ class PipelineActor(vtk.vtkActor):
 
     def create_geometry(self):
         append_filter = vtk.vtkAppendPolyData()
-        selection_color = (247, 0, 20)
+        selection_color = (255, 0, 50)
 
         for i, shape in enumerate(self.pipeline.all_structures()):
             shape_data = shape.as_vtk().GetMapper().GetInput()
