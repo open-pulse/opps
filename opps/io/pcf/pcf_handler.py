@@ -65,17 +65,8 @@ class PCFHandler:
         x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence=0)
         x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence=1)
         thickness, *_ = self.load_parameter("R2_WALL_THK", group, default=[0])
-        pressure_data = self.load_parameter("R2_DESIGN_PRESS", group)
-        temperature_data = self.load_parameter("R2_DESIGN_TEMP", group)
 
-        extra_info = dict()
-
-        if len(pressure_data) > 0:
-            extra_info["pressure"] = pressure_data[0]
-        if len(pressure_data) > 0:
-            extra_info["temperature"] = temperature_data[0]
-
-        print(extra_info)
+        extra_info = self.extra_info(group)
 
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
         end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
@@ -94,6 +85,7 @@ class PCFHandler:
         x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence=0)
         x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence=1)
         thickness, *_ = self.load_parameter("R2_WALL_THK", group, default=[0])
+        
 
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
         end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
@@ -109,6 +101,8 @@ class PCFHandler:
         x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence=1)
         x2, y2, z2 = self.load_parameter("CENTRE-POINT", group)
         thickness, *_ = self.load_parameter("R2_WALL_THK", group, default=[0])
+
+        extra_info = self.extra_info(group)
 
         thickness = float(thickness)/1000
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
@@ -150,7 +144,8 @@ class PCFHandler:
             diameter=diameter,
             thickness=thickness,
             auto=False,
-            color = (227, 215, 255)
+            color=(227, 215, 255),
+            extra_info=extra_info,
         )
 
     def create_flange(self, group):
@@ -159,6 +154,9 @@ class PCFHandler:
         x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence=1)
         thickness, *_ = self.load_parameter("R2_WALL_THK", group, default=[0])
 
+        extra_info = self.extra_info(group)
+
+
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
         end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
         position = start
@@ -166,13 +164,15 @@ class PCFHandler:
         start_radius = float(r0) / 1000
         thickness = float(thickness)/1000
 
-        return Flange(start, end , diameter = start_radius, thickness=thickness, color = (50, 168, 82))
+        return Flange(start, end , diameter = start_radius, thickness=thickness, color = (50, 168, 82), extra_info=extra_info)
     
     def create_valve(self, group):
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
         x1, y1, z1, r1 = self.load_parameter("END-POINT", group, occurence=1)
         thickness, *_ = self.load_parameter("R2_WALL_THK", group, default=[0])
 
+        extra_info = self.extra_info(group)
+
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
         end = Point(float(x1) / 1000, float(y1) / 1000, float(z1) / 1000)
         position = start
@@ -180,7 +180,7 @@ class PCFHandler:
         start_radius = float(r0) / 1000
         thickness = float(thickness)/1000
 
-        return Valve(start, end, diameter=start_radius, thickness = thickness, color = (143, 45, 86) )
+        return Valve(start, end, diameter=start_radius, thickness = thickness, color = (143, 45, 86), extra_info= extra_info )
 
     def create_elbow(self, group):
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
@@ -188,6 +188,7 @@ class PCFHandler:
         x2, y2, z2 = self.load_parameter("CENTRE-POINT", group)
         thickness, *_ = self.load_parameter("R2_WALL_THK", group, default=[0])
 
+        extra_info = self.extra_info(group)
 
         thickness = float(thickness)/1000
         start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
@@ -226,7 +227,8 @@ class PCFHandler:
             diameter = start_radius,
             thickness=thickness,
             auto=False,
-            color = (115, 210, 222)
+            color = (115, 210, 222),
+            extra_info= extra_info
         )
         # return Elbow(
         #     start,
@@ -260,4 +262,22 @@ class PCFHandler:
         else: 
             return default
         
+    def extra_info(self,group):
+
+        pressure_data = self.load_parameter("R2_DESIGN_PRESS", group)
+        temperature_data = self.load_parameter("R2_DESIGN_TEMP", group)
+        material_data = self.load_parameter("R2_MATERIAL", group)
+
+        extra_info = dict()
+
+        if len(pressure_data) > 0:
+            extra_info["pressure"] = pressure_data[0]
+        if len(temperature_data) > 0:
+            extra_info["temperature"] = temperature_data[0]
+        if len(material_data) > 0:
+            extra_info["material"] = material_data[0]
+
+        print (extra_info)
+
         
+
