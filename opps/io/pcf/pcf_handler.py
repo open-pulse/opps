@@ -3,7 +3,7 @@ from itertools import pairwise
 
 import numpy as np
 
-from opps.model import Bend, Elbow, Flange, Pipe, Point, ReducerEccentric, Valve
+from opps.model import Bend, Elbow, Flange, Pipe, Point, ReducerEccentric, Valve, Support
 
 
 class PCFHandler:
@@ -14,6 +14,7 @@ class PCFHandler:
         with open(path, "r", encoding="iso_8859_1") as c2:
             lines = c2.readlines()
             groups = self.group_structures(lines)
+            header = self.reading_header(groups)
             pipeline.structures = self.create_classes(groups)
 
     def group_structures(self, lines_list):
@@ -22,12 +23,24 @@ class PCFHandler:
         lines_list.append("")
 
         for i, line in enumerate(lines_list):
-            if line[0:4] != "    ":
+            if not line.startswith("    "):
                 index_list.append(i)
+
         for a, b in pairwise(index_list):
             structures_list.append(lines_list[a:b])
 
         return structures_list
+    
+    def reading_header(self,groups):
+        units = ["UNITS-BORE","UNITS-WEIGHT","ISOGEN-FILES","andre","UNITS-BOLT-DIA","UNITS-BOLT-LENGTH","PIPELINE-REFERENCE","UNITS-CO-ORDS"]
+        header = dict()
+        for group in groups:
+            for unit in units:       
+                value = self.load_parameter(unit, group)
+                if value:
+                    header[unit] = value
+
+        print(header)
 
     def create_classes(self, groups):
         objects = []
@@ -54,13 +67,20 @@ class PCFHandler:
 
             elif group[0].strip() == "REDUCER-CONCENTRIC":
                 reducer = self.create_reducer(group)
-                objects.append(reducer)
+                objects.append(reducer)             
+
+            # elif group[0].strip() == "SUPPORT":
+            #     support = self.create_support(group)
+            #     objects.append(support)
+
+            elif group[0].strip() == "ISOGEN-FILES":
+                header = self.reading_header(group)
+                objects.append(header)
 
         return objects
     
 
     def create_pipe(self, group):
-
     
         x0, y0, z0, d0 = self.load_parameter("END-POINT", group, occurence=0)
         x1, y1, z1, d1 = self.load_parameter("END-POINT", group, occurence=1)
@@ -230,16 +250,14 @@ class PCFHandler:
             color = (115, 210, 222),
             extra_info= extra_info
         )
-        # return Elbow(
-        #     start,
-        #     end,
-        #     corner,
-        #     curvature=radius,
-        #     start_diameter=start_radius,
-        #     end_diameter=end_radius,
-        #     thickness=thickness,
-        #     auto=False,
-        # )
+
+    # def create_support(self, group):
+
+    #     x0, y0, z0, d0 = self.load_parameter("CO-ORDS", group, occurence=0)
+
+    #     start = Point(float(x0) / 1000, float(y0) / 1000, float(z0) / 1000)
+        
+    #     return Support(start)
 
     def load_parameter(
         self, parameter_name: str, group: list[str], occurence: int = 0, default = None
@@ -276,8 +294,6 @@ class PCFHandler:
             extra_info["temperature"] = temperature_data[0]
         if len(material_data) > 0:
             extra_info["material"] = material_data[0]
-
-        print (extra_info)
 
         
 
