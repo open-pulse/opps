@@ -1,5 +1,5 @@
 import vtk
-from vtkat.actors import RoundPointsActor
+from molde.actors import RoundPointsActor
 
 
 class SelectedPointsActor(RoundPointsActor):

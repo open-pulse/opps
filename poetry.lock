@@ -443,6 +443,27 @@ python-dateutil = ">=2.7"
 dev = ["meson-python (>=0.13.1)", "numpy (>=1.25)", "pybind11 (>=2.6)", "setuptools (>=64)", "setuptools_scm (>=7)"]
 
 [[package]]
+name = "molde"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = ">=3.10,<3.12"
+files = []
+develop = false
+
+[package.dependencies]
+numpy = "^1.26.3"
+pyqt5 = "^5.15.10"
+pyqt5-qt5 = "5.15.2"
+vtk = "^9.3.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/andrefpf/molde"
+reference = "HEAD"
+resolved_reference = "b2708e75293a9931b183f9be4e63d58793ebe9ab"
+
+[[package]]
 name = "mypy-extensions"
 version = "1.0.0"
 description = "Type system extensions for programs checked with the mypy type checker."
@@ -911,28 +932,7 @@ matplotlib = ">=2.0.0"
 numpy = ["numpy (>=1.9)"]
 web = ["wslink (>=1.0.4)"]
 
-[[package]]
-name = "vtkat"
-version = "0.1.0"
-description = ""
-optional = false
-python-versions = ">=3.10,<3.12"
-files = []
-develop = false
-
-[package.dependencies]
-numpy = "^1.26.3"
-pyqt5 = "^5.15.10"
-pyqt5-qt5 = "5.15.2"
-vtk = "^9.3.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/andrefpf/vtkat"
-reference = "HEAD"
-resolved_reference = "942cad5f74d96c930e781eea77871d618d507fea"
-
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "7f00762276a30b814514ce7b33dfe00a28eb8da673968f6773b66fb10f2d59c0"
+content-hash = "2e5c9ea3d273107347eb035f735bb994a2c4fbfdfdc8a7dc0b76e5803d8a597c"

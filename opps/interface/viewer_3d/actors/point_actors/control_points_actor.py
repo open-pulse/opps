@@ -1,5 +1,5 @@
 import vtk
-from vtkat.poly_data import VerticesData
+from molde.poly_data import VerticesData
 
 
 class ControlPointsActor(vtk.vtkActor):
