@@ -23,7 +23,7 @@ class PipelineActor(vtk.vtkActor):
 
     def create_geometry(self):
         append_filter = vtk.vtkAppendPolyData()
-        selection_color = (247, 0, 20)
+        selection_color = (255, 0, 50)
 
         for i, shape in enumerate(self.pipeline.all_structures()):
             shape_data = shape.as_vtk().GetMapper().GetInput()
@@ -36,10 +36,15 @@ class PipelineActor(vtk.vtkActor):
 
             fill_cell_identifier(shape_data, i)
             append_filter.AddInputData(shape_data)
-        append_filter.Update()
+
+        if len(list(self.pipeline.all_structures())):
+            append_filter.Update()
+            appended_data = append_filter.GetOutput()
+        else:
+            appended_data = vtk.vtkPolyData()
 
         normals_filter = vtk.vtkPolyDataNormals()
-        normals_filter.AddInputData(append_filter.GetOutput())
+        normals_filter.AddInputData(appended_data)
         normals_filter.Update()
 
         data = normals_filter.GetOutput()
@@ -53,5 +58,5 @@ class PipelineActor(vtk.vtkActor):
         self.GetProperty().SetInterpolationToPhong()
         self.GetProperty().SetDiffuse(0.8)
         self.GetProperty().SetSpecular(1.5)
-        self.GetProperty().SetSpecularPower(60)
+        self.GetProperty().SetSpecularPower(80)
         self.GetProperty().SetSpecularColor(1, 1, 1)

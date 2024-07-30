@@ -16,9 +16,9 @@ def load_symbol(path):
 VALVE_WHEEL = load_symbol(SYMBOLS_DIR / "valve_wheel.obj")
 
 
-def closed_pipe_data(length, outside_diameter):
+def closed_pipe_data(length, outside_diameter, sides=20):
     cilinder = vtk.vtkCylinderSource()
-    cilinder.SetResolution(20)
+    cilinder.SetResolution(sides)
     cilinder.SetRadius(outside_diameter / 2)
     cilinder.SetCenter(0, length / 2, 0)
     cilinder.SetHeight(length)
@@ -27,11 +27,10 @@ def closed_pipe_data(length, outside_diameter):
     return cilinder.GetOutput()
 
 
-def pipe_data(length, outside_diameter, thickness):
+def pipe_data(length, outside_diameter, thickness, sides=20):
     if (thickness == 0) or (2 * thickness > outside_diameter):
         return closed_pipe_data(length, outside_diameter)
 
-    sides = 20
     outer_radius = outside_diameter / 2
     inner_radius = (outside_diameter) / 2 - thickness
 
