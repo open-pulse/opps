@@ -1,4 +1,3 @@
-import vtk
 from molde.actors import RoundPointsActor
 
 

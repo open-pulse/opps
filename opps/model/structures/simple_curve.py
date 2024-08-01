@@ -48,8 +48,8 @@ class SimpleCurve(Structure):
         c_vector = a_vector_normalized + b_vector_normalized
         c_vector_normalized = c_vector / np.linalg.norm(c_vector)
 
-        magic = np.dot(a_vector, b_vector) + self.curvature ** 2
-        corner_distance = (self.curvature ** 2) * np.sqrt(2 / magic)
+        magic = np.dot(a_vector, b_vector) + self.curvature**2
+        corner_distance = (self.curvature**2) * np.sqrt(2 / magic)
         corner = center + c_vector_normalized * corner_distance
         self.corner.set_coords(*corner)
 

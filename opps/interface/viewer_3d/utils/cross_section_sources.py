@@ -1,13 +1,25 @@
 from itertools import chain
 
 import numpy as np
-import vtk
+from vtkmodules.vtkCommonCore import vtkPoints
+from vtkmodules.vtkCommonDataModel import VTK_TRIANGLE, vtkPolyData
+from vtkmodules.vtkCommonTransforms import vtkTransform
+from vtkmodules.vtkFiltersCore import vtkAppendPolyData
+from vtkmodules.vtkFiltersGeneral import vtkTransformFilter
+from vtkmodules.vtkFiltersSources import (
+    vtkCubeSource,
+    vtkCylinderSource,
+    vtkDiskSource,
+    vtkRegularPolygonSource,
+    vtkSphereSource,
+)
+from vtkmodules.vtkIOGeometry import vtkOBJReader
 
 from opps import SYMBOLS_DIR
 
 
 def load_symbol(path):
-    reader = vtk.vtkOBJReader()
+    reader = vtkOBJReader()
     reader.SetFileName(str(path))
     reader.Update()
     return reader.GetOutput()
@@ -17,7 +29,7 @@ VALVE_WHEEL = load_symbol(SYMBOLS_DIR / "valve_wheel.obj")
 
 
 def closed_pipe_data(length, outside_diameter, sides=20):
-    cilinder = vtk.vtkCylinderSource()
+    cilinder = vtkCylinderSource()
     cilinder.SetResolution(sides)
     cilinder.SetRadius(outside_diameter / 2)
     cilinder.SetCenter(0, length / 2, 0)
@@ -34,7 +46,7 @@ def pipe_data(length, outside_diameter, thickness, sides=20):
     outer_radius = outside_diameter / 2
     inner_radius = (outside_diameter) / 2 - thickness
 
-    outer_cilinder = vtk.vtkCylinderSource()
+    outer_cilinder = vtkCylinderSource()
     outer_cilinder.SetResolution(sides)
     outer_cilinder.SetRadius(outer_radius)
     outer_cilinder.SetHeight(length)
@@ -42,7 +54,7 @@ def pipe_data(length, outside_diameter, thickness, sides=20):
     outer_cilinder.CappingOff()
     outer_cilinder.Update()
 
-    inner_cilinder = vtk.vtkCylinderSource()
+    inner_cilinder = vtkCylinderSource()
     inner_cilinder.SetResolution(sides)
     inner_cilinder.SetRadius(inner_radius)
     inner_cilinder.SetHeight(length)
@@ -50,14 +62,14 @@ def pipe_data(length, outside_diameter, thickness, sides=20):
     inner_cilinder.CappingOff()
     inner_cilinder.Update()
 
-    ring_bottom = vtk.vtkDiskSource()
+    ring_bottom = vtkDiskSource()
     ring_bottom.SetCircumferentialResolution(sides)
     ring_bottom.SetOuterRadius(outer_radius)
     ring_bottom.SetInnerRadius(inner_radius)
     ring_bottom.SetNormal(0, 1, 0)
     ring_bottom.Update()
 
-    ring_top = vtk.vtkDiskSource()
+    ring_top = vtkDiskSource()
     ring_top.SetCircumferentialResolution(sides)
     ring_top.SetOuterRadius(outer_radius)
     ring_top.SetInnerRadius(inner_radius)
@@ -65,7 +77,7 @@ def pipe_data(length, outside_diameter, thickness, sides=20):
     ring_top.SetNormal(0, 1, 0)
     ring_top.Update()
 
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
     append_polydata.AddInputData(outer_cilinder.GetOutput())
     append_polydata.AddInputData(inner_cilinder.GetOutput())
     append_polydata.AddInputData(ring_bottom.GetOutput())
@@ -76,7 +88,7 @@ def pipe_data(length, outside_diameter, thickness, sides=20):
 
 
 def circular_beam_data(length, outside_diameter, thickness):
-    cilinder = vtk.vtkCylinderSource()
+    cilinder = vtkCylinderSource()
     cilinder.SetResolution(12)
     cilinder.SetRadius(outside_diameter / 2)
     cilinder.SetHeight(length)
@@ -87,7 +99,7 @@ def circular_beam_data(length, outside_diameter, thickness):
 
 
 def closed_rectangular_beam_data(length, b, h):
-    rectangle = vtk.vtkCubeSource()
+    rectangle = vtkCubeSource()
     rectangle.SetYLength(length)
     rectangle.SetXLength(b)
     rectangle.SetZLength(h)
@@ -100,10 +112,10 @@ def rectangular_beam_data(length, b, h, t):
     if t == 0:
         return closed_rectangular_beam_data(length, b, h)
 
-    rectangular_top = vtk.vtkCubeSource()
-    rectangular_left = vtk.vtkCubeSource()
-    rectangular_right = vtk.vtkCubeSource()
-    rectangular_bottom = vtk.vtkCubeSource()
+    rectangular_top = vtkCubeSource()
+    rectangular_left = vtkCubeSource()
+    rectangular_right = vtkCubeSource()
+    rectangular_bottom = vtkCubeSource()
 
     rectangular_top.SetYLength(length)
     rectangular_top.SetZLength(t)
@@ -130,7 +142,7 @@ def rectangular_beam_data(length, b, h, t):
     rectangular_right.Update()
     rectangular_bottom.Update()
 
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
     append_polydata.AddInputData(rectangular_top.GetOutput())
     append_polydata.AddInputData(rectangular_left.GetOutput())
     append_polydata.AddInputData(rectangular_right.GetOutput())
@@ -141,9 +153,9 @@ def rectangular_beam_data(length, b, h, t):
 
 
 def c_beam_data(length, h, w1, w2, t1, t2, tw):
-    rectangular_top = vtk.vtkCubeSource()
-    rectangular_left = vtk.vtkCubeSource()
-    rectangular_bottom = vtk.vtkCubeSource()
+    rectangular_top = vtkCubeSource()
+    rectangular_left = vtkCubeSource()
+    rectangular_bottom = vtkCubeSource()
 
     rectangular_top.SetYLength(length)
     rectangular_top.SetZLength(t1)
@@ -164,7 +176,7 @@ def c_beam_data(length, h, w1, w2, t1, t2, tw):
     rectangular_left.Update()
     rectangular_bottom.Update()
 
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
     append_polydata.AddInputData(rectangular_top.GetOutput())
     append_polydata.AddInputData(rectangular_left.GetOutput())
     append_polydata.AddInputData(rectangular_bottom.GetOutput())
@@ -174,9 +186,9 @@ def c_beam_data(length, h, w1, w2, t1, t2, tw):
 
 
 def i_beam_data(length, h, w1, w2, t1, t2, tw):
-    rectangular_top = vtk.vtkCubeSource()
-    rectangular_center = vtk.vtkCubeSource()
-    rectangular_bottom = vtk.vtkCubeSource()
+    rectangular_top = vtkCubeSource()
+    rectangular_center = vtkCubeSource()
+    rectangular_bottom = vtkCubeSource()
 
     rectangular_top.SetYLength(length)
     rectangular_top.SetZLength(t1)
@@ -197,7 +209,7 @@ def i_beam_data(length, h, w1, w2, t1, t2, tw):
     rectangular_center.Update()
     rectangular_bottom.Update()
 
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
     append_polydata.AddInputData(rectangular_top.GetOutput())
     append_polydata.AddInputData(rectangular_center.GetOutput())
     append_polydata.AddInputData(rectangular_bottom.GetOutput())
@@ -207,8 +219,8 @@ def i_beam_data(length, h, w1, w2, t1, t2, tw):
 
 
 def t_beam_data(length, h, w1, t1, tw):
-    rectangular_top = vtk.vtkCubeSource()
-    rectangular_center = vtk.vtkCubeSource()
+    rectangular_top = vtkCubeSource()
+    rectangular_center = vtkCubeSource()
 
     rectangular_top.SetYLength(length)
     rectangular_top.SetZLength(t1)
@@ -223,7 +235,7 @@ def t_beam_data(length, h, w1, t1, tw):
     rectangular_top.Update()
     rectangular_center.Update()
 
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
     append_polydata.AddInputData(rectangular_top.GetOutput())
     append_polydata.AddInputData(rectangular_center.GetOutput())
     append_polydata.Update()
@@ -240,20 +252,19 @@ def reducer_data(
     final_offset_y,
     final_offset_z,
 ):
-
     initial_radius = initial_diameter / 2
     final_radius = final_diameter / 2
 
     sides = 20
 
-    initial_ring = vtk.vtkRegularPolygonSource()
+    initial_ring = vtkRegularPolygonSource()
     initial_ring.SetRadius(initial_radius)
     initial_ring.SetNumberOfSides(sides)
     initial_ring.SetCenter(initial_offset_y, 0, initial_offset_z)
     initial_ring.SetNormal(0, 1, 0)
     initial_ring.Update()
 
-    final_ring = vtk.vtkRegularPolygonSource()
+    final_ring = vtkRegularPolygonSource()
     final_ring.SetRadius(final_radius)
     final_ring.SetNumberOfSides(sides)
     final_ring.SetCenter(final_offset_y, length, final_offset_z)
@@ -263,27 +274,27 @@ def reducer_data(
     initial_points = initial_ring.GetOutput().GetPoints()
     final_points = final_ring.GetOutput().GetPoints()
 
-    points = vtk.vtkPoints()
+    points = vtkPoints()
     points.InsertPoints(0, sides, 0, initial_points)
     points.InsertPoints(sides, sides, 0, final_points)
 
-    external_face = vtk.vtkPolyData()
+    external_face = vtkPolyData()
     external_face.Allocate()
     external_face.SetPoints(points)
 
     for i in range(sides):
         external_face.InsertNextCell(
-            vtk.VTK_TRIANGLE,
+            VTK_TRIANGLE,
             3,
             [i, i + sides, (i + 1) % sides],
         )
         external_face.InsertNextCell(
-            vtk.VTK_TRIANGLE,
+            VTK_TRIANGLE,
             3,
             [i + sides, (i + 1) % sides + sides, (i + 1) % sides],
         )
 
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
     append_polydata.AddInputData(initial_ring.GetOutput())
     append_polydata.AddInputData(final_ring.GetOutput())
     append_polydata.AddInputData(external_face)
@@ -294,12 +305,12 @@ def reducer_data(
 
 def flange_data(length, outside_diameter, thickness, bolts=8):
     pipe = pipe_data(length, outside_diameter, thickness)
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
     append_polydata.AddInputData(pipe)
 
     for i in range(bolts):
         angle = i * 2 * np.pi / bolts
-        nut = vtk.vtkCylinderSource()
+        nut = vtkCylinderSource()
         nut.SetHeight(length + thickness / 2)
         nut.SetRadius(thickness / 4 / 2)
         nut.SetCenter(
@@ -315,7 +326,7 @@ def flange_data(length, outside_diameter, thickness, bolts=8):
 
 
 def expansion_joint_data(length, outside_diameter, thickness):
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
 
     width = 0.15 * outside_diameter
     pipe = pipe_data(length, outside_diameter, thickness)
@@ -323,10 +334,10 @@ def expansion_joint_data(length, outside_diameter, thickness):
 
     # I just wanted to move the flange to the end of the structure
     # but that is the only way vtk let me do it.
-    transform = vtk.vtkTransform()
+    transform = vtkTransform()
     transform.Translate(0, length - width, 0)
     transform.Update()
-    transform_filter = vtk.vtkTransformFilter()
+    transform_filter = vtkTransformFilter()
     transform_filter.SetInputData(flange_data(width, outside_diameter + width, width))
     transform_filter.SetTransform(transform)
     transform_filter.Update()
@@ -340,7 +351,7 @@ def expansion_joint_data(length, outside_diameter, thickness):
     rings = int(3 * length / width / 5)
     for i in range(0, rings, 2):
         position = i / (rings - 1) * (3 * length / 5) + length / 5
-        ring = vtk.vtkCylinderSource()
+        ring = vtkCylinderSource()
         ring.SetHeight(width)
         ring.SetRadius(width + outside_diameter / 2)
         ring.SetCenter(0, position + width / 2, 0)
@@ -354,14 +365,14 @@ def expansion_joint_data(length, outside_diameter, thickness):
         x = (3 * width + outside_diameter) / 2 * np.sin(angle)
         z = (3 * width + outside_diameter) / 2 * np.cos(angle)
 
-        tie_rod = vtk.vtkCylinderSource()
+        tie_rod = vtkCylinderSource()
         tie_rod.SetHeight(length)
         tie_rod.SetRadius(width / 2)
         tie_rod.SetCenter(x, length / 2, z)
         tie_rod.Update()
         append_polydata.AddInputData(tie_rod.GetOutput())
 
-        initial_nut = vtk.vtkCubeSource()
+        initial_nut = vtkCubeSource()
         initial_nut.SetCenter(x, width / 2, z)
         initial_nut.SetXLength(2 * width)
         initial_nut.SetYLength(width)
@@ -369,7 +380,7 @@ def expansion_joint_data(length, outside_diameter, thickness):
         initial_nut.Update()
         append_polydata.AddInputData(initial_nut.GetOutput())
 
-        final_nut = vtk.vtkCubeSource()
+        final_nut = vtkCubeSource()
         final_nut.SetCenter(x, length - width / 2, z)
         final_nut.SetXLength(2 * width)
         final_nut.SetYLength(width)
@@ -382,11 +393,11 @@ def expansion_joint_data(length, outside_diameter, thickness):
 
 
 def valve_data(length, outside_diameter, thickness):
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
 
     if length == 0:
         # empty poly data
-        return vtk.vtkPolyData()
+        return vtkPolyData()
 
     width = 0.20 * outside_diameter
     pipe = pipe_data(length, outside_diameter, thickness)
@@ -394,28 +405,28 @@ def valve_data(length, outside_diameter, thickness):
 
     # I just wanted to move the flange to the end of the structure
     # but that is the only way vtk let me do it.
-    transform = vtk.vtkTransform()
+    transform = vtkTransform()
     transform.Translate(0, length - width, 0)
     transform.Update()
-    transform_filter = vtk.vtkTransformFilter()
+    transform_filter = vtkTransformFilter()
     transform_filter.SetInputData(flange_data(width, outside_diameter + width, width))
     transform_filter.SetTransform(transform)
     transform_filter.Update()
     end_flange = transform_filter.GetOutput()
 
-    center_sphere = vtk.vtkSphereSource()
+    center_sphere = vtkSphereSource()
     center_sphere.SetPhiResolution(20)
     center_sphere.SetThetaResolution(20)
     center_sphere.SetRadius(outside_diameter)
     center_sphere.SetCenter(0, length / 2, 0)
     center_sphere.Update()
 
-    transform = vtk.vtkTransform()
+    transform = vtkTransform()
     transform.Translate(0, length / 2, 0)
     transform.RotateZ(90)
     transform.Translate(0, outside_diameter / 3, 0)
     transform.Update()
-    transform_filter = vtk.vtkTransformFilter()
+    transform_filter = vtkTransformFilter()
     transform_filter.SetInputData(valve_handle(outside_diameter, length / 4, width))
     transform_filter.SetTransform(transform)
     transform_filter.Update()
@@ -432,15 +443,15 @@ def valve_data(length, outside_diameter, thickness):
 
 
 def valve_handle(outside_diameter, height, axis_diameter):
-    append_polydata = vtk.vtkAppendPolyData()
+    append_polydata = vtkAppendPolyData()
     width = 0.20 * outside_diameter
 
     # I just wanted to move the flange to the end of the structure
     # but that is the only way vtk let me do it.
-    transform = vtk.vtkTransform()
+    transform = vtkTransform()
     transform.Translate(0, (height - axis_diameter), 0)
     transform.Update()
-    transform_filter = vtk.vtkTransformFilter()
+    transform_filter = vtkTransformFilter()
     transform_filter.SetInputData(
         flange_data(axis_diameter, outside_diameter + width, axis_diameter)
     )
@@ -451,11 +462,11 @@ def valve_handle(outside_diameter, height, axis_diameter):
     pipe = pipe_data(height, outside_diameter, 0)
 
     wheel_diameter = outside_diameter * 1.5
-    transform = vtk.vtkTransform()
+    transform = vtkTransform()
     transform.Translate(0, height, 0)
     transform.Scale(wheel_diameter, wheel_diameter, wheel_diameter)
     transform.Update()
-    transform_filter = vtk.vtkTransformFilter()
+    transform_filter = vtkTransformFilter()
     transform_filter.SetInputData(VALVE_WHEEL)
     transform_filter.SetTransform(transform)
     transform_filter.Update()

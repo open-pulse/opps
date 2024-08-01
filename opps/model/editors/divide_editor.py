@@ -1,11 +1,6 @@
 from itertools import pairwise
 
-from opps.model import (
-    Structure,
-    LinearStructure,
-    SimpleCurve,
-    Point,
-)
+from opps.model import LinearStructure, Point, SimpleCurve, Structure
 
 from .editor import Editor
 
@@ -43,7 +38,7 @@ class DivideEditor(Editor):
             structure.end = point
             new_structure.start = point
             self.pipeline.add_structure(new_structure)
-        
+
         elif isinstance(structure, SimpleCurve):
             center = structure.center
             corner = structure.corner.copy()
@@ -74,7 +69,7 @@ class DivideEditor(Editor):
 
                 a.end = point
                 b.start = point
-            
+
             elif isinstance(structure, SimpleCurve):
                 a: SimpleCurve
                 b: SimpleCurve

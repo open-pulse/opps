@@ -1,5 +1,7 @@
 import numpy as np
-import vtk
+from vtkmodules.vtkCommonDataModel import vtkPolyData
+from vtkmodules.vtkCommonTransforms import vtkTransform
+from vtkmodules.vtkFiltersGeneral import vtkTransformFilter
 
 
 def align_y_rotations(vector):
@@ -30,18 +32,18 @@ def align_y_rotations(vector):
     return rx, ry, rz
 
 
-def align_vtk_geometry(geometry: vtk.vtkPolyData, start: np.ndarray, vector: np.ndarray):
+def align_vtk_geometry(geometry: vtkPolyData, start: np.ndarray, vector: np.ndarray):
     x, y, z = start
     rx, ry, rz = align_y_rotations(vector)
 
-    transform = vtk.vtkTransform()
+    transform = vtkTransform()
     transform.Translate(x, y, z)
     transform.RotateZ(np.degrees(rz))
     transform.RotateX(np.degrees(rx))
     transform.RotateY(np.degrees(ry))
     transform.Update()
 
-    transform_filter = vtk.vtkTransformFilter()
+    transform_filter = vtkTransformFilter()
     transform_filter.SetInputData(geometry)
     transform_filter.SetTransform(transform)
     transform_filter.Update()

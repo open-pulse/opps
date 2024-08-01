@@ -1,5 +1,5 @@
 import numpy as np
-import vtk
+from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
 
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
 from opps.interface.viewer_3d.utils.cross_section_sources import reducer_data
@@ -7,7 +7,7 @@ from opps.interface.viewer_3d.utils.rotations import align_vtk_geometry
 from opps.model import Reducer
 
 
-class ReducerActor(vtk.vtkActor):
+class ReducerActor(vtkActor):
     def __init__(self, reducer: Reducer):
         self.reducer = reducer
         self.create_geometry()
@@ -28,7 +28,7 @@ class ReducerActor(vtk.vtkActor):
         data = align_vtk_geometry(source, self.reducer.start.coords(), vector)
         paint_data(data, self.reducer.color)
 
-        mapper = vtk.vtkPolyDataMapper()
+        mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)
         mapper.SetScalarModeToUseCellData()
         self.SetMapper(mapper)

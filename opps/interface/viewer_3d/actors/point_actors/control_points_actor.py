@@ -1,8 +1,8 @@
-import vtk
 from molde.poly_data import VerticesData
+from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
 
 
-class ControlPointsActor(vtk.vtkActor):
+class ControlPointsActor(vtkActor):
     def __init__(self, points):
         super().__init__()
         self.points = points
@@ -11,7 +11,7 @@ class ControlPointsActor(vtk.vtkActor):
     def build(self):
         coords = [p.coords() for p in self.points]
         data = VerticesData(coords)
-        mapper = vtk.vtkPolyDataMapper()
+        mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)
         self.SetMapper(mapper)
 
