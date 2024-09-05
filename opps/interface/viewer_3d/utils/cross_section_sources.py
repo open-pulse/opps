@@ -136,7 +136,7 @@ def rectangular_beam_data(length, b, h, t, offset_y=0, offset_z=0):
     rectangular_bottom.SetYLength(length)
     rectangular_bottom.SetZLength(t)
     rectangular_bottom.SetXLength(b)
-    rectangular_bottom.SetCenter(offset_y, length / 2, h / 2 - t / 2, offset_z)
+    rectangular_bottom.SetCenter(offset_y, length / 2, h / 2 - t / 2 + offset_z)
 
     rectangular_top.Update()
     rectangular_left.Update()
