@@ -18,7 +18,8 @@ class RectangularBeamActor(vtkActor):
         vector = self.beam.end.coords() - self.beam.start.coords()
         length = np.linalg.norm(vector)
         source = rectangular_beam_data(
-            length, self.beam.width, self.beam.height, self.beam.thickness
+            length, self.beam.width, self.beam.height, 
+            self.beam.thickness_width, self.beam.thickness_width,
         )
 
         data = align_vtk_geometry(source, self.beam.start.coords(), vector)
