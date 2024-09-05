@@ -39,7 +39,7 @@ def closed_pipe_data(length, outside_diameter, sides=20):
     return cilinder.GetOutput()
 
 
-def pipe_data(length, outside_diameter, thickness, sides=20):
+def pipe_data(length, outside_diameter, thickness, offset_y=0, offset_z=0, sides=20):
     if (thickness == 0) or (2 * thickness > outside_diameter):
         return closed_pipe_data(length, outside_diameter)
 
@@ -50,7 +50,7 @@ def pipe_data(length, outside_diameter, thickness, sides=20):
     outer_cilinder.SetResolution(sides)
     outer_cilinder.SetRadius(outer_radius)
     outer_cilinder.SetHeight(length)
-    outer_cilinder.SetCenter(0, length / 2, 0)
+    outer_cilinder.SetCenter(offset_y, length / 2, offset_z)
     outer_cilinder.CappingOff()
     outer_cilinder.Update()
 
@@ -58,7 +58,7 @@ def pipe_data(length, outside_diameter, thickness, sides=20):
     inner_cilinder.SetResolution(sides)
     inner_cilinder.SetRadius(inner_radius)
     inner_cilinder.SetHeight(length)
-    inner_cilinder.SetCenter(0, length / 2, 0)
+    inner_cilinder.SetCenter(offset_y, length / 2, offset_z)
     inner_cilinder.CappingOff()
     inner_cilinder.Update()
 
@@ -66,6 +66,7 @@ def pipe_data(length, outside_diameter, thickness, sides=20):
     ring_bottom.SetCircumferentialResolution(sides)
     ring_bottom.SetOuterRadius(outer_radius)
     ring_bottom.SetInnerRadius(inner_radius)
+    ring_bottom.SetCenter(offset_y, 0, offset_z)
     ring_bottom.SetNormal(0, 1, 0)
     ring_bottom.Update()
 
@@ -73,7 +74,7 @@ def pipe_data(length, outside_diameter, thickness, sides=20):
     ring_top.SetCircumferentialResolution(sides)
     ring_top.SetOuterRadius(outer_radius)
     ring_top.SetInnerRadius(inner_radius)
-    ring_top.SetCenter(0, length, 0)
+    ring_top.SetCenter(offset_y, length, offset_z)
     ring_top.SetNormal(0, 1, 0)
     ring_top.Update()
 
