@@ -109,8 +109,8 @@ def closed_rectangular_beam_data(length, b, h, offset_y=0, offset_z=0):
     return rectangle.GetOutput()
 
 
-def rectangular_beam_data(length, b, h, t, offset_y=0, offset_z=0):
-    if t == 0:
+def rectangular_beam_data(length, b, h, t0, t1, offset_y=0, offset_z=0):
+    if t0 == 0 or t1 == 0:
         return closed_rectangular_beam_data(length, b, h, offset_y, offset_z)
 
     rectangular_top = vtkCubeSource()
@@ -119,24 +119,24 @@ def rectangular_beam_data(length, b, h, t, offset_y=0, offset_z=0):
     rectangular_bottom = vtkCubeSource()
 
     rectangular_top.SetYLength(length)
-    rectangular_top.SetZLength(t)
+    rectangular_top.SetZLength(t1)
     rectangular_top.SetXLength(b)
-    rectangular_top.SetCenter(offset_y, length / 2, -h / 2 + t / 2 + offset_z)
+    rectangular_top.SetCenter(offset_y, length / 2, -h / 2 + t1 / 2 + offset_z)
 
     rectangular_left.SetYLength(length)
     rectangular_left.SetZLength(h)
-    rectangular_left.SetXLength(t)
-    rectangular_left.SetCenter(offset_y - b / 2 + t / 2, length / 2, offset_z)
+    rectangular_left.SetXLength(t0)
+    rectangular_left.SetCenter(offset_y - b / 2 + t0 / 2, length / 2, offset_z)
 
     rectangular_right.SetYLength(length)
     rectangular_right.SetZLength(h)
-    rectangular_right.SetXLength(t)
-    rectangular_right.SetCenter(offset_y + b / 2 - t / 2, length / 2, offset_z)
+    rectangular_right.SetXLength(t0)
+    rectangular_right.SetCenter(offset_y + b / 2 - t0 / 2, length / 2, offset_z)
 
     rectangular_bottom.SetYLength(length)
-    rectangular_bottom.SetZLength(t)
+    rectangular_bottom.SetZLength(t1)
     rectangular_bottom.SetXLength(b)
-    rectangular_bottom.SetCenter(offset_y, length / 2, h / 2 - t / 2 + offset_z)
+    rectangular_bottom.SetCenter(offset_y, length / 2, h / 2 - t1 / 2 + offset_z)
 
     rectangular_top.Update()
     rectangular_left.Update()
