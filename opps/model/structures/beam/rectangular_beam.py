@@ -7,13 +7,15 @@ class RectangularBeam(Beam):
 
         self.width = kwargs.get("width", 0.1)
         self.height = kwargs.get("height", 0.1)
-        self.thickness = kwargs.get("thickness", 0.01)
+        self.thickness_width = kwargs.get("thickness_width", 0.01)
+        self.thickness_height = kwargs.get("thickness_height", 0.01)
 
     def as_dict(self) -> dict:
         return super().as_dict() | {
             "height": self.height,
             "width": self.width,
-            "thickness": self.thickness,
+            "thickness_width": self.thickness_width,
+            "thickness_height": self.thickness_height,
         }
 
     def as_vtk(self):
