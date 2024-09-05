@@ -28,11 +28,11 @@ def load_symbol(path):
 VALVE_WHEEL = load_symbol(SYMBOLS_DIR / "valve_wheel.obj")
 
 
-def closed_pipe_data(length, outside_diameter, sides=20):
+def closed_pipe_data(length, outside_diameter, offset_y=0, offset_z=0, sides=20):
     cilinder = vtkCylinderSource()
     cilinder.SetResolution(sides)
     cilinder.SetRadius(outside_diameter / 2)
-    cilinder.SetCenter(0, length / 2, 0)
+    cilinder.SetCenter(offset_y, length / 2, offset_z)
     cilinder.SetHeight(length)
     cilinder.CappingOn()
     cilinder.Update()
@@ -41,7 +41,7 @@ def closed_pipe_data(length, outside_diameter, sides=20):
 
 def pipe_data(length, outside_diameter, thickness, offset_y=0, offset_z=0, sides=20):
     if (thickness == 0) or (2 * thickness > outside_diameter):
-        return closed_pipe_data(length, outside_diameter)
+        return closed_pipe_data(length, outside_diameter, offset_y, offset_z, sides)
 
     outer_radius = outside_diameter / 2
     inner_radius = (outside_diameter) / 2 - thickness
@@ -88,30 +88,30 @@ def pipe_data(length, outside_diameter, thickness, offset_y=0, offset_z=0, sides
     return append_polydata.GetOutput()
 
 
-def circular_beam_data(length, outside_diameter, thickness):
+def circular_beam_data(length, outside_diameter, thickness, offset_y=0, offset_z=0):
     cilinder = vtkCylinderSource()
     cilinder.SetResolution(12)
     cilinder.SetRadius(outside_diameter / 2)
     cilinder.SetHeight(length)
-    cilinder.SetCenter(0, length / 2, 0)
+    cilinder.SetCenter(offset_y, length / 2, offset_z)
     cilinder.CappingOn()
     cilinder.Update()
     return cilinder.GetOutput()
 
 
-def closed_rectangular_beam_data(length, b, h):
+def closed_rectangular_beam_data(length, b, h, offset_y=0, offset_z=0):
     rectangle = vtkCubeSource()
     rectangle.SetYLength(length)
     rectangle.SetXLength(b)
     rectangle.SetZLength(h)
-    rectangle.SetCenter(0, length / 2, 0)
+    rectangle.SetCenter(offset_y, length / 2, offset_z)
     rectangle.Update()
     return rectangle.GetOutput()
 
 
-def rectangular_beam_data(length, b, h, t):
+def rectangular_beam_data(length, b, h, t, offset_y=0, offset_z=0):
     if t == 0:
-        return closed_rectangular_beam_data(length, b, h)
+        return closed_rectangular_beam_data(length, b, h, offset_y, offset_z)
 
     rectangular_top = vtkCubeSource()
     rectangular_left = vtkCubeSource()
@@ -121,22 +121,22 @@ def rectangular_beam_data(length, b, h, t):
     rectangular_top.SetYLength(length)
     rectangular_top.SetZLength(t)
     rectangular_top.SetXLength(b)
-    rectangular_top.SetCenter(0, length / 2, -h / 2 + t / 2)
+    rectangular_top.SetCenter(offset_y, length / 2, -h / 2 + t / 2 + offset_z)
 
     rectangular_left.SetYLength(length)
     rectangular_left.SetZLength(h)
     rectangular_left.SetXLength(t)
-    rectangular_left.SetCenter(-b / 2 + t / 2, length / 2, 0)
+    rectangular_left.SetCenter(offset_y - b / 2 + t / 2, length / 2, offset_z)
 
     rectangular_right.SetYLength(length)
     rectangular_right.SetZLength(h)
     rectangular_right.SetXLength(t)
-    rectangular_right.SetCenter(b / 2 - t / 2, length / 2, 0)
+    rectangular_right.SetCenter(offset_y + b / 2 - t / 2, length / 2, offset_z)
 
     rectangular_bottom.SetYLength(length)
     rectangular_bottom.SetZLength(t)
     rectangular_bottom.SetXLength(b)
-    rectangular_bottom.SetCenter(0, length / 2, h / 2 - t / 2)
+    rectangular_bottom.SetCenter(offset_y, length / 2, h / 2 - t / 2, offset_z)
 
     rectangular_top.Update()
     rectangular_left.Update()
@@ -153,7 +153,7 @@ def rectangular_beam_data(length, b, h, t):
     return append_polydata.GetOutput()
 
 
-def c_beam_data(length, h, w1, w2, t1, t2, tw):
+def c_beam_data(length, h, w1, w2, t1, t2, tw, offset_y=0, offset_z=0):
     rectangular_top = vtkCubeSource()
     rectangular_left = vtkCubeSource()
     rectangular_bottom = vtkCubeSource()
@@ -161,17 +161,17 @@ def c_beam_data(length, h, w1, w2, t1, t2, tw):
     rectangular_top.SetYLength(length)
     rectangular_top.SetZLength(t1)
     rectangular_top.SetXLength(w1)
-    rectangular_top.SetCenter(w1 / 2 - max(w1, w2) / 2, length / 2, -h / 2 + t1 / 2)
+    rectangular_top.SetCenter(offset_y + w1 / 2 - max(w1, w2) / 2, length / 2, -h / 2 + t1 / 2 + offset_z)
 
     rectangular_left.SetYLength(length)
     rectangular_left.SetZLength(h)
     rectangular_left.SetXLength(tw)
-    rectangular_left.SetCenter(-max(w1, w2) / 2 + tw / 2, length / 2, 0)
+    rectangular_left.SetCenter(offset_y - max(w1, w2) / 2 + tw / 2, length / 2, offset_z)
 
     rectangular_bottom.SetYLength(length)
     rectangular_bottom.SetZLength(t2)
     rectangular_bottom.SetXLength(w2)
-    rectangular_bottom.SetCenter(w2 / 2 - max(w1, w2) / 2, length / 2, h / 2 - t2 / 2)
+    rectangular_bottom.SetCenter(offset_y + w2 / 2 - max(w1, w2) / 2, length / 2, h / 2 - t2 / 2 + offset_z)
 
     rectangular_top.Update()
     rectangular_left.Update()
@@ -186,7 +186,7 @@ def c_beam_data(length, h, w1, w2, t1, t2, tw):
     return append_polydata.GetOutput()
 
 
-def i_beam_data(length, h, w1, w2, t1, t2, tw):
+def i_beam_data(length, h, w1, w2, t1, t2, tw, offset_y=0, offset_z=0):
     rectangular_top = vtkCubeSource()
     rectangular_center = vtkCubeSource()
     rectangular_bottom = vtkCubeSource()
@@ -194,17 +194,17 @@ def i_beam_data(length, h, w1, w2, t1, t2, tw):
     rectangular_top.SetYLength(length)
     rectangular_top.SetZLength(t1)
     rectangular_top.SetXLength(w1)
-    rectangular_top.SetCenter(0, length / 2, -h / 2 + t1 / 2)
+    rectangular_top.SetCenter(offset_y, length / 2, -h / 2 + t1 / 2 + offset_z)
 
     rectangular_center.SetYLength(length)
     rectangular_center.SetZLength(h)
-    rectangular_center.SetCenter(0, length / 2, 0)
+    rectangular_center.SetCenter(offset_y, length / 2, offset_z)
     rectangular_center.SetXLength(tw)
 
     rectangular_bottom.SetYLength(length)
     rectangular_bottom.SetZLength(t2)
     rectangular_bottom.SetXLength(w2)
-    rectangular_bottom.SetCenter(0, length / 2, h / 2 - t2 / 2)
+    rectangular_bottom.SetCenter(offset_y, length / 2, h / 2 - t2 / 2 + offset_z)
 
     rectangular_top.Update()
     rectangular_center.Update()
@@ -219,18 +219,18 @@ def i_beam_data(length, h, w1, w2, t1, t2, tw):
     return append_polydata.GetOutput()
 
 
-def t_beam_data(length, h, w1, t1, tw):
+def t_beam_data(length, h, w1, t1, tw, offset_y=0, offset_z=0):
     rectangular_top = vtkCubeSource()
     rectangular_center = vtkCubeSource()
 
     rectangular_top.SetYLength(length)
     rectangular_top.SetZLength(t1)
     rectangular_top.SetXLength(w1)
-    rectangular_top.SetCenter(0, length / 2, -h / 2 + t1 / 2)
+    rectangular_top.SetCenter(offset_y, length / 2, -h / 2 + t1 / 2 + offset_z)
 
     rectangular_center.SetYLength(length)
     rectangular_center.SetZLength(h)
-    rectangular_center.SetCenter(0, length / 2, 0)
+    rectangular_center.SetCenter(offset_y, length / 2, offset_z)
     rectangular_center.SetXLength(tw)
 
     rectangular_top.Update()
