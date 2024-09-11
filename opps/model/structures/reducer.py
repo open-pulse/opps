@@ -1,3 +1,5 @@
+from molde.colors import TEAL_7
+
 from .linear_structure import LinearStructure
 
 
@@ -12,6 +14,7 @@ class Reducer(LinearStructure):
         self.final_offset_y = kwargs.get("final_offset_y", 0)
         self.final_offset_z = kwargs.get("final_offset_z", 0)
         self.thickness = kwargs.get("thickness", 0.01)
+        self.color = TEAL_7
 
     def as_vtk(self):
         from opps.interface.viewer_3d.actors import ReducerActor

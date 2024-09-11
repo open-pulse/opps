@@ -20,7 +20,7 @@ class CircularBeamActor(vtkActor):
         source = circular_beam_data(length, self.beam.diameter, self.beam.thickness)
 
         data = align_vtk_geometry(source, self.beam.start.coords(), vector)
-        paint_data(data, self.beam.color)
+        paint_data(data, self.beam.color.to_rgb())
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)

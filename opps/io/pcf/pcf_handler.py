@@ -111,7 +111,7 @@ class PCFHandler:
         end_diameter = float(d1) / 1000
         thickness = float(thickness)/1000 
         
-        return Reducer(start, end, start_diameter=start_diameter, end_diameter=end_diameter, thickness=thickness, color = (251, 177, 60))
+        return Reducer(start, end, start_diameter=start_diameter, end_diameter=end_diameter, thickness=thickness)
         
 
     def create_bend(self, group):
@@ -162,7 +162,6 @@ class PCFHandler:
             diameter=diameter,
             thickness=thickness,
             auto=False,
-            color=(227, 215, 255),
             extra_info=extra_info,
         )
 
@@ -182,7 +181,7 @@ class PCFHandler:
         start_radius = float(r0) / 1000
         thickness = float(thickness)/1000
 
-        return Flange(start, end , diameter = start_radius, thickness=thickness, color = (50, 168, 82), extra_info=extra_info)
+        return Flange(start, end , diameter = start_radius, thickness=thickness, extra_info=extra_info)
     
     def create_valve(self, group):
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
@@ -198,7 +197,7 @@ class PCFHandler:
         start_radius = float(r0) / 1000
         thickness = float(thickness)/1000
 
-        return Valve(start, end, diameter=start_radius, thickness = thickness, color = (143, 45, 86), extra_info= extra_info )
+        return Valve(start, end, diameter=start_radius, thickness = thickness, extra_info= extra_info )
 
     def create_elbow(self, group):
         x0, y0, z0, r0 = self.load_parameter("END-POINT", group, occurence=0)
@@ -245,7 +244,6 @@ class PCFHandler:
             diameter = start_radius,
             thickness=thickness,
             auto=False,
-            color = (115, 210, 222),
             extra_info= extra_info
         )
 

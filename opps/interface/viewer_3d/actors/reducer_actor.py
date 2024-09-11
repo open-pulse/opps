@@ -26,7 +26,7 @@ class ReducerActor(vtkActor):
         )
 
         data = align_vtk_geometry(source, self.reducer.start.coords(), vector)
-        paint_data(data, self.reducer.color)
+        paint_data(data, self.reducer.color.to_rgb())
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)

@@ -1,3 +1,4 @@
+from molde.colors import ORANGE_5
 from .linear_structure import LinearStructure
 
 
@@ -7,6 +8,7 @@ class ExpansionJoint(LinearStructure):
 
         self.diameter = kwargs.get("diameter", 0.1)
         self.thickness = kwargs.get("thickness", 0.01)
+        self.color = ORANGE_5
 
     def as_dict(self) -> dict:
         return super().as_dict() | {

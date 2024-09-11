@@ -69,8 +69,7 @@ class ElbowActor(vtkActor):
         append_polydata.Update()
 
         data = append_polydata.GetOutput()
-        color = self.elbow.color
-        paint_data(data, color)
+        paint_data(data, self.elbow.color.to_rgb())
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)

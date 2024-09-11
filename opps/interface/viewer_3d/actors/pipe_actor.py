@@ -18,7 +18,7 @@ class PipeActor(vtkActor):
         source = closed_pipe_data(length, self.pipe.diameter)
 
         data = align_vtk_geometry(source, self.pipe.start.coords(), vector)
-        paint_data(data, self.pipe.color)
+        paint_data(data, self.pipe.color.to_rgb())
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)

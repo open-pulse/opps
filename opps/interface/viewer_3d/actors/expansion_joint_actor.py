@@ -22,7 +22,7 @@ class ExpansionJointActor(vtkActor):
         )
 
         data = align_vtk_geometry(source, self.expansion_joint.start.coords(), vector)
-        paint_data(data, self.expansion_joint.color)
+        paint_data(data, self.expansion_joint.color.to_rgb())
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)

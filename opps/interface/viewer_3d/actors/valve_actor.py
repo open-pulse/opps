@@ -27,7 +27,7 @@ class ValveActor(vtkActor):
         source = valve_data(length, self.valve.diameter, self.valve.thickness)
 
         data = align_vtk_geometry(source, a, vector)
-        paint_data(data, self.valve.color)
+        paint_data(data, self.valve.color.to_rgb())
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)

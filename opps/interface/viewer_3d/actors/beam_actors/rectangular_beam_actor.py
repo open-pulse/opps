@@ -23,7 +23,7 @@ class RectangularBeamActor(vtkActor):
         )
 
         data = align_vtk_geometry(source, self.beam.start.coords(), vector)
-        paint_data(data, self.beam.color)
+        paint_data(data, self.beam.color.to_rgb())
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)

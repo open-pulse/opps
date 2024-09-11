@@ -4,15 +4,15 @@ if TYPE_CHECKING:
     from opps.model import Point
 
 from copy import deepcopy
-
+from molde.colors import Color, WHITE
 
 class Structure:
     def __init__(self, **kwargs) -> None:
-        self.color = kwargs.get("color", [255, 255, 255])
-        self.selected = kwargs.get("selected", False)
-        self.staged = kwargs.get("staged", False)
-        self.tag = kwargs.get("tag", -1)
-        self.extra_info = kwargs.get("extra_info", dict())
+        self.color: Color = kwargs.get("color", WHITE)
+        self.selected: bool = kwargs.get("selected", False)
+        self.staged: bool = kwargs.get("staged", False)
+        self.tag: int = kwargs.get("tag", -1)
+        self.extra_info: dict = kwargs.get("extra_info", dict())
 
     def get_points(self) -> list["Point"]:
         raise NotImplementedError(f'get_points method not implemented in "{type(self).__name__}".')

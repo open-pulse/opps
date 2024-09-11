@@ -65,8 +65,7 @@ class BendActor(vtkActor):
         append_polydata.Update()
 
         data = append_polydata.GetOutput()
-        color = self.bend.color
-        paint_data(data, color)
+        paint_data(data, self.bend.color.to_rgb())
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)

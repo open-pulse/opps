@@ -18,7 +18,7 @@ class FlangeActor(vtkActor):
         source = flange_data(length, self.flange.diameter, self.flange.thickness)
 
         data = align_vtk_geometry(source, self.flange.start.coords(), vector)
-        paint_data(data, self.flange.color)
+        paint_data(data, self.flange.color.to_rgb())
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)

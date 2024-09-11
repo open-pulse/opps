@@ -1,5 +1,7 @@
 import numpy as np
 
+from molde.colors import PURPLE_7
+
 from .point import Point
 from .simple_curve import SimpleCurve
 
@@ -10,6 +12,7 @@ class Bend(SimpleCurve):
 
         self.diameter = kwargs.get("diameter", 0.1)
         self.thickness = kwargs.get("thickness", 0.01)
+        self.color = PURPLE_7
 
     def as_dict(self) -> dict:
         return super().as_dict() | {
