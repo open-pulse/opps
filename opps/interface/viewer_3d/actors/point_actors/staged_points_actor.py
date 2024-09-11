@@ -2,7 +2,7 @@ from molde.poly_data import VerticesData
 from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
 
 
-class PassivePointsActor(vtkActor):
+class StagedPointsActor(vtkActor):
     def __init__(self, points):
         super().__init__()
         self.points = points
@@ -15,8 +15,8 @@ class PassivePointsActor(vtkActor):
         mapper.SetInputData(data)
         self.SetMapper(mapper)
 
-        self.GetProperty().SetPointSize(12)
-        self.GetProperty().SetColor([i / 255 for i in (255, 200, 110)])
+        self.GetProperty().SetPointSize(10)
+        self.GetProperty().SetColor([i / 255 for i in (255, 180, 50)])
         self.GetProperty().LightingOff()
 
         offset = -66000

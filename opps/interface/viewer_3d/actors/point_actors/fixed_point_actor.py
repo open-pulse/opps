@@ -1,14 +1,16 @@
-import vtk
+from vtkmodules.vtkFiltersCore import vtkAppendPolyData
+from vtkmodules.vtkFiltersSources import vtkCubeSource, vtkCylinderSource
+from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
 
 
-class FixedPointActor(vtk.vtkActor):
+class FixedPointActor(vtkActor):
     def __init__(self):
         super().__init__()
         self.create_geometry()
 
     def create_geometry(self):
-        base = vtk.vtkCubeSource()
-        cylinder = vtk.vtkCylinderSource()
+        base = vtkCubeSource()
+        cylinder = vtkCylinderSource()
 
         base.SetXLength(1)
         base.SetYLength(0.1)
@@ -21,11 +23,11 @@ class FixedPointActor(vtk.vtkActor):
         base.Update()
         cylinder.Update()
 
-        append_filter = vtk.vtkAppendPolyData()
+        append_filter = vtkAppendPolyData()
         append_filter.AddInputData(base.GetOutput())
         append_filter.AddInputData(cylinder.GetOutput())
         append_filter.Update()
 
-        mapper = vtk.vtkPolyDataMapper()
+        mapper = vtkPolyDataMapper()
         mapper.SetInputData(append_filter.GetOutput())
         self.SetMapper(mapper)

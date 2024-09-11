@@ -157,7 +157,11 @@ class AddStructuresWidget(QWidget):
         pass
 
     def section_callback(self):
-        return
+        pipeline = self.render_widget.pipeline
+        pipeline.dismiss()
+        pipeline.divide_structures_evenly(1)
+        pipeline.clear_selection()
+        self.render_widget.update_plot(reset_camera=False)
 
     def apply_callback(self):
         try:

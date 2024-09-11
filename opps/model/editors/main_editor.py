@@ -1,8 +1,3 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
-
 import numpy as np
 
 from opps.model import (
@@ -15,16 +10,19 @@ from opps.model import (
     Pipe,
     Point,
     RectangularBeam,
-    ReducerEccentric,
+    Reducer,
     Structure,
     TBeam,
     Valve,
 )
 
+from .editor import Editor
 
-class MainEditor:
-    def __init__(self, pipeline: "Pipeline") -> None:
-        self.pipeline = pipeline
+
+class MainEditor(Editor):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
         self.next_border = list()
 
     def add_pipe(self, deltas, **kwargs) -> list[Pipe]:
@@ -81,25 +79,16 @@ class MainEditor:
     def add_flange(self, deltas, **kwargs) -> list[Flange]:
         return self._add_generic_line_structure(Flange, deltas, **kwargs)
 
-        flanges = list()
-
-        if not self.pipeline.selected_points:
-            self.pipeline.select_last_point()
-
-        for point in self.pipeline.selected_points:
-            vectors = self._get_point_vectors(point)
-            vectors.append(np.array([1, 0, 0]))  # the default flange points to the right
-
-            normal, *_ = vectors
-            flange = Flange(point, normal=normal, **kwargs)
-            self.pipeline.add_structure(flange)
-            flanges.append(flange)
-
-        return flanges
-
     def add_bent_pipe(self, deltas, curvature_radius: float, **kwargs) -> list[Pipe | Bend]:
         pipes = self.add_pipe(deltas, **kwargs)
         bends = self.add_bend(curvature_radius, **kwargs)
+
+        # force the last point added to be a pipe point instead of a bend point
+        if pipes:
+            *_, last_pipe = pipes
+            self.pipeline.staged_points.remove(last_pipe.end)
+            self.pipeline.add_point(last_pipe.end)
+
         return bends + pipes
 
     def add_expansion_joint(self, deltas, **kwargs) -> list[ExpansionJoint]:
@@ -108,8 +97,8 @@ class MainEditor:
     def add_valve(self, deltas, **kwargs) -> list[Valve]:
         return self._add_generic_line_structure(Valve, deltas, **kwargs)
 
-    def add_reducer_eccentric(self, deltas, **kwargs) -> list[ReducerEccentric]:
-        return self._add_generic_line_structure(ReducerEccentric, deltas, **kwargs)
+    def add_reducer_eccentric(self, deltas, **kwargs) -> list[Reducer]:
+        return self._add_generic_line_structure(Reducer, deltas, **kwargs)
 
     def add_circular_beam(self, deltas, **kwargs) -> list[CircularBeam]:
         return self._add_generic_line_structure(CircularBeam, deltas, **kwargs)
@@ -166,6 +155,12 @@ class MainEditor:
         # the following line:
         # self.remove_collapsed_bends()
 
+    def add_isolated_point(self, coords: tuple[float, float, float], **kwargs):
+        point = Point(*coords, **kwargs)
+        self.pipeline.add_point(point)
+        self.next_border.append(point)
+        return point
+
     def remove_collapsed_bends(self):
         to_remove = []
         for bend in self.pipeline.structures_of_type(Bend):
@@ -202,8 +197,13 @@ class MainEditor:
 
         for point in self.pipeline.selected_points:
             for bend in self.pipeline.structures_of_type(Bend):
-                if id(bend.corner) == id(point):
-                    bend.colapse()
+                if not bend.auto:
+                    continue
+
+                if id(bend.corner) != id(point):
+                    continue
+
+                bend.colapse()
 
     def _get_bend_vectors(self, point: Point):
         directions = self._get_point_vectors(point)
@@ -230,7 +230,7 @@ class MainEditor:
     def _get_point_vectors(self, point: Point):
         directions = list()
 
-        pipe_like_structure = Pipe | Flange | ReducerEccentric | ExpansionJoint | Valve
+        pipe_like_structure = Pipe | Flange | Reducer | ExpansionJoint | Valve
         for structure in self.pipeline.structures_of_type(pipe_like_structure):
             if not point in structure.get_points():
                 continue

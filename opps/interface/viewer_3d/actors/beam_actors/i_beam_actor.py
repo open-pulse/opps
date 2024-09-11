@@ -1,5 +1,5 @@
 import numpy as np
-import vtk
+from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
 
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
 from opps.interface.viewer_3d.utils.cross_section_sources import i_beam_data
@@ -7,7 +7,7 @@ from opps.interface.viewer_3d.utils.rotations import align_vtk_geometry
 from opps.model import IBeam
 
 
-class IBeamActor(vtk.vtkActor):
+class IBeamActor(vtkActor):
     def __init__(self, beam: IBeam):
         self.beam = beam
         self.create_geometry()
@@ -28,7 +28,7 @@ class IBeamActor(vtk.vtkActor):
         data = align_vtk_geometry(source, self.beam.start.coords(), vector)
         paint_data(data, self.beam.color)
 
-        mapper = vtk.vtkPolyDataMapper()
+        mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)
         mapper.SetScalarModeToUseCellData()
         self.SetMapper(mapper)

@@ -5,6 +5,7 @@ import numpy as np
 import yaml
 
 from opps.model.editors.connection_editor import ConnectionEditor
+from opps.model.editors.divide_editor import DivideEditor
 from opps.model.editors.main_editor import MainEditor
 from opps.model.editors.points_editor import PointsEditor
 from opps.model.editors.selection_editor import SelectionEditor
@@ -32,10 +33,6 @@ class Pipeline:
         self.selected_points: list[Point] = list()
         self.selected_structures: list[Structure] = list()
 
-        # origin
-        if not self.points:
-            self.points.append(Point(0, 0, 0))
-
         # Instead of placing incountable lines of code here,
         # most of the functions are a facade, and their actual
         # implementation is handled by one of the following editors.
@@ -43,6 +40,7 @@ class Pipeline:
         self.points_editor = PointsEditor(self)
         self.selection_editor = SelectionEditor(self)
         self.connection_editor = ConnectionEditor(self)
+        self.divide_editor = DivideEditor(self)
 
     def reset(self):
         self.points.clear()
@@ -208,20 +206,23 @@ class Pipeline:
     def add_reducer_eccentric(self, deltas, **kwargs):
         return self.main_editor.add_reducer_eccentric(deltas, **kwargs)
 
-    def add_circular_beam(self, deltas):
-        return self.main_editor.add_circular_beam(deltas)
+    def add_circular_beam(self, deltas, **kwargs):
+        return self.main_editor.add_circular_beam(deltas, **kwargs)
 
-    def add_rectangular_beam(self, deltas):
-        return self.main_editor.add_rectangular_beam(deltas)
+    def add_rectangular_beam(self, deltas, **kwargs):
+        return self.main_editor.add_rectangular_beam(deltas, **kwargs)
 
-    def add_c_beam(self, deltas):
-        return self.main_editor.add_c_beam(deltas)
+    def add_c_beam(self, deltas, **kwargs):
+        return self.main_editor.add_c_beam(deltas, **kwargs)
 
-    def add_t_beam(self, deltas):
-        return self.main_editor.add_t_beam(deltas)
+    def add_t_beam(self, deltas, **kwargs):
+        return self.main_editor.add_t_beam(deltas, **kwargs)
 
-    def add_i_beam(self, deltas):
-        return self.main_editor.add_i_beam(deltas)
+    def add_i_beam(self, deltas, **kwargs):
+        return self.main_editor.add_i_beam(deltas, **kwargs)
+
+    def add_isolated_point(self, coords, **kwargs):
+        return self.main_editor.add_isolated_point(coords, **kwargs)
 
     def recalculate_curvatures(self):
         self.main_editor.recalculate_curvatures()
@@ -230,8 +231,8 @@ class Pipeline:
     def connect_pipes(self, **kwargs):
         return self.connection_editor.connect_pipes(**kwargs)
 
-    def connect_bent_pipes(self, **kwargs):
-        return self.connection_editor.connect_bent_pipes(**kwargs)
+    def connect_bent_pipes(self, curvature_radius, **kwargs):
+        return self.connection_editor.connect_bent_pipes(curvature_radius, **kwargs)
 
     def connect_flanges(self, **kwargs):
         return self.connection_editor.connect_flanges(**kwargs)
@@ -292,6 +293,25 @@ class Pipeline:
     def clear_selection(self):
         self.selection_editor.clear_selection()
 
+    def clear_point_selection(self):
+        self.selection_editor.clear_point_selection()
+
+    def clear_structure_selection(self):
+        self.selection_editor.clear_structure_selection()
+
+    # Divide editor
+    def divide_structures(self, t=0.5):
+        self.divide_editor.divide_structures(t)
+
+    def divide_structures_evenly(self, divisions=1):
+        self.divide_editor.divide_structures_evenly(divisions)
+
+    def preview_divide_structures(self, t=0.5):
+        self.divide_editor.preview_divide_structures(t)
+
+    def preview_divide_structures_evenly(self, divisions=1):
+        self.divide_editor.preview_divide_structures_evenly(divisions)
+
     # Common
     def as_dict(self) -> dict:
         return {"structures": self.structures, "points": self.points}
@@ -305,106 +325,3 @@ class Pipeline:
 
     def __hash__(self) -> int:
         return id(self)
-
-    def _update_flanges(self):
-        return
-        for flange in self.structures:
-            if not isinstance(flange, Flange):
-                continue
-
-            if not flange.auto:
-                continue
-
-            connected_points = self._connected_points(flange.position)
-            if not connected_points:
-                continue
-
-            oposite_a, *_ = connected_points
-            flange.normal = flange.position.coords() - oposite_a.coords()
-
-    def _update_curvatures(self):
-        return
-        # First colapse all joint that can be colapsed.
-        # This prevents cases were a normalization of a
-        # joint disturbs the normalization of others.
-        for joint in self.structures:
-            if not isinstance(joint, Bend | Elbow):
-                continue
-
-            if not joint.auto:
-                continue
-
-            joint.colapse()
-
-        for joint in self.structures:
-            if not isinstance(joint, Bend | Elbow):
-                continue
-
-            if not joint.auto:
-                continue
-
-            connected_points = (
-                self._connected_points(joint.start)
-                + self._connected_points(joint.end)
-                + self._connected_points(joint.corner)
-            )
-
-            if len(connected_points) != 2:
-                continue
-
-            oposite_a, oposite_b, *_ = connected_points
-            joint.normalize_values(oposite_a, oposite_b)
-
-    def _update_points(self):
-        return
-        points = list()
-        control_points = list()
-        for structure in self.structures:
-            points.extend(structure.get_points())
-            if not isinstance(structure, Pipe | Beam):
-                continue
-            control_points.extend(structure.get_points())
-
-        point_to_index = {v: i for i, v in enumerate(control_points)}
-        indexes_to_remove = []
-
-        for structure in self.structures:
-            if not isinstance(structure, Bend | Elbow):
-                continue
-
-            if not structure.auto:
-                control_points.append(structure.corner)
-                control_points.append(structure.end)
-                control_points.append(structure.start)
-                continue
-
-            control_points.append(structure.corner)
-            if structure.start in point_to_index:
-                indexes_to_remove.append(point_to_index[structure.start])
-
-            if structure.end in point_to_index:
-                indexes_to_remove.append(point_to_index[structure.end])
-
-        for i in sorted(indexes_to_remove, reverse=True):
-            control_points.pop(i)
-
-        if not control_points and not points:
-            control_points.append(self.origin)
-            points.append(self.origin)
-
-        self.control_points = list(control_points)
-        self.points = list(points)
-
-    def _connected_points(self, point):
-        oposite_points = []
-        for pipe in self.structures:
-            if not isinstance(pipe, Pipe):
-                continue
-
-            if id(pipe.start) == id(point):
-                oposite_points.append(pipe.end)
-
-            elif id(pipe.end) == id(point):
-                oposite_points.append(pipe.start)
-
-        return oposite_points

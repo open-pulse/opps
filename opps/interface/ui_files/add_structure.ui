@@ -149,7 +149,7 @@
         <string>Apply</string>
        </property>
        <property name="shortcut">
-        <string>Ctrl+Return</string>
+        <string>Return</string>
        </property>
       </widget>
      </item>

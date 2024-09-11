@@ -3,7 +3,7 @@ from itertools import pairwise
 
 import numpy as np
 
-from opps.model import Bend, Elbow, Flange, Pipe, Point, ReducerEccentric, Valve, Support
+from opps.model import Bend, Elbow, Flange, Pipe, Point, Reducer, Valve, Support
 
 
 class PCFHandler:
@@ -97,7 +97,7 @@ class PCFHandler:
         if start_diameter == end_diameter:
             return Pipe(start, end, diameter=start_diameter, thickness=thickness, extra_info=extra_info )
         else:
-            return ReducerEccentric(start, end, start_diameter=start_diameter, end_diameter=end_diameter, thickness=thickness)
+            return Reducer(start, end, start_diameter=start_diameter, end_diameter=end_diameter, thickness=thickness)
 
     def create_reducer(self, group):
 
@@ -113,7 +113,7 @@ class PCFHandler:
         end_diameter = float(d1) / 1000
         thickness = float(thickness)/1000 
         
-        return ReducerEccentric(start, end, start_diameter=start_diameter, end_diameter=end_diameter, thickness=thickness, color = (251, 177, 60))
+        return Reducer(start, end, start_diameter=start_diameter, end_diameter=end_diameter, thickness=thickness, color = (251, 177, 60))
         
 
     def create_bend(self, group):

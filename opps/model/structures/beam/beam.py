@@ -1,5 +1,8 @@
-from opps.model.structures.structure import Structure
+from ..linear_structure import LinearStructure
 
 
-class Beam(Structure):
-    pass
+class Beam(LinearStructure):
+    """
+    Abstract class to handle common stuff to most structures.
+    Also usefull to get diferentiate Beams from other structures.
+    """

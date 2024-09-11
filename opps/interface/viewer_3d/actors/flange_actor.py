@@ -1,5 +1,5 @@
 import numpy as np
-import vtk
+from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
 
 from opps.interface.viewer_3d.utils.cell_utils import paint_data
 from opps.interface.viewer_3d.utils.cross_section_sources import flange_data
@@ -7,7 +7,7 @@ from opps.interface.viewer_3d.utils.rotations import align_vtk_geometry
 from opps.model import Flange
 
 
-class FlangeActor(vtk.vtkActor):
+class FlangeActor(vtkActor):
     def __init__(self, flange: Flange):
         self.flange = flange
         self.create_geometry()
@@ -20,7 +20,7 @@ class FlangeActor(vtk.vtkActor):
         data = align_vtk_geometry(source, self.flange.start.coords(), vector)
         paint_data(data, self.flange.color)
 
-        mapper = vtk.vtkPolyDataMapper()
+        mapper = vtkPolyDataMapper()
         mapper.SetInputData(data)
         mapper.SetScalarModeToUseCellData()
         self.SetMapper(mapper)

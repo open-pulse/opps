@@ -1,17 +1,11 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
-
 import numpy as np
 
 from opps.model import Bend, Point
 
+from .editor import Editor
 
-class PointsEditor:
-    def __init__(self, pipeline: "Pipeline") -> None:
-        self.pipeline = pipeline
 
+class PointsEditor(Editor):
     def attatch_point(self, point: Point):
         replaced_points = []
 
@@ -57,9 +51,14 @@ class PointsEditor:
         for structure in self.pipeline.structures:
             for point in structure.get_points():
                 x, y, z = np.round(point.coords(), 6)
-
                 if (x, y, z) in found_points:
                     new = found_points[x, y, z]
                     structure.replace_point(point, new)
                 else:
                     found_points[x, y, z] = point
+
+        self.pipeline.points.clear()
+        for structure in self.pipeline.structures:
+            for point in structure.get_points():
+                if point not in self.pipeline.points:
+                    self.pipeline.points.append(point)

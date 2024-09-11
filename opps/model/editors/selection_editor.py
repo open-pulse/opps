@@ -1,22 +1,26 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from opps.model import Pipeline
-
 import numpy as np
 from ordered_set import OrderedSet
 
+from opps.model import Point
 
-class SelectionEditor:
-    def __init__(self, pipeline: "Pipeline") -> None:
-        self.pipeline = pipeline
+from .editor import Editor
 
+
+class SelectionEditor(Editor):
     def select_last_point(self):
-        point, *_ = self.pipeline.points
+        if self.pipeline.points:
+            *_, point = self.pipeline.points
+        else:
+            point = Point(0, 0, 0)
+            self.pipeline.staged_points.append(point)
+
         self.pipeline.select_points([point])
 
     def select_last_structure(self):
-        structure, *_ = self.pipeline.structures
+        if not self.pipeline.structures:
+            return
+
+        *_, structure = self.pipeline.structures
         self.pipeline.select_structures([structure])
 
     def select_points(self, points, join=False, remove=False):
@@ -67,7 +71,13 @@ class SelectionEditor:
         self.pipeline.selected_structures = list(current_selection)
 
     def clear_selection(self):
+        self.clear_structure_selection()
+        self.clear_point_selection()
+
+    def clear_point_selection(self):
+        self.pipeline.selected_points.clear()
+
+    def clear_structure_selection(self):
         for structure in self.pipeline.structures:
             structure.selected = False
-        self.pipeline.selected_points.clear()
         self.pipeline.selected_structures.clear()

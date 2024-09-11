@@ -2,8 +2,8 @@ import os
 import sys
 from pathlib import Path
 
-import vtk
 from PyQt5.QtWidgets import QApplication
+from vtkmodules.vtkCommonCore import vtkLogger, vtkObject
 
 from opps.io.yaml_file.configuration import configure_custom_yaml
 
@@ -23,8 +23,8 @@ def app() -> "Application":
 def run():
     # disables the terrible vtk error handler and its logs
     # you may want to enable them while debugging something
-    vtk.vtkObject.GlobalWarningDisplayOff()
-    vtk.vtkLogger.SetStderrVerbosity(vtk.vtkLogger.VERBOSITY_OFF)
+    vtkObject.GlobalWarningDisplayOff()
+    vtkLogger.SetStderrVerbosity(vtkLogger.VERBOSITY_OFF)
 
     # Make the window scale evenly for every monitor
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"

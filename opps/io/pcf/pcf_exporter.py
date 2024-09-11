@@ -2,7 +2,7 @@ from pathlib import Path
 
 import numpy as np
 
-from opps.model import Bend, Elbow, Flange, Pipe, Point, Valve, ReducerEccentric
+from opps.model import Bend, Elbow, Flange, Pipe, Point, Valve, Reducer
 
 
 class PCFExporter:
@@ -44,7 +44,7 @@ class PCFExporter:
                 stringer = self.encoder_valve(structure)
                 string = string + "\n" + stringer
 
-            elif isinstance(structure, ReducerEccentric):
+            elif isinstance(structure, Reducer):
                 stringer = self.encoder_reducer(structure)
                 string = string + "\n" + stringer
 
