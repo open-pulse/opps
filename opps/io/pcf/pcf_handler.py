@@ -40,8 +40,6 @@ class PCFHandler:
                 if value:
                     header[unit] = value
 
-        print(header)
-
     def create_classes(self, groups):
         objects = []
         for group in groups:
