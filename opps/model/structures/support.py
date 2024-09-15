@@ -1,10 +1,7 @@
-from dataclasses import dataclass
-
-import numpy as np
+from vtkmodules.vtkRenderingCore import vtkActor, vtkPolyDataMapper
 
 from .point import Point
 from .structure import Structure
-import vtk
 
 
 class Support(Structure):
@@ -28,7 +25,7 @@ class Support(Structure):
         }
 
     def as_vtk(self):
-        return vtk.vtkActor(mapper=vtk.vtkPolyDataMapper())
+        return vtkActor(mapper=vtkPolyDataMapper())
     
     def __hash__(self) -> int:
         return id(self)
