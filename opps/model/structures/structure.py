@@ -30,7 +30,9 @@ class Structure:
         }
 
     def copy(self):
-        return deepcopy(self)
+        new_structure = deepcopy(self)
+        new_structure.tag = -1
+        return new_structure
 
     def as_vtk(self):
         raise NotImplementedError(f'as_vtk method not implemented in "{type(self).__name__}".')
