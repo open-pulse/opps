@@ -18,6 +18,8 @@ class SimpleCurve(Structure):
         self.curvature = curvature
         self.auto = True
 
+        self.center_coords = None
+
     @property
     def center(self):
         if self.is_colapsed():
@@ -33,8 +35,7 @@ class SimpleCurve(Structure):
             return self.corner
 
         sin_angle = np.linalg.norm(a_vector - b_vector) / 2
-        angle = np.arcsin(sin_angle)
-        center_distance = self.curvature / np.sin(angle)
+        center_distance = self.curvature / sin_angle
 
         c_vector = normalize(a_vector + b_vector)
         return Point(*(self.corner.coords() + c_vector * center_distance))
