@@ -12,6 +12,7 @@ class Bend(SimpleCurve):
 
         self.diameter = kwargs.get("diameter", 0.1)
         self.thickness = kwargs.get("thickness", 0.01)
+        self.center_coords = kwargs.get("center_coords")
         self.color = PURPLE_7
 
     def as_dict(self) -> dict:
