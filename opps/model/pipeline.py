@@ -9,6 +9,7 @@ from opps.model.editors.divide_editor import DivideEditor
 from opps.model.editors.main_editor import MainEditor
 from opps.model.editors.points_editor import PointsEditor
 from opps.model.editors.selection_editor import SelectionEditor
+from opps.model.editors.undo_redo_editor import UndoRedoEditor
 
 from .structures.beam import Beam
 from .structures.bend import Bend
@@ -41,6 +42,7 @@ class Pipeline:
         self.selection_editor = SelectionEditor(self)
         self.connection_editor = ConnectionEditor(self)
         self.divide_editor = DivideEditor(self)
+        self.undo_redo_editor = UndoRedoEditor(self)
 
     def reset(self):
         self.points.clear()
@@ -78,6 +80,7 @@ class Pipeline:
 
     # Essential functions
     def commit(self):
+        self.undo_redo_editor.push()
         self.main_editor.remove_collapsed_bends()
 
         for structure in self.staged_structures:
@@ -143,6 +146,8 @@ class Pipeline:
             self.attatch_point(structure.corner)
 
     def delete_selection(self):
+        self.undo_redo_editor.push()
+
         for structure in self.selected_structures:
             self.remove_structure(structure, rejoin=True)
 
@@ -311,6 +316,19 @@ class Pipeline:
 
     def preview_divide_structures_evenly(self, divisions=1):
         self.divide_editor.preview_divide_structures_evenly(divisions)
+
+    # Undo/Redo editor
+    def undo(self):
+        return self.undo_redo_editor.undo()
+
+    def redo(self):
+        return self.undo_redo_editor.redo()
+
+    def can_undo(self):
+        return self.undo_redo_editor.can_undo()
+
+    def can_redo(self):
+        return self.undo_redo_editor.can_redo()
 
     # Common
     def as_dict(self) -> dict:

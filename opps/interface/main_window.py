@@ -28,6 +28,16 @@ class MainWindow(QMainWindow):
         self.delete_action.triggered.connect(self.delete_selection_callback)
         self.addAction(self.delete_action)
 
+        self.undo_action = QAction(self)
+        self.undo_action.setShortcut("ctrl+z")
+        self.undo_action.triggered.connect(self.undo_action_callback)
+        self.addAction(self.undo_action)
+
+        self.redo_action = QAction(self)
+        self.redo_action.setShortcut("ctrl+shift+z")
+        self.redo_action.triggered.connect(self.redo_action_callback)
+        self.addAction(self.redo_action)
+
         self._create_menu_bar()
         self._configure_window()
         self._create_central_widget()
@@ -115,6 +125,16 @@ class MainWindow(QMainWindow):
     def delete_selection_callback(self):
         pipeline = self.render_widget.pipeline
         pipeline.delete_selection()
+        app().update()
+
+    def undo_action_callback(self):
+        pipeline = self.render_widget.pipeline
+        pipeline.undo()
+        app().update()
+
+    def redo_action_callback(self):
+        pipeline = self.render_widget.pipeline
+        pipeline.redo()
         app().update()
 
     def selection_callback(self):
