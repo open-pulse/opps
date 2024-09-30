@@ -33,13 +33,17 @@ class DivideEditor(Editor):
         self.pipeline.add_points(all_points)
 
     def _divide_on_point(self, structure: Structure, point: Point):
+
         if isinstance(structure, LinearStructure):
+            original_end = structure.end
             new_structure = structure.copy()
             structure.end = point
             new_structure.start = point
+            new_structure.end = original_end
             self.pipeline.add_structure(new_structure)
 
         elif isinstance(structure, SimpleCurve):
+            original_end = structure.end
             center = structure.center
             corner = structure.corner.copy()
             new_structure = structure.copy()
@@ -48,6 +52,7 @@ class DivideEditor(Editor):
             structure.update_corner_from_center(center)
 
             new_structure.start = point
+            new_structure.end = original_end
             new_structure.update_corner_from_center(center)
 
             self.pipeline.add_structure(new_structure)
@@ -56,6 +61,11 @@ class DivideEditor(Editor):
     def _divide_evenly(self, structure: Structure, divisions: int):
         structures = [structure] + [structure.copy() for i in range(divisions)]
         points = self._interpolate_evenly(structure, divisions)
+
+        try:
+            structures[-1].end = structures[0].end
+        except:
+            return
 
         corner = None
         if isinstance(structure, SimpleCurve):
